@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+.libPaths("C:/Users/toomase/Documents/R/win-library/3.2")
 library(knitr)
 
 # Get the filename given as an argument in the shell.
@@ -16,8 +17,8 @@ output = paste0(dir, sub('.Rmd', '.md', filename))
 knit(filename, output)
 
 # Copy .png files to the images directory.
-fromdir = "{{ site.url }}/images"
-todir = "../images"
+fromdir = "{{ site.url }}/img"
+todir = "../img"
 
 pics = list.files(fromdir, ".png")
 pics = sapply(pics, function(x) paste(fromdir, x, sep="/"))

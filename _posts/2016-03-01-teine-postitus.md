@@ -32,6 +32,6 @@ summary(cars)
 
 You can also embed plots, for example:
 
-![plot of chunk pressure]({{ site.url }}/img/esimene-postitus-pressure-1.png)
+![plot of chunk surve]({{ site.url }}/img/teine-postitus-surve-1.png)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

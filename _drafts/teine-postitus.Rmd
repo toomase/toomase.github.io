@@ -6,8 +6,8 @@ layout: post
 ---
 
 ```{r, echo=FALSE}
-# Do Not Delete This Chunk
-knitr::opts_chunk$set(fig.path='{{ site.url }}/img/esimene-postitus-')
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/teine-postitus-')
 ```
 
 ## R Markdown
@@ -24,7 +24,7 @@ summary(cars)
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
+```{r surve, echo=FALSE}
 plot(pressure)
 ```
 

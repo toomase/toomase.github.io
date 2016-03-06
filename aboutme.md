@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Minust
+title: Kes?
 ---
 
-![plot of chunk surve]({{ site.url }}/img/cv.png)
+![CV]({{ site.url }}/img/cv.png)

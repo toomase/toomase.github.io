@@ -20,4 +20,4 @@ See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid 
 
 ## Suur ja väike
 Kus nimetakse...
-<img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-vaike-1.png" title="plot of chunk vaike" alt="plot of chunk vaike" style="display: block; margin: auto;" />
+<img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-suurus-1.png" title="plot of chunk suurus" alt="plot of chunk suurus" style="display: block; margin: auto;" />

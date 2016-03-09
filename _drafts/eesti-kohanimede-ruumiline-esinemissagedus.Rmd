@@ -43,9 +43,9 @@ See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid 
 
 ## Suur ja väike
 Kus nimetakse...
-```{r vaike, fig.height = 3, fig.align = "center"}
+```{r suurus, fig.height = 4, fig.align = "center"}
 vaike <- eesti_hexabin("väike")
 suur <- eesti_hexabin("suur")
 
-grid.arrange(vaike, suur, ncol=2)
+grid.arrange(vaike, suur, ncol = 2)
 ```

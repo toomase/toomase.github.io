@@ -11,7 +11,12 @@ knitr::opts_chunk$set(fig.path='{{ site.url }}/img/eesti-kohanimede-ruumiline-es
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(svglite)
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    dev = "svglite"
+)
 ```
 
 ```{r andmete laadimine}

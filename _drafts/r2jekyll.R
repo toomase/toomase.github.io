@@ -23,7 +23,7 @@ todir = "../img"
 pics = list.files(fromdir, ".png")
 pics = sapply(pics, function(x) paste(fromdir, x, sep="/"))
 file.copy(pics, todir)
-unlink("{{ site.url }}", recursive=T)
+# unlink("{{ site.url }}", recursive=T)
 
 pics_svg = list.files(fromdir, ".svg")
 pics_svg = sapply(pics_svg, function(x) paste(fromdir, x, sep="/"))

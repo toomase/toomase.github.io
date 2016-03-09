@@ -49,7 +49,7 @@ See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid 
 
 ## Suur ja väike
 Kus nimetakse...
-```{r suurus, fig.height = 4, fig.align = "center"}
+```{r suurus_uus, fig.height = 5, dpi = 120, fig.align = "center"}
 vaike <- eesti_hexabin("väike")
 suur <- eesti_hexabin("suur")
 

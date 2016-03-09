@@ -20,15 +20,4 @@ See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid 
 
 ## Suur ja väike
 Kus nimetakse...
-
-```
-## Error in over(SpatialPoints(coordinates(data.frame(sonaga_kohanimed[, : error in evaluating the argument 'x' in selecting a method for function 'over': Error in coordinates(coords) : 
-##   error in evaluating the argument 'obj' in selecting a method for function 'coordinates': Error in .local(obj, ...) : 
-##   cannot derive coordinates from non-numeric matrix
-## Calls: coordinates ... coordinates -> .local -> coordinates -> coordinates -> .local
-## Calls: SpatialPoints -> coordinates
-```
-
-```
-## Error in arrangeGrob(...): object 'vaike' not found
-```
+<img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-vaike-1.png" title="plot of chunk vaike" alt="plot of chunk vaike" style="display: block; margin: auto;" />

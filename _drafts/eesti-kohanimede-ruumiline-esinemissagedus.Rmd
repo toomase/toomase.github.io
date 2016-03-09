@@ -35,7 +35,7 @@ source("C:/Users/toomase/Dropbox/DataScience/R/kohanimed/R/eesti_hexabin.R")
 ## Mis?
 Inspireerituna Moritz Stefaner'i [blogipostitusest](http://truth-and-beauty.net/experiments/ach-ingen-zell/) tegin Eesti [kohanimeregistri](http://xgis.maaamet.ee/knravalik/) baasil väikese analüüsi kohanimedes sisalduvate sõnade ruumilisest esinemissagedusest. Kohanimeregisteris on üle 155 000 kande: linnad, tänavad, järved, mäed, poolsaared, bussipeatused, talud jne. Sellest andmebaasist otsisin kohanimesid, mis sisaldavad mingit sõna, näiteks "mets" ja kuvasin kõik vastavad asukohad kaardile. Tumesinine toon näitab suurt esinemissagedust, heleroheline väikest ning kollane seda, et piirkonnas vastavat sõna sisaldavaid kohanimesid pole.
 
-```{r mets, fig.height = 3, fig.align = "center", message = FALSE, warning = FALSE}
+```{r mets, fig.height = 4, fig.align = "center", message = FALSE, warning = FALSE}
 eesti_hexabin("mets")
 ```
 

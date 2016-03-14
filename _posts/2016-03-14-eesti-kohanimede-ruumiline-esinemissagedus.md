@@ -1,58 +1,23 @@
 ---
 title: "Eesti kohanimede ruumiline esinemissagedus"
 author: "Toomas Eilat"
-date: "`r Sys.Date()`"
+date: "2016-03-14"
 layout: post
 ---
 
-```{r, echo=FALSE}
-# Piltide asukoht
-knitr::opts_chunk$set(fig.path='{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-')
-```
 
-```{r setup, include=FALSE}
-library(svglite)
-knitr::opts_chunk$set(
-    echo = FALSE, 
-    message = FALSE,
-    dev = "svglite",
-    warning = FALSE,
-    fig.cap = ""
-)
-```
 
-```{r andmete laadimine}
-library(extrafont)
-library(dplyr)
-library(stringr)
-library(ggplot2)
-library(readr)
-library(scales)
-library(ggthemes)
-library(ggalt)
-library(sp)
-library(viridis)
-library(gridExtra)
 
-load("C:/Users/toomase/Dropbox/DataScience/R/kohanimed/output/algandmed.RData")
-source("C:/Users/toomase/Dropbox/DataScience/R/kohanimed/R/eesti_hexabin.R")
 
-```
+
 
 ## Mis?
 Inspireerituna Moritz Stefaner'i [blogipostitusest](http://truth-and-beauty.net/experiments/ach-ingen-zell/) tegin Eesti [kohanimeregistri](http://xgis.maaamet.ee/knravalik/) baasil väikese analüüsi kohanimedes sisalduvate sõnade ruumilisest esinemissagedusest. Kohanimeregisteris on üle 155 000 kande: linnad, tänavad, järved, mäed, poolsaared, bussipeatused, talud jne. Sellest andmebaasist otsisin kohanimesid, mis sisaldavad mingit sõna, näiteks "mets" ja kuvasin kõik vastavad asukohad kaardile. Tumesinine toon näitab suurt esinemissagedust, heleroheline väikest ning kollane seda, et piirkonnas vastavat sõna sisaldavaid kohanimesid pole.
 
-```{r mets, fig.align = "center", message = FALSE, warning = FALSE}
-eesti_hexabin("mets")
-```
+<img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-mets-1.svg" title="" alt="" style="display: block; margin: auto;" />
 
 See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid pigem on eesmärk leida lihtsalt huvitavaid mustreid ja avastada Eestit uue nurga alt.
 
 ## Suur ja väike
 Kus nimetakse...
-```{r suurus_uuem, fig.width = 10, fig.align = "center"}
-vaike <- eesti_hexabin("väike")
-suur <- eesti_hexabin("suur")
-
-grid.arrange(vaike, suur, ncol = 2)
-```
+<img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-suurus_uuem-1.svg" title="" alt="" style="display: block; margin: auto;" />

@@ -51,22 +51,19 @@ eesti_hexabin("mõis")
 
 See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid pigem on eesmärk leida lihtsalt huvitavaid mustreid ja avastada Eestit uue nurga alt.
 
-## Suur ja väike
-Kohanimedes sõna "suur" ja "väike" kasutamine on koondunud peamiselt Kagu- ja Põhja-Eestisse. Huvitav on näha, et "väikeseid" kohtasid on rohkem Kagu-Eestis, aga "suured kohad" on üle Eesti ühtlasemalt jagunenud. 
-```{r suur_vaike, fig.width = 10, fig.height = 4.5, fig.align = "center"}
-vaike <- eesti_hexabin("väike")
+## Vastandid
+
+```{r vastandid, fig.width = 10, fig.height = 18, fig.align = "center"}
 suur <- eesti_hexabin("suur")
-
-grid.arrange(suur, vaike, ncol = 2)
-```
-
-## Must ja valge
-
-```{r must_valge, fig.width = 10, fig.height = 4.5, fig.align = "center"}
+vaike <- eesti_hexabin("väike")
 must <- eesti_hexabin("must")
 valge <- eesti_hexabin("valge")
+pikk <- eesti_hexabin("pikk")
+luhike <- eesti_hexabin("lühike")
+uus <- eesti_hexabin("uus")
+vana <- eesti_hexabin("vana")
 
-grid.arrange(must, valge, ncol = 2)
+grid.arrange(suur, vaike, must, valge, pikk, luhike, uus, vana, ncol = 2, nrow = 4)
 ```
 
 

@@ -44,7 +44,7 @@ source("C:/Users/toomase/Dropbox/DataScience/R/kohanimed/R/eesti_hexabin.R")
 Inspireerituna Moritz Stefaner'i [blogipostitusest](http://truth-and-beauty.net/experiments/ach-ingen-zell/) tegin Eesti [kohanimeregistri](http://xgis.maaamet.ee/knravalik/) baasil väikese analüüsi kohanimedes sisalduvate sõnade ruumilisest esinemissagedusest. Kohanimeregisteris on üle 155 000 kande: linnad, tänavad, järved, mäed, poolsaared, bussipeatused, talud jne. Sellest andmebaasist otsisin kohanimesid, mis sisaldavad mingit sõna, näiteks "mõis" ja kuvasin kõik vastavad asukohad kaardile. 
 Tumesinine toon näitab suurt esinemissagedust, heleroheline väikest ning kollane seda, et piirkonnas vastavat sõna sisaldavaid kohanimesid pole.
 
-```{r mois, fig.height = 4.5, fig.width = 5, fig.align = "center", message = FALSE, warning = FALSE}
+```{r mois, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
 eesti_hexabin("mõis")
 
 ```
@@ -52,10 +52,31 @@ eesti_hexabin("mõis")
 See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid pigem on eesmärk leida lihtsalt huvitavaid mustreid ja avastada Eestit uue nurga alt.
 
 ## Suur ja väike
-Kus nimetakse...
+Kohanimedes sõna "suur" ja "väike" kasutamine on koondunud peamiselt Kagu- ja Põhja-Eestisse. Huvitav on näha, et "väikeseid" kohtasid on rohkem Kagu-Eestis, aga "suured kohad" on üle Eesti ühtlasemalt jagunenud. 
 ```{r suur_vaike, fig.width = 10, fig.height = 4.5, fig.align = "center"}
 vaike <- eesti_hexabin("väike")
 suur <- eesti_hexabin("suur")
 
-grid.arrange(vaike, suur, ncol = 2)
+grid.arrange(suur, vaike, ncol = 2)
+```
+
+## Must ja valge
+
+```{r must_valge, fig.width = 10, fig.height = 4.5, fig.align = "center"}
+must <- eesti_hexabin("must")
+valge <- eesti_hexabin("valge")
+
+grid.arrange(must, valge, ncol = 2)
+```
+
+
+## Mõisad, kirikud, lossid ja talud
+
+```{r mois_talu_kirik_loss, fig.width = 10, fig.height = 9, fig.align = "center"}
+mois <- eesti_hexabin("mõis")
+kirik <- eesti_hexabin("kirik")
+loss <- eesti_hexabin("loss")
+talu <- eesti_hexabin("talu")
+
+grid.arrange(mois, talu, kirik, loss, ncol = 2, nrow = 2)
 ```

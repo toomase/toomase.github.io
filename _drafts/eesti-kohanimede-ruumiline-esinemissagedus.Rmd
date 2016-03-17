@@ -85,21 +85,21 @@ Lauget Eestimaad katab üle 8000 _-mäe-_ ja 1000 _-oru-_. Kui mäed asuvad kõi
 ```{r loodus, fig.width = 10, fig.height = 9, fig.align = "center"}
 ranna <- eesti_hexabin("ranna")
 kalda <- eesti_hexabin("kalda")
-mäe <- eesti_hexabin("mäe")
+mae <- eesti_hexabin("mäe")
 oru <- eesti_hexabin("oru")
 
-grid.arrange(ranna, kalda, mäe, oru, ncol = 2, nrow = 2)
+grid.arrange(ranna, kalda, mae, oru, ncol = 2, nrow = 2)
 ```
 
 ## Naabrid
 Meie naabritest on kohanimedega kõige rohkem tunnustatud rootslasi, 141 korral. Vaeslapse osas on lätlased, kelle riigi nime on saanud 38 kohta. 
 ```{r naabrid, fig.width = 10, fig.height = 9, fig.align = "center"}
-läti <- eesti_hexabin("läti")
+lati <- eesti_hexabin("läti")
 vene <- eesti_hexabin("vene")
 soome <- eesti_hexabin("soome")
 rootsi <- eesti_hexabin("rootsi")
 
-grid.arrange(läti, vene, soome, rootsi, ncol = 2, nrow = 2)
+grid.arrange(lati, vene, soome, rootsi, ncol = 2, nrow = 2)
 ```
 
 ## Nimed

@@ -11,7 +11,8 @@ knitr::opts_chunk$set(fig.path='{{ site.url }}/img/eesti-kohanimede-ruumiline-es
 ```
 
 ```{r setup, include=FALSE}
-library(svglite)
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
 knitr::opts_chunk$set(
     echo = FALSE, 
     message = FALSE,
@@ -52,7 +53,7 @@ eesti_hexabin("mõis")
 See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid pigem on eesmärk leida lihtsalt huvitavaid mustreid ja avastada Eestit uue nurga alt.
 
 ## Vastandid
-
+Vaatasin kuidas jagunevad erinevad vastandid kohanimedes. 
 ```{r vastandid, fig.width = 10, fig.height = 18, fig.align = "center"}
 suur <- eesti_hexabin("suur")
 vaike <- eesti_hexabin("väike")

@@ -42,18 +42,19 @@ source("C:/Users/toomase/Dropbox/DataScience/R/kohanimed/R/eesti_hexabin.R")
 ```
 
 ## Mis?
-Inspireerituna Moritz Stefaner'i [blogipostitusest](http://truth-and-beauty.net/experiments/ach-ingen-zell/) tegin Eesti [kohanimeregistri](http://xgis.maaamet.ee/knravalik/) baasil väikese analüüsi kohanimedes sisalduvate sõnade ruumilisest esinemissagedusest. Kohanimeregisteris on üle 155 000 kande: linnad, tänavad, järved, mäed, poolsaared, bussipeatused, talud jne. Sellest andmebaasist otsisin kohanimesid, mis sisaldavad mingit sõna, näiteks "mõis" ja kuvasin kõik vastavad asukohad kaardile. 
+Inspireerituna Moritz Stefaner'i [blogipostitusest](http://truth-and-beauty.net/experiments/ach-ingen-zell/) tegin Eesti [kohanimeregistri](http://xgis.maaamet.ee/knravalik/) baasil väikese analüüsi kohanimedes sisalduvate sõnade ruumilisest esinemissagedusest. Kohanimeregisteris on üle 155 000 kande: linnad, tänavad, järved, mäed, poolsaared, bussipeatused, talud jne. Sellest andmebaasist otsisin kohanimesid, mis sisaldavad mingit sõna, näiteks _-nõmme-_ ja kuvasin kõik vastavad asukohad kaardile. 
 Tumesinine toon näitab suurt esinemissagedust, heleroheline väikest ning kollane seda, et piirkonnas vastavat sõna sisaldavaid kohanimesid pole.
 
-```{r mois, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
-eesti_hexabin("mõis")
+```{r nomme, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
+eesti_hexabin("nõmme")
 
 ```
 
 See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid pigem on eesmärk leida lihtsalt huvitavaid mustreid ja avastada Eestit uue nurga alt.
 
+
 ## Vastandid
-Vaatasin kuidas jagunevad erinevad vastandid kohanimedes. 
+Vaatasin kuidas jagunevad erinevad vastandid kohanimedes. Mitmed neist on väga levinud. Näiteks _-suur-_ esineb 1248 ja _-väike-_ 1763 kohanimes. Kui sõna _-suur-_ esineb kogu Eesti kohanimedes suhteliselt ühtlaselt, siis sõna _-väike-_ on rohkem levinud Kagu- ja Põhja-Eestis. 
 ```{r vastandid, fig.width = 10, fig.height = 18, fig.align = "center"}
 suur <- eesti_hexabin("suur")
 vaike <- eesti_hexabin("väike")
@@ -69,7 +70,7 @@ grid.arrange(suur, vaike, must, valge, pikk, luhike, uus, vana, ncol = 2, nrow =
 
 
 ## Mõisad, kirikud, lossid ja talud
-
+Huvitav on näha, et _-mõis-_ on kohanimedes laiemalt levinud kui _-talu-_. Eriti paistab mõisade suurem konsentratsioon silma Lõuna-Eestis.
 ```{r mois_talu_kirik_loss, fig.width = 10, fig.height = 9, fig.align = "center"}
 mois <- eesti_hexabin("mõis")
 kirik <- eesti_hexabin("kirik")
@@ -77,4 +78,42 @@ loss <- eesti_hexabin("loss")
 talu <- eesti_hexabin("talu")
 
 grid.arrange(mois, talu, kirik, loss, ncol = 2, nrow = 2)
+```
+
+## Loodus
+Lauget Eestimaad katab üle 8000 _-mäe-_ ja 1000 _-oru-_. Kui mäed asuvad kõikeal Eestis, siis orgude suurem konsentratsioon on Lõuna-Eestis. Nagu arvata võis, siis _-ranna-_ asub seal kus peab, ehk pikki rannikut ja saartel.
+```{r loodus, fig.width = 10, fig.height = 9, fig.align = "center"}
+ranna <- eesti_hexabin("ranna")
+kalda <- eesti_hexabin("kalda")
+mäe <- eesti_hexabin("mäe")
+oru <- eesti_hexabin("oru")
+
+grid.arrange(ranna, kalda, mäe, oru, ncol = 2, nrow = 2)
+```
+
+## Naabrid
+Meie naabritest on kohanimedega kõige rohkem tunnustatud rootslasi, 141 korral. Vaeslapse osas on lätlased, kelle riigi nime sisaldab ainult 38 kohata. 
+```{r naabrid, fig.width = 10, fig.height = 9, fig.align = "center"}
+läti <- eesti_hexabin("läti")
+vene <- eesti_hexabin("vene")
+soome <- eesti_hexabin("soome")
+rootsi <- eesti_hexabin("rootsi")
+
+grid.arrange(läti, vene, soome, rootsi, ncol = 2, nrow = 2)
+```
+
+## Nimed
+Kandsin kaardile ka 8 meeste eesnime, mis tunde järgi tihedamini koanimedes esinevad. Vaieldamatult on sellest väikesest valimist kõige populaarsem _-jaani-_. Nimede põhjal joonistuvad välja mitmed päris huvitavad mustrid kuidas piirkonniti esinemissagedused küllalt erinevad.
+```{r nimed, fig.width = 10, fig.height = 18, fig.align = "center"}
+antsu <- eesti_hexabin("antsu")
+mardi <- eesti_hexabin("mardi")
+juri <- eesti_hexabin("jüri")
+tooma <- eesti_hexabin("tooma")
+miku <- eesti_hexabin("miku")
+jaani <- eesti_hexabin("jaani")
+matsi <- eesti_hexabin("matsi")
+tonise <- eesti_hexabin("tõnise")
+
+grid.arrange(tooma, tonise, antsu, juri, miku, mardi, jaani, matsi, 
+             ncol = 2, nrow = 4)
 ```

@@ -92,7 +92,7 @@ grid.arrange(ranna, kalda, mäe, oru, ncol = 2, nrow = 2)
 ```
 
 ## Naabrid
-Meie naabritest on kohanimedega kõige rohkem tunnustatud rootslasi, 141 korral. Vaeslapse osas on lätlased, kelle riigi nime sisaldab ainult 38 kohata. 
+Meie naabritest on kohanimedega kõige rohkem tunnustatud rootslasi, 141 korral. Vaeslapse osas on lätlased, kelle riigi nime on saanud 38 kohta. 
 ```{r naabrid, fig.width = 10, fig.height = 9, fig.align = "center"}
 läti <- eesti_hexabin("läti")
 vene <- eesti_hexabin("vene")
@@ -103,9 +103,9 @@ grid.arrange(läti, vene, soome, rootsi, ncol = 2, nrow = 2)
 ```
 
 ## Nimed
-Kandsin kaardile ka 8 meeste eesnime, mis tunde järgi tihedamini koanimedes esinevad. Vaieldamatult on sellest väikesest valimist kõige populaarsem _-jaani-_. Nimede põhjal joonistuvad välja mitmed päris huvitavad mustrid kuidas piirkonniti esinemissagedused küllalt erinevad.
+Kandsin kaardile ka 8 meeste eesnime, mis tunde järgi tihedamini koanimedes esinevad. Vaieldamatult on sellest väikesest valimist kõige populaarsem _-jaani-_. Nimede põhjal joonistuvad välja mitmed päris huvitavad mustrid, kuidas piirkonniti esinemissagedused erinevad.
 ```{r nimed, fig.width = 10, fig.height = 18, fig.align = "center"}
-antsu <- eesti_hexabin("antsu")
+peetri <- eesti_hexabin("peetri")
 mardi <- eesti_hexabin("mardi")
 juri <- eesti_hexabin("jüri")
 tooma <- eesti_hexabin("tooma")
@@ -114,6 +114,25 @@ jaani <- eesti_hexabin("jaani")
 matsi <- eesti_hexabin("matsi")
 tonise <- eesti_hexabin("tõnise")
 
-grid.arrange(tooma, tonise, antsu, juri, miku, mardi, jaani, matsi, 
+grid.arrange(tooma, tonise, peetri, juri, miku, mardi, jaani, matsi, 
              ncol = 2, nrow = 4)
 ```
+
+## Loomad
+Loomaliikide väikesest valikust on levinuim _-karu-_. 
+```{r loomad, fig.width = 10, fig.height = 18, fig.align = "center"}
+karu <- eesti_hexabin("karu")
+hundi <- eesti_hexabin("hundi")
+janese <- eesti_hexabin("jänese")
+rebase <- eesti_hexabin("rebase")
+koera <- eesti_hexabin("koera")
+kassi <- eesti_hexabin("kassi")
+siili <- eesti_hexabin("siili")
+hiire <- eesti_hexabin("hiire")
+
+grid.arrange(karu, hundi, janese, rebase, koera, kassi, siili, hiire, 
+             ncol = 2, nrow = 4)
+```
+
+## Kuidas?
+Kogu analüüs on tehtud R programmeerimiskeele abil. Koodiga võib tutvuta siin: https://github.com/toomase/kohanimed

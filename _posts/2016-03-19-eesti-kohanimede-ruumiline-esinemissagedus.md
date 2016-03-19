@@ -21,7 +21,7 @@ See analüüs ei ole teaduslik ja ülimalt täpne lähenemine kohanimedele vaid 
 
 
 ## Vastandid
-Vaatasin kuidas jagunevad erinevad vastandid kohanimedes. Mitmed neist on väga levinud. Näiteks _-suur-_ esineb 1248 ja _-väike-_ 1763 kohanimes. Kui sõna _-suur-_ esineb kogu Eesti kohanimedes suhteliselt ühtlaselt, siis sõna _-väike-_ on rohkem levinud Kagu- ja Põhja-Eestis. 
+Vaatasin kuidas jagunevad erinevad vastandid kohanimedes. Mitmed neist on väga levinud. Näiteks _-suur-_ esineb 1248-s ja _-väike-_ 1763-s kohanimes. Kui näiteks sõna _-suur-_ on üle Eesti jagunenud üsna ühtlaselt, siis sõna _-väike-_ on rohkem levinud Kagu- ja Põhja-Eestis.
 <img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-vastandid-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 
@@ -30,20 +30,16 @@ Huvitav on näha, et _-mõis-_ on kohanimedes laiemalt levinud kui _-talu-_. Eri
 <img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-mois_talu_kirik_loss-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 ## Loodus
-Lauget Eestimaad katab üle 8000 _-mäe-_ ja 1000 _-oru-_. Kui mäed asuvad kõikeal Eestis, siis orgude suurem konsentratsioon on Lõuna-Eestis. Nagu arvata võis, siis _-ranna-_ asub seal kus peab, ehk pikki rannikut ja saartel.
+Lauget Eestimaad katab üle 8000 _-mäe-_ ja 1000 _-oru-_. Kui mäed asuvad kõikeal Eestis, siis orud on koondunud rohkem Lõuna-Eestisse.
 <img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-loodus-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 ## Naabrid
-Meie naabritest on kohanimedega kõige rohkem tunnustatud rootslasi, 141 korral. Vaeslapse osas on lätlased, kelle riigi nime on saanud 38 kohta. 
+Meie naabritest on kohanimedega kõige rohkem tunnustatud rootslasi, 141 korral. Vaeslapse osas on lätlased, kelle riigi nime on saanud 38 kohta. Kui _-vene-_ ja _-läti-_ ei moodusta kohanimedes populaarsemaid piirkondi, siis _-soome-_ on mõnevõrra levinum Lõuna- ja _-rootsi-_ Lõuna- ja Lääne-Eestis.
 <img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-naabrid-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 ## Nimed
-Kandsin kaardile ka 8 meeste eesnime, mis tunde järgi tihedamini koanimedes esinevad. Vaieldamatult on sellest väikesest valimist kõige populaarsem _-jaani-_. Nimede põhjal joonistuvad välja mitmed päris huvitavad mustrid, kuidas piirkonniti esinemissagedused erinevad.
+Kandsin kaardile ka 8 eesnime, mis tunde järgi tihedamini kohanimedes esinevad. Sellest väikesest valimist osutus kõige populaarsemaks _-jaani-_. Nimede põhjal joonistuvad välja mitmed päris huvitavad mustrid. Näiteks ei ole _-matsi-_ nimelisi kohtasid peaaegu üldse Põhja-Eestis. _-mardi-_ ei ole aga populaarne olnud Lõuna-Eestis.
 <img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-nimed-1.png" title="" alt="" style="display: block; margin: auto;" />
 
-## Loomad
-Loomaliikide väikesest valikust on levinuim _-karu-_. 
-<img src="{{ site.url }}/img/eesti-kohanimede-ruumiline-esinemissagedus-loomad-1.png" title="" alt="" style="display: block; margin: auto;" />
-
 ## Kuidas?
-Kogu analüüs on tehtud R programmeerimiskeele abil. Koodiga võib tutvuta siin: https://github.com/toomase/kohanimed
+Kogu analüüs on tehtud R programmeerimiskeele abil. Koodiga võib tutvuta siin: [https://github.com/toomase/kohanimed](https://github.com/toomase/kohanimed)

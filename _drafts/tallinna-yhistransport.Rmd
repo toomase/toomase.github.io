@@ -66,9 +66,7 @@ tallinna_kaart <- get_map(tallinn, zoom = 11, maptype = "toner-background")
 
 ```
 
-## Mis?
-Inspireerituna Moritz Stefaner'i [blogipostitusest](http://truth-and-beauty.net/experiments/ach-ingen-zell/) tegin Eesti [kohanimeregistri](http://xgis.maaamet.ee/knravalik/) baasil väikese analüüsi kohanimedes sisalduvate sõnade ruumilisest esinemissagedusest. Kohanimeregisteris on üle 155 000 kande: linnad, tänavad, järved, mäed, poolsaared, bussipeatused, talud jne. Sellest andmebaasist otsisin kohanimesid, mis sisaldavad mingit sõna, näiteks _-nõmme-_ ja kuvasin kõik vastavad asukohad kaardile. 
-Tumesinine toon näitab suurt esinemissagedust, heleroheline väikest ning kollane seda, et piirkonnas vastavat sõna sisaldavaid kohanimesid pole.
+Koostasin kaardi, mis kujutab ühte päeva Tallinna ühistranspordis. Arvesse võtsin kõikide busside, trollida ja trammide sõidud teisipäeval, 22. märtsil 2016. Kokku läbiti sellel päeval ca __98 000 km__ Tallinna tänavaid. Iga tehtud sõit jätab endast kaardile maha peenikese kollase joone. Mida rohkem sõite ühel tänaval tehakse, seda rohkem kollaseid jooni sinna koguneb. 
 
 ```{r soidud, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
 
@@ -82,10 +80,10 @@ ggmap(tallinna_kaart, darken = 0.7) +  # alusaakrt tumedat tooni
              colour = "grey", size = 6) +
     # alapealkiri selgitustega graafiku sees
     annotate("text", x = min(gps$lng), y = max(gps$lat),
-             hjust = -0.04, vjust = 2.3, label = "22.03.2016 tehtud kõik sõidud busside, trollide ja trammidega (kokku ca 98 000 km)\n  Paksem kollane jooned tähendab rohkem sõite",
+             hjust = -0.04, vjust = 2.3, label = "22.03.2016 tehtud kõik sõidud busside, trollide ja trammidega (kokku ca 98 000 km)\n  Paksem kollane joon tähendab rohkem sõite",
              colour = "grey", size = 3)
 
 ```
 
 ## Kuidas?
-Kogu analüüs on tehtud R programmeerimiskeele abil. Koodiga võib tutvuta siin: [https://github.com/toomase/yhistransport](https://github.com/toomase/yhistransport)
+Alusandmetena kasutasin ühistranspordi gps andmeid aadressilt: [http://soiduplaan.tallinn.ee/gps.txt](http://soiduplaan.tallinn.ee/gps.txt). Kuna see fail sisaldab ainult hetkeseisu kõigi busside, trollide ja tarmmide asukohaga, siis salvestasin andmestiku päeva jooksul 15 sekundiste vahedega maha. Analüüsiks ja visualiseerimiseks kasutasin R programmeerimiskeelt. Koodiga võib tutvuta siin: [https://github.com/toomase/yhistransport](https://github.com/toomase/yhistransport). Inspiratsiooni sain blogipostitusest [Where People Run in Major Cities](http://flowingdata.com/2014/02/05/where-people-run/).

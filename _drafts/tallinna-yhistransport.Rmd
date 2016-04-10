@@ -73,7 +73,7 @@ Tumesinine toon näitab suurt esinemissagedust, heleroheline väikest ning kolla
 ```{r soidud, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
 
 ggmap(tallinna_kaart, darken = 0.7) +  # alusaakrt tumedat tooni 
-    geom_path(data = gps %>% head(10000), aes(x = lng, y = lat, group = factor(id)), 
+    geom_path(data = gps, aes(x = lng, y = lat, group = factor(id)), 
               colour = "#FFFF33", alpha = 0.01) +  # joonesd kollased ja peenikesed
     theme_map() + 
     # pealkiri graafiku sees

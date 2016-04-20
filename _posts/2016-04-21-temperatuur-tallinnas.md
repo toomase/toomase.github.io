@@ -1,27 +1,13 @@
 ---
 title: "Temperatuur Tallinnas 2015.a"
 author: "Toomas Eilat"
-date: "`r Sys.Date()`"
+date: "2016-04-21"
 layout: post
 ---
 
-```{r, echo=FALSE}
-# Piltide asukoht
-knitr::opts_chunk$set(fig.path='{{ site.url }}/img/temperatuur-talllinnas-')
-```
 
-```{r setup, include=FALSE}
-# graafikute ja koodi seaded
-# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
-knitr::opts_chunk$set(
-    echo = FALSE, 
-    message = FALSE,
-    # dev = "svglite",
-    dpi = 300,
-    warning = FALSE,
-    fig.cap = ""
-)
-```
+
+
 
 Graafikul on päevade lõikes Tallinna temperatuur 2015.a. Tulba väline ots näitab päeva maksimum kraade ja sisemine  miinimumi. Iga tulba värv iseloomustab keskmist temperatuuri. Sinakad ja lillad toonid näitavad madalamaid väärtuseid ning oranžid ja kollased kõrgemaid. Graafiku kohale hiirega liikudes kuvatakse ka iga päeva kohta maksimum, miinimum ja keskmine temperatuur.
 

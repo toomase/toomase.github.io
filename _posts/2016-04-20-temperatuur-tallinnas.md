@@ -14,7 +14,7 @@ Graafikul on päevade lõikes Tallinna temperatuur 2015.a. Tulba väline serv n�
 Ringi-kujulisel graafikul ei ole visuaalselt väärtuseid nii hea võrrelda kui horisontaalsel graafikul. Samas on sellise graafiku plussiks atraktiivsus, mis köidab tähelepanu ja paneb andmeid täpsemalt uurima.
 
 <p> 
-<iframe frameborder="0" width="500" height="500" 
+<iframe frameborder="0" width="800" height="800" 
         sandbox="allow-same-origin allow-scripts"
         scrolling="no" seamless="seamless"
         src="/files/temperatuur-tallinnas.html">

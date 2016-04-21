@@ -1,5 +1,5 @@
 ---
-title: "Temperatuur Tallinnas 2015.a"
+title: "Tallinna ilmaratas ehk temperatuur ühe aasta jooksul"
 author: "Toomas Eilat"
 date: "`r Sys.Date()`"
 layout: post

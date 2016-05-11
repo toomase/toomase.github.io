@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
 
 Kaardil on optimaalne teekond läbi kõigi Eesti linnade (47). Kokku tuleb kõigi linnade külastamiseks minimaalselt läbida xxx km. Autoga järjest sõites kuluks selleks 34h. Interaktiivse kaardi nägemiseks kliki alloleval pildil või sellel <a href="http://toomase.github.io/files/reis_labi_eesti_linnade.html" target="_blank">lingil</a>.
 
+<a href="http://toomase.github.io/files/reis_labi_eesti_linnade.html" target="_blank"><img border="0" alt="Reis-labi-linnade" src="http://toomase.github.io/img/reis-labi-eesti-linnade-teekond.png"></a>
+
 ![](http://toomase.github.io/img/reis-labi-eesti-linnade-teekond.png)
 
 ## Kuidas?

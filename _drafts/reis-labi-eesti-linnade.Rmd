@@ -23,11 +23,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-Kaardil on optimaalne teekond läbi kõigi Eesti linnade (47). Kokku tuleb kõigi linnade külastamiseks minimaalselt läbida xxx km. Autoga järjest sõites kuluks selleks 34h. Interaktiivse kaardi nägemiseks kliki alloleval pildil või sellel <a href="http://toomase.github.io/files/reis_labi_eesti_linnade.html" target="_blank">lingil</a>.
+Kaardil on optimaalne teekond läbi kõigi Eesti linnade (47). Kokku tuleb autoga kõigi linnade külastamiseks minimaalselt läbida __1762 km__. Järjest sõites kuluks selleks __34 h__. Interaktiivse kaardi nägemiseks kliki alloleval pildil või sellel <a href="http://toomase.github.io/files/reis_labi_eesti_linnade.html" target="_blank">lingil</a>.
 
 <a href="http://toomase.github.io/files/reis_labi_eesti_linnade.html" target="_blank"><img border="0" alt="Reis-labi-linnade" src="http://toomase.github.io/img/reis-labi-eesti-linnade-teekond.png"></a>
 
-![](http://toomase.github.io/img/reis-labi-eesti-linnade-teekond.png)
-
 ## Kuidas?
-Nagu ikka, tegin andmetöötluse ja visualiseerimise R-s. Lähtekoodiga võib tutvuda siin: [https://github.com/toomase/temperatuur](https://github.com/toomase/temperatuur). Inspiratsiooni sain blogipostitusest: [How to: Weather Radials](http://jkunst.com/r/how-to-weather-radials/).
+Optimaalse teekonna arvutamine linnade külastamiseks on arvutuslikult keeruline. Põhjus on selles, et võimalikke kombinatsioone on väga palju. Tegemist on probleemiga, mida tuntakse nime all [Travelling salesman problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem). Probleemi lahendamiseks on spetsiaalsed algoritmid, mille abil leidsin optimaalse linnulennulise linnade läbimise järjekorra. Sellest omakorda arvutasin google maps API abil teekonnad mööda maanteid. Täpsemalt saab R lähtekoodiga tutvuda siin: [https://github.com/toomase/reis_ymber_eesti](https://github.com/toomase/reis_ymber_eesti). Idee sain blogipostitusest [Computing the optimal road trip across Europe](http://www.randalolson.com/2015/03/10/computing-the-optimal-road-trip-across-europe/).

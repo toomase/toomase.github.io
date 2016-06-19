@@ -25,9 +25,7 @@ Kõige rohkem laekus numbrile 112 joobes inimestega seotud teated, 24H jooksul _
 
 <img src="{{ site.url }}/img/politsei-teated-joobes_inimene_teated-1.png" style="display: block; margin: auto;" />
 
-
-
-Interaktiivne graafik
+Alloleval interaktiivsel graafikul on näidatud olisemate teemade väljakutsete arv tundide lõikes. Iga punkt tähistab ühte teadet ning mida suurem see punkt on, seda rohkem tähelepanu vastav teade Facebooksi pälvis (Like´de arv). Graafiku kohal hiirega liikudes kuvatakse teadete sisu.
 
 <iframe frameborder="0" width="800" height="500" 
         sandbox="allow-same-origin allow-scripts"
@@ -36,4 +34,4 @@ Interaktiivne graafik
 </iframe>
 
 ## Kuidas?
-Nagu ikka, tegin andmetöötluse ja visualiseerimise R-s. Lähtekoodiga võib tutvuda siin: [https://github.com/toomase/temperatuur](https://github.com/toomase/temperatuur). Inspiratsiooni sain blogipostitusest: [How to: Weather Radials](http://jkunst.com/r/how-to-weather-radials/).
+Andmed on kogutud PPA Facebooki seinalt (APi abil). Andmetöötlus ja graafikud on tehtud R-s. Detailsem skript on üleval Githubis: [https://github.com/toomase/politsei_teated](https://github.com/toomase/politsei_teated).

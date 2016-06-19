@@ -1,7 +1,7 @@
 ---
 title: "Politseile laekunud teated 24H jooksul"
 author: "Toomas Eilat"
-date: "2016-06-18"
+date: "2016-06-19"
 layout: post
 ---
 

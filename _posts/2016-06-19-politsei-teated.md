@@ -15,7 +15,7 @@ layout: post
 
 Proovin läbi erinevate graafiku tüüpide teadetes olevat infot pisut visualiseerida. Alustuseks üks animatsioon, mis kujutab tundide lõikes teadete arvu. Tumedamat tooni postid kujutavad öötunde ning heledamad päevast aega. Maksimaalselt laekus teateid ühe tunni jooksul õhtul kella 19 ajal (__43__). Huvitava kokkusattumusena saabus kõige vähem teateid aga hommikul kell 7 (__11__).
 
-![Kõned kokku päeva jooksul](http://toomase.github.io/img/politei-teated-koned.gif)
+![Kõned kokku päeva jooksul](http://toomase.github.io/img/politsei-teated-koned.gif)
 
 
 <img src="{{ site.url }}/img/politsei-teated-liikluse_teated-1.png" style="display: block; margin: auto;" />

@@ -139,7 +139,7 @@ pm <- function(x){
 
 Proovin läbi erinevate graafiku tüüpide teadetes olevat infot pisut visualiseerida. Alustuseks üks animatsioon, mis kujutab tundide lõikes teadete arvu. Tumedamat tooni postid kujutavad öötunde ning heledamad päevast aega. Maksimaalselt laekus teateid ühe tunni jooksul õhtul kella 19 ajal (__43__). Huvitava kokkusattumusena saabus kõige vähem teateid aga hommikul kell 7 (__11__).
 
-![Kõned kokku päeva jooksul](http://toomase.github.io/img/politei-teated-koned.gif)
+![Kõned kokku päeva jooksul](http://toomase.github.io/img/politsei-teated-koned.gif)
 
 
 ```{r liikluse_teated, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}

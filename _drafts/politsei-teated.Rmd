@@ -171,4 +171,4 @@ Alloleval interaktiivsel graafikul on näidatud olisemate teemade väljakutsete 
 </iframe>
 
 ## Kuidas?
-Andmed on kogutud PPA Facebooki seinalt (APi abil). Andmetöötlus ja graafikud on tehtud R-s. Detailsem skript on üleval Githubis: [https://github.com/toomase/politsei_teated](https://github.com/toomase/politsei_teated).
+Andmed on kogutud PPA Facebooki seinalt (APi abil). Andmetöötlus ja graafikud on tehtud R-s. Detailsem skript on üleval Githubis: [https://github.com/toomase/politsei_koned](https://github.com/toomase/politsei_koned).

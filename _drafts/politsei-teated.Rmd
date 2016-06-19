@@ -50,13 +50,10 @@ politsei_postitused <- politsei_postitused_raw %>%
     # ainult teated facebooki feed-st
     filter(type == "status") %>%
     mutate(tunnus = str_extract(message, "^[^:]+"),  # teatest tunnus
-           # teate esitamise aeg
-           aeg = str_replace_all(created_time, "T|\\+0000", ""),
-           aeg = parse_date_time(aeg, "ymdHMS"),
-           aeg = aeg + hours(1),
            tund = hour(aeg),
            tund = ifelse(tund == 0, 24, tund),
-           # suuremate tunnuste grupeerimine
+           aasta = year(aeg),
+           #suuremate tunnuste grupeerimine
            tunnus_toodeldud = ifelse(str_detect(tunnus, "LIIKLUS"), "LIIKLUS", 
                                      tunnus),
            tunnus_toodeldud = ifelse(str_detect(tunnus_toodeldud, "JOOBES"), 
@@ -78,13 +75,14 @@ names(vorm) <- c("tund", "tunnus")
 
 # postituste arv tunnuste ja tundide lõikes
 postituste_arv <- politsei_postitused %>%
+    filter(aasta == 2016) %>%
     group_by(tund, tunnus) %>%
     tally() %>%
     ungroup() %>%
     right_join(vorm) %>%
     mutate(n = ifelse(is.na(n), 0, n),
            am_pm = ifelse(tund > 12, "PM", "AM"))
-
+    
 # fuktsioon AM kella graafiku tegemiseks
 am <- function(x){
     postituste_arv %>%

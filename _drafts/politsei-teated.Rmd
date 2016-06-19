@@ -1,5 +1,5 @@
 ---
-title: "Politseile laekunud teated 24H jooksul"
+title: "Politseile laekunud väljakutsed 24H jooksul"
 author: "Toomas Eilat"
 date: "`r Sys.Date()`"
 layout: post
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r lae andmed}
+```{r lae andmed, echo = FALSE}
 library(dplyr)
 library(stringr)
 library(lubridate)
@@ -84,61 +84,76 @@ postituste_arv <- politsei_postitused %>%
     mutate(n = ifelse(is.na(n), 0, n),
            am_pm = ifelse(tund > 12, "PM", "AM"))
 
-postituste_arv %>%
-    group_by(tund) %>%
-    tally() %>%
-    arrange((n))
+# fuktsioon AM kella graafiku tegemiseks
+am <- function(x){
+    postituste_arv %>%
+        filter(am_pm == "AM", tunnus == x) %>%
+        ggplot(aes(x = factor(tund), y = n, group = am_pm)) +
+        geom_bar(stat = "identity", position = "dodge", fill = "#460E5B") +
+        # ümmargune graafik
+        coord_polar(theta = "x", start = 0.26) +
+        xlab("") +
+        ylab("") +
+        # y-telja max AM ja PM graafikul samaks
+        ylim(0, postituste_arv %>%
+                 filter(tunnus == x) %>%
+                 summarise(maksimum = max(n)) %>%
+                 .$maksimum) +
+        labs(subtitle = "AM - kell 00:00 - 12:00") +
+        theme(axis.ticks = element_blank(), 
+              axis.text.y = element_blank(), 
+              panel.background = element_blank(), 
+              panel.grid.major.x = element_line(colour = "grey", lineend = 5),
+              axis.text.x = element_text(size = 15, hjust = 300), 
+              legend.title = element_blank(),
+              legend.position = "none")
+}
+
+# fuktsioon PM kella graafiku tegemiseks
+pm <- function(x){
+    postituste_arv %>%
+        filter(am_pm == "PM", tunnus == x) %>%
+        ggplot(aes(x = factor(tund), y = n, group = am_pm)) +
+        geom_bar(stat = "identity", position = "dodge", fill = "#F2E51D") +
+        coord_polar(theta = "x", start = 0.26) +
+        xlab("") +
+        ylab("") +
+        ylim(0, postituste_arv %>%
+                 filter(tunnus == x) %>%
+                 summarise(maksimum = max(n)) %>%
+                 .$maksimum) +
+        scale_fill_viridis() +
+        labs(subtitle = "PM - kell 12:00 - 00:00") +
+        theme(axis.ticks = element_blank(), 
+              axis.text.y = element_blank(), 
+              panel.background = element_blank(), 
+              panel.grid.major.x = element_line(colour = "grey", lineend = 5),
+              axis.text.x = element_text(size = 15, hjust = 300), 
+              legend.title = element_blank(),
+              legend.position = "none")
+}
 
 ```
 
-Ühel talvisel reedel vastu laupäeva (04.03.2016 - 05.03.2016) viis Politsei läbi aktsiooni, mille käigus postitati 24 tunni jooksul Facebooki infot numbrile 112 tulnud väljakutsete kohta. Kokku laekus selle aja jooksul __668__ teadet, mis annavad päris hea ülevaate sellest, kuidas paistab elu Eestimaal välja läbi politsei silmade.
+Ühel talvisel reedel vastu laupäeva (04.03.2016 - 05.03.2016) viis Politsei läbi aktsiooni, mille käigus postitati 24 tunni jooksul Facebooki infot numbrile 112 tulnud väljakutsete kohta. Kokku laekus selle aja jooksul __668__ teadet, mis annavad päris hea ülevaate sellest, kuidas paistab elu Eestimaal läbi politsei silmade.
 
-Proovin läbi erinevate graafiku tüüpide teadetes olevat infot pisut visualiseerida. Alustuseks üks animatsioon, mis kujutab tundide lõikes teadete arvu. Tumedamat tooni postid kujutavad öötunde ning heledamad päevast aega. Maksimaalselt laekus teateid ühe tunni jooksul õhtul kella 19 ajal, __43__. Huvitava kokkusattumusena saabus kõige vähem teateid aga hommikul kell 7, __11__.
+Proovin läbi erinevate graafiku tüüpide teadetes olevat infot pisut visualiseerida. Alustuseks üks animatsioon, mis kujutab tundide lõikes teadete arvu. Tumedamat tooni postid kujutavad öötunde ning heledamad päevast aega. Maksimaalselt laekus teateid ühe tunni jooksul õhtul kella 19 ajal (__43__). Huvitava kokkusattumusena saabus kõige vähem teateid aga hommikul kell 7 (__11__).
 
-```{r teated_kokku, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
+![Kõned kokku päeva jooksul](http://toomase.github.io/img/politei-teated-koned.gif)
 
-# gif graafikus värvid öötunnid tumedad ja päeval heledad
-fill <- data_frame(c(1:13, 12:2), c(1:24))
-names(fill) <- c("fill", "tund")
 
-# gif graafik teadete arvuga kokku tundide lõikes
-animeeritud_graafik <- postituste_arv %>%
-    # pealkirjas kasutatav kellaaeg
-    mutate(tund_frame = str_c(ifelse(tund < 10, "0", ""),
-                              tund, ".00 - ", 
-                              ifelse((tund + 1) == 25, "01",
-                                     ifelse((tund + 1) < 10, str_c("0", tund + 1), 
-                                            tund + 1)),
-                              ".00", sep = ""),
-           tund_am_pm = ifelse(am_pm == "PM", tund - 12, tund)) %>%
-    group_by(tund, tund_am_pm, tund_frame, am_pm) %>%
-    summarise(n = sum(n)) %>%
-    ungroup() %>%
-    left_join(fill) %>%
-    ggplot(aes(x = factor(tund_am_pm), y = n, group = am_pm, fill = fill, 
-               frame = tund_frame)) +
-    geom_bar(aes(cumulative = TRUE), stat = "identity", position = "dodge") +
-    coord_polar(theta = "x", start = 0.26) +
-    xlab("") +
-    ylab("") +
-    scale_fill_viridis() +
-    labs(title = "Teated kell") +
-    theme(axis.ticks = element_blank(), 
-          axis.text.y = element_blank(), 
-          panel.background = element_blank(), 
-          panel.grid.major.x = element_line(colour = "grey", lineend = 5),
-          axis.text.x = element_text(size = 15, hjust = 300), 
-          legend.title = element_blank(),
-          legend.position = "none")
+```{r liikluse_teated, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
 
-# salvesta graafik GIF-na
-gg_animate(animeeritud_graafik, interval = .5, saver = "gif")
+# AM ja PM graafikud kõrvuti
+grid.arrange(am(x = "LIIKLUS"), pm(x = "LIIKLUS"), ncol = 2, 
+             top = "Liiklusega seotud teated")
 
 ```
 
 
+Interaktiivne graafik
 
-<iframe frameborder="0" width="800" height="600" 
+<iframe frameborder="0" width="800" height="500" 
         sandbox="allow-same-origin allow-scripts"
         scrolling="no" seamless="seamless"
         src="/files/politsei-teated.html">

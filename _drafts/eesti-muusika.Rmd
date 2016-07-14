@@ -104,7 +104,7 @@ wordcloud(sonapilv_omadussonad$lemmas, sonapilv_omadussonad$n,
           random.order = FALSE)
 ```
 Järgmisel graafikul on võrreldud populaarsemaid nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
-```{r slopegraph, fig.width = 4, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
+```{r slopegraph, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # top 20 omadus- ja tegusõna 20 aasta jooksul
 top_20_sona <- laulusonad_sonapilveks %>%
     filter(!postag_descriptions %in% c("nimisõna", "tegusõna") |
@@ -134,7 +134,7 @@ bump <- laulusonade_bumpchart %>%
     geom_line(size = 1.2) +
     labs(title = "Populaarsemad sõnad lauludes 1994-2005 vs 2006-2015",
          subtitle = "Top 20 omadus- ja tegusõna on järjestatud selle järgi, \nmitmes erinevas laulus see esineb") +
-    coord_cartesian(xlim = c(1.45, 1.55)) +
+    # coord_cartesian(xlim = c(1.45, 1.55)) +
     theme_classic() +
     scale_y_continuous(breaks = c(1, 5, 10, 15, 20), 
                        labels = c("20", "15", "10", "5", "1")) +

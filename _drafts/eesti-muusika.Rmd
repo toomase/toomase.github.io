@@ -103,7 +103,7 @@ wordcloud(sonapilv_omadussonad$lemmas, sonapilv_omadussonad$n,
           min.freq = 5, max.words = 200, rot.per = 0.2, scale = c(7, 0.2),
           random.order = FALSE)
 ```
-Järgmisel graafikul on võrreldud populaarsemaid nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
+Järgmisel graafikul on võrreldud 20 populaarsemat nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
 ```{r slopegraph, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # top 20 omadus- ja tegusõna 20 aasta jooksul
 top_20_sona <- laulusonad_sonapilveks %>%
@@ -135,7 +135,7 @@ bump <- laulusonade_bumpchart %>%
     labs(title = "Populaarsemad sõnad lauludes 1994-2005 vs 2006-2015",
          subtitle = "Top 20 omadus- ja tegusõna on järjestatud selle järgi, \nmitmes erinevas laulus see esineb") +
     # coord_cartesian(xlim = c(1.45, 1.55)) +
-    theme_classic() +
+    theme_classic(base_family = "Lucida Sans") +
     scale_y_continuous(breaks = c(1, 5, 10, 15, 20), 
                        labels = c("20", "15", "10", "5", "1")) +
     theme(legend.position = "none",
@@ -149,7 +149,8 @@ bump %>%
     direct.label(method = "last.qp")
 ```
 
-
+## Erinevad sõnad lauludes
+Keskmiselt on ühes laulus 82 unikaalset sõna. Kõige suurema sõnavaraga paistavad silma hip-hop ja räpi lood. Esimesel kohal on __373_ erineva sõnaga Ä-Rühma Popmuusik. 
 
 ```{r sonade_arv_laulus, fig.width = 7, fig.height = 4, fig.align = "center", message = FALSE, warning = FALSE}
 # laulude lõikes unikaalsete eestikeelsete sõnade arv
@@ -179,15 +180,81 @@ laulusonade_arv %>%
     geom_text_repel(data = laul_max_min_sonadega, 
                     aes(x = aasta, y = sonu, 
                         label = str_c(lugu_toodeldud, " (", sonu, " sõna)", sep = "")),
-                    size = 2.5, color = "Black") +
+                    size = 3, color = "Black") +
     scale_x_discrete(breaks = c(1995, 2000, 2005, 2010, 2015)) +
     scale_color_manual(values = c("#e34a33", "#e34a33", "#2b8cbe")) +
     labs(title = "Unikaalsete sõnade arv lauludes",
          subtitle = "Iga punkt tähistab ühte laulu") +
-    theme_bw() +
+    theme_bw(base_family = "Lucida Sans") +
     theme(panel.border = element_blank(),
           axis.title = element_blank(),
           legend.position = "none")
+```
+## Artistid 
+
+
+```{r top_artistid, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
+# top 25 artisti laulude arvu järgi edetabelis
+top_artistid <- lood_sonadega %>%
+    group_by(artist) %>%
+    summarise(n = n_distinct(str_to_lower(track))) %>%
+    arrange(desc(n)) %>%
+    head(25)
+
+# heatmapi tegemiseks andmetöötlus
+heat <- lood_sonadega %>%
+    inner_join(top_artistid %>% select(artist)) %>%
+    distinct(artist, track, .keep_all = TRUE) %>%
+    group_by(artist, aasta) %>%
+    tally() %>%
+    ungroup() %>%
+    complete(artist, aasta, fill = list(n = 0)) %>%
+    group_by(artist) %>%
+    mutate(n_kokku = sum(n)) %>%
+    ungroup() %>%
+    mutate(artist = str_c(artist, " (", n_kokku, ")", sep =""),
+           artist = as.factor(artist),
+           artist = reorder(artist, n_kokku))
+
+# top40 laulud artistide ja aastate lõikes (hetamap)
+ggplot(heat, aes(x = aasta, y = artist, fill = n)) + 
+    geom_tile(color = "white", size = 0.1) +
+    scale_fill_gradient(low = "white", high = "#2b8cbe") +
+    coord_equal() +
+    scale_x_discrete(breaks = c(1995, 2000, 2005, 2010, 2015)) +
+    labs(title = "Top40 laulud artistide ja aastate lõikes",
+         subtitle = "25 populaarsemat artisti, sulgudes edetabelis olevate laulude arv kokku",
+         fill = "laule") +
+    theme_tufte(base_family = "Lucida Sans") +
+    theme(axis.ticks = element_blank(),
+          axis.title = element_blank(),
+          legend.title=element_text(size=8),
+          legend.text=element_text(size=7))
+```
+
+```{r artistide_haalte_arv, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
+# häälte arv kokku artistide lõikes
+haalte_arv_kokku <- lood_sonadega %>%
+    group_by(artist) %>%
+    summarise(vastanuid = sum(vastanuid, na.rm = TRUE)) %>%
+    arrange(desc(vastanuid)) %>%
+    head(20) 
+
+# häälte arv graafikul
+haalte_arv_kokku %>%
+    ggplot(aes(x = reorder(artist, vastanuid), y = vastanuid)) +
+    geom_bar(stat = "identity", fill = "#2b8cbe", alpha = 0.5) +
+    geom_text(data = head(haalte_arv_kokku, 5) , aes(x = reorder(artist, vastanuid), y = vastanuid, label = vastanuid),
+              size = 3, hjust = -0.1) +
+    scale_y_continuous(limits = c(0, 25000), 
+                       breaks = seq(from = 0, to = 30000, by = 5000)) +
+    coord_flip() +
+    labs(title = "Häälte arv kokku artistide lõikes",
+         subtitle = "Arvesse on võetud kogu 21-aastane periood",
+         y = "hääli") +
+    theme_tufte(base_family = "Lucida Sans") +
+    theme(axis.title.y = element_blank(),
+          axis.title.x = element_text(size = 10))
 ```
 
 

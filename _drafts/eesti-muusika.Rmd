@@ -2,7 +2,7 @@
 title: "Eesti muusika ehk 21 aastat R2 aastahitte"
 author: "Toomas Eilat"
 date: "`r Sys.Date()`"
-layout: html_notebook
+layout: post
 ---
 
 ```{r, echo=FALSE}

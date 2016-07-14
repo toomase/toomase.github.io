@@ -2,7 +2,7 @@
 title: "Eesti muusika ehk 21 aastat R2 aastahitte"
 author: "Toomas Eilat"
 date: "2016-07-14"
-layout: html_notebook
+layout: post
 ---
 
 

@@ -19,12 +19,19 @@ Selleks, et võtta kokku, millest populaarsemad laulud räägivad, koostasin ees
 
 <img src="{{ site.url }}/img/eesti-muusika-sonapilv_nimisonad-1.png" style="display: block; margin: auto;" />
 <img src="{{ site.url }}/img/eesti-muusika-sonapilv_omadussonad-1.png" style="display: block; margin: auto;" />
-Järgmisel graafikul on võrreldud populaarsemaid nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
+Järgmisel graafikul on võrreldud 20 populaarsemat nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
 <img src="{{ site.url }}/img/eesti-muusika-slopegraph-1.png" style="display: block; margin: auto;" />
 
-
+## Erinevad sõnad lauludes
+Keskmiselt on ühes laulus 82 unikaalset sõna. Kõige suurema sõnavaraga paistavad silma hip-hop ja räpi lood. Esimesel kohal on __373_ erineva sõnaga Ä-Rühma Popmuusik. 
 
 <img src="{{ site.url }}/img/eesti-muusika-sonade_arv_laulus-1.png" style="display: block; margin: auto;" />
+## Artistid 
+
+
+<img src="{{ site.url }}/img/eesti-muusika-top_artistid-1.png" style="display: block; margin: auto;" />
+
+<img src="{{ site.url }}/img/eesti-muusika-artistide_haalte_arv-1.png" style="display: block; margin: auto;" />
 
 
 ## Kuidas?

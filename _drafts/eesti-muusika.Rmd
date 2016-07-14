@@ -1,0 +1,195 @@
+---
+title: "Eesti muusika ehk 21 aastat R2 aastahitte"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: html_notebook
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/eesti-muusika-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(dplyr)
+library(stringr)
+library(purrr)
+library(readr)
+library(tidyr)
+library(wordcloud)
+library(ggplot2)
+library(ggrepel)
+library(directlabels)
+library(zoo)
+library(extrafont)
+library(viridis)
+library(ggthemes)
+
+# lae veebist kraabitud andmed
+load("C:/Users/toomase/Dropbox/DataScience/R/eesti_muusika/output/andmete_laadimine.RData")
+
+# lae pythonis eeltöödeldud andmed
+# tehtud tekstianalüüs, millega tuvastatud iga laulu üksikud sõnad
+laulusonad_lemmadega <- read_csv("C:/Users/toomase/Dropbox/DataScience/R/eesti_muusika/python/laulusonad_lemmadega.csv")
+
+# lemmadega laulusõnad ja laulude metaandmed ühes tabelis koos
+laulusonad_kokku <- laulusonad_lemmadega %>%
+    mutate(sonad = str_to_lower(str_extract(sonad, "[A-Za-z].*")),
+           sonad = str_trim(sonad)) %>%
+    left_join(lood_sonadega %>%
+                  mutate(sidumiseks = str_sub(sonad, start = 1, end = 10),
+                         sidumiseks = str_to_lower(str_extract(sidumiseks, "[A-z].*")),
+                         sidumiseks = str_trim(sidumiseks)) %>%
+                  filter(!is.na(sidumiseks)),
+              by = c("sonad" = "sidumiseks"))
+```
+Raadio 2 on alates 1994. aastast korraldanud küsitluse populaarsemate Eesti laulude valimiseks. Kõik tulemused, kokku 21 aastat, on kättesaadavad veebilehelt [http://r2.err.ee/aastahitt/ajalugureg.php](http://r2.err.ee/aastahitt/ajalugureg.php). Need annavad hea ülevaate Eesti muusika lähiajaloost. Analüüsin pisut parimaid laule ja populaarsemaid artiste.
+
+Kokku on aastahittide tabelis __880__ lugu, millest omakorda 845 on unikaalset (osad lood on edetabelis mitmel aastal). Selleks, et pisut esitajatest ja lauludest sügavamale vaadata, on vaja ka laulude sõnu. Nende leidmiseks kasutasin veebilehte [http://sasslantis.ee/](http://sasslantis.ee/). Sõnad õnnestus mul kokku leida __495__ loole (59%).
+
+## Laulusõnad
+Selleks, et võtta kokku, millest populaarsemad laulud räägivad, koostasin eestikeelsete laulude sõnade esinemissagedusel põhinevad sõnapilved. Seejuures kasutasin ainult sõnade algvorme. Sõnakorduste vältimiseks (näit mõne loo refräänis), tegin sõnapilved selle järgi, mitmes loos mingi sõna esineb. Esimesel pildil on populaarsemad nimisõnad ja teisel omadussõnad.
+
+```{r sonapilv_nimisonad, fig.width = 7, fig.height = 4.5, fig.align = "center", message = FALSE, warning = FALSE}
+# visualiseerimiseks ainult teatud sõnad
+laulusonad_sonapilveks <- laulusonad_kokku %>%
+    filter(keel == "eesti", 
+           !postag_descriptions %in% c("lausemärk", "sidesõna"),
+           !str_detect(lemmas, "[0-9]"),
+           (postag_descriptions %in% c("nimisõna", "tegusõna") | 
+            str_detect(postag_descriptions, "omaduss"))) %>%
+    # jaga andmed visualiseerimiseks kahte perioodi
+    mutate(aasta_grupp = cut(as.numeric(aasta), breaks = c(-Inf, 2005, 2015), 
+                             labels = c("1994-2005", "2006-2015"))) %>%
+    group_by(lugu) %>%
+    distinct(lemmas, .keep_all = TRUE) %>%
+    ungroup()
+
+# nimisõnade esinemissagedus erinevated lauludes
+sonapilv_nimisonad <- laulusonad_sonapilveks %>%
+    group_by(lemmas, postag_descriptions) %>%
+    tally() %>%
+    ungroup() %>%
+    filter(postag_descriptions == "nimisõna")
+
+# nimisõnade sõnapilv    
+wordcloud(sonapilv_nimisonad$lemmas, sonapilv_nimisonad$n, scale = c(4, 0.2),
+          min.freq = 5, max.words = 200, rot.per = 0.2,
+          random.order = FALSE)
+```
+```{r sonapilv_omadussonad, fig.width = 7, fig.height = 4, fig.align = "center", message = FALSE, warning = FALSE}
+# omadussõnade esinemissagedus erinevates lauludes
+sonapilv_omadussonad <- laulusonad_sonapilveks %>%
+    group_by(lemmas, postag_descriptions) %>%
+    tally() %>%
+    ungroup() %>%
+    filter(!postag_descriptions %in% c("nimisõna", "tegusõna"))
+
+# omadussõnade sõnapilv
+wordcloud(sonapilv_omadussonad$lemmas, sonapilv_omadussonad$n,
+          min.freq = 5, max.words = 200, rot.per = 0.2, scale = c(7, 0.2),
+          random.order = FALSE)
+```
+Järgmisel graafikul on võrreldud populaarsemaid nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
+```{r slopegraph, fig.width = 4, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
+# top 20 omadus- ja tegusõna 20 aasta jooksul
+top_20_sona <- laulusonad_sonapilveks %>%
+    filter(!postag_descriptions %in% c("nimisõna", "tegusõna") |
+               postag_descriptions == "nimisõna") %>%
+    group_by(lemmas) %>%
+    tally() %>%
+    arrange(desc(n)) %>%
+    head(20) %>%
+    .$lemmas
+
+# 1994-2005 vs 2006-2015 top esinemissagedusega laulusõnad järjekorras
+laulusonade_bumpchart <- laulusonad_sonapilveks %>%
+    filter(lemmas %in% c(top_20_sona)) %>%
+    group_by(lemmas, aasta_grupp) %>%
+    tally() %>%
+    ungroup() %>%
+    group_by(aasta_grupp) %>%
+    arrange(n) %>%
+    mutate(jrk = row_number()) %>%
+    ungroup() %>%
+    group_by(lemmas) %>%
+    arrange(aasta_grupp)
+
+# graafikul top laulusõnade võrdlus
+bump <- laulusonade_bumpchart %>%
+    ggplot(aes(x = aasta_grupp, y = jrk, color = lemmas, group = lemmas)) +
+    geom_line(size = 1.2) +
+    labs(title = "Populaarsemad sõnad lauludes 1994-2005 vs 2006-2015",
+         subtitle = "Top 20 omadus- ja tegusõna on järjestatud selle järgi, \nmitmes erinevas laulus see esineb") +
+    coord_cartesian(xlim = c(1.45, 1.55)) +
+    theme_classic() +
+    scale_y_continuous(breaks = c(1, 5, 10, 15, 20), 
+                       labels = c("20", "15", "10", "5", "1")) +
+    theme(legend.position = "none",
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.ticks = element_blank()) 
+
+# lisa sõnade labelid
+bump %>% 
+    direct.label(method = "first.qp") %>%
+    direct.label(method = "last.qp")
+```
+
+
+
+```{r sonade_arv_laulus, fig.width = 7, fig.height = 4, fig.align = "center", message = FALSE, warning = FALSE}
+# laulude lõikes unikaalsete eestikeelsete sõnade arv
+laulusonade_arv <- laulusonad_kokku %>%
+    filter(keel == "eesti", 
+           postag_descriptions !="lausemärk",
+           !str_detect(lemmas, "[0-9]"),
+           # välista poolikute sõnadega laul
+           lugu_toodeldud != "Chalice - Mulle meeldib see") %>%
+    group_by(aasta, lugu_toodeldud) %>%
+    summarise(sonu = n_distinct(lemmas)) %>%
+    ungroup() %>%
+    arrange(desc(sonu)) %>%
+    mutate(max_min = ifelse(row_number() <= 3, "max", 
+                            ifelse(row_number() == 446, "min", "muu")))
+
+# laulud, mille son kõige rohkem/vähem unikaalseid sõnu
+laul_max_min_sonadega <- bind_rows(head(laulusonade_arv, 3), 
+                                   tail(laulusonade_arv, 1))
+
+# graafik unikaalsete sõnade arvu kohta lauludes
+laulusonade_arv %>%
+    ggplot(aes(x = aasta, y = sonu, group = max_min, color = max_min)) +
+    # geom_boxplot(colour = "Red", alpha = 0.5) +
+    # geom_point(colour = "Red", alpha = 0.5) +
+    geom_jitter(alpha = 0.4, size = 3, shape = 16) +
+    geom_text_repel(data = laul_max_min_sonadega, 
+                    aes(x = aasta, y = sonu, 
+                        label = str_c(lugu_toodeldud, " (", sonu, " sõna)", sep = "")),
+                    size = 2.5, color = "Black") +
+    scale_x_discrete(breaks = c(1995, 2000, 2005, 2010, 2015)) +
+    scale_color_manual(values = c("#e34a33", "#e34a33", "#2b8cbe")) +
+    labs(title = "Unikaalsete sõnade arv lauludes",
+         subtitle = "Iga punkt tähistab ühte laulu") +
+    theme_bw() +
+    theme(panel.border = element_blank(),
+          axis.title = element_blank(),
+          legend.position = "none")
+```
+
+
+## Kuidas?
+Andmed on kogutud PPA Facebooki seinalt (API abil). Andmetöötlus ja graafikud on tehtud R-s ning detailsemat skripti näeb Githubis: [https://github.com/toomase/politsei_koned](https://github.com/toomase/politsei_koned).

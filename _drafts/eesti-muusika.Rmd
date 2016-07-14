@@ -58,7 +58,7 @@ laulusonad_kokku <- laulusonad_lemmadega %>%
 ```
 Raadio 2 on alates 1994. aastast korraldanud küsitluse populaarsemate Eesti laulude valimiseks. Kõik tulemused, kokku 21 aastat, on kättesaadavad veebilehelt [http://r2.err.ee/aastahitt/ajalugureg.php](http://r2.err.ee/aastahitt/ajalugureg.php). Need annavad hea ülevaate Eesti muusika lähiajaloost. Analüüsin pisut parimaid laule ja populaarsemaid artiste.
 
-Kokku on aastahittide tabelis __880__ lugu, millest omakorda 845 on unikaalset (osad lood on edetabelis mitmel aastal). Selleks, et pisut esitajatest ja lauludest sügavamale vaadata, on vaja ka laulude sõnu. Nende leidmiseks kasutasin veebilehte [http://sasslantis.ee/](http://sasslantis.ee/). Sõnad õnnestus mul kokku leida __495__ loole (59%).
+Kokku on aastahittide tabelis __880__ lugu, millest omakorda 845 on unikaalset (osad lood on edetabelis mitmel aastal). Selleks, et pisut esitajatest ja lauludest sügavamale vaadata, on vaja ka laulude sõnu. Nende leidmiseks kasutasin veebilehte [http://sasslantis.ee/](http://sasslantis.ee/). Sõnad õnnestus mul kokku juurde lisada __495__ loole (59%).
 
 ## Laulusõnad
 Selleks, et võtta kokku, millest populaarsemad laulud räägivad, koostasin eestikeelsete laulude sõnade esinemissagedusel põhinevad sõnapilved. Seejuures kasutasin ainult sõnade algvorme. Sõnakorduste vältimiseks (näit mõne loo refräänis), tegin sõnapilved selle järgi, mitmes loos mingi sõna esineb. Esimesel pildil on populaarsemad nimisõnad ja teisel omadussõnad.
@@ -152,7 +152,7 @@ bump %>%
 ```
 
 ## Erinevad sõnad lauludes
-Keskmiselt on ühes laulus 82 unikaalset sõna. Kõige suurema sõnavaraga paistavad silma hip-hop ja räpi lood. Esimesel kohal on __373_ erineva sõnaga Ä-Rühma Popmuusik. 
+Keskmiselt on ühes laulus 82 unikaalset sõna. Kõige suurema sõnavaraga paistavad silma hip-hop ja räpi lood. Esimesel kohal on __373__ erineva sõnaga Ä-Rühma Popmuusik ning unikaalsete sõnade poolest viimasel kohal Vaiko Epliku Moonaliisa. 
 
 ```{r sonade_arv_laulus, fig.width = 7, fig.height = 4, fig.align = "center", message = FALSE, warning = FALSE}
 # laulude lõikes unikaalsete eestikeelsete sõnade arv
@@ -186,15 +186,16 @@ laulusonade_arv %>%
     scale_x_discrete(breaks = c(1995, 2000, 2005, 2010, 2015)) +
     scale_color_manual(values = c("#e34a33", "#e34a33", "#2b8cbe")) +
     labs(title = "Unikaalsete sõnade arv lauludes",
-         subtitle = "Iga punkt tähistab ühte laulu") +
+         subtitle = "Iga punkt tähistab ühte laulu",
+         y = "sõnade arv") +
     theme_bw(base_family = "Helvetica") +
     theme(panel.border = element_blank(),
-          axis.title = element_blank(),
+          axis.title.x = element_blank(),
           legend.position = "none")
 ```
 
 ## Artistid 
-Läbi R2 aastahiti ajaloo on selgelt kaks kõige populaarsemat artisti __Terminaator ja Smilers__, kellel on vastavalt 43 ja 41 lugu edetabelis. Allolev heatmap annab ülevaate 25 populaarsema artisti karjääri kohta. Ka siin eristuvad kaks populaarsemat artisti, kelle lood on peaaegu katkematult aastahiti edetabelisse jõudnud. Alles viimastel aastatel on Terminaatori populaarsus vähenema hakanud. Teised artistid figureerivad edetaelis kõik oluliselt lühemal perioodil. 
+Läbi R2 aastahiti ajaloo on selgelt kaks kõige populaarsemat artisti __Terminaator__ ja __Smilers__, kellel on vastavalt __43__ ja __41__ lugu edetabelis. Allolev heatmap annab ülevaate 25 populaarsema artisti karjääri kohta. Ka siin eristuvad need kaks kõige populaarsemat artisti, kelle lood on peaaegu katkematult aastahiti edetabelisse jõudnud. Alles viimastel aastatel on Terminaatori populaarsus vähenema hakanud. Teised artistid figureerivad edetaelis kõik oluliselt lühemal perioodil. 
 
 ```{r top_artistid, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # top 25 artisti laulude arvu järgi edetabelis
@@ -235,7 +236,7 @@ ggplot(heat, aes(x = aasta, y = artist, fill = n)) +
           legend.text=element_text(size=7))
 ```
 
-Lisaks lugude arvule edetabelis vaatasin ka artistide poolt saadud häälte arvu kokku läbi ajaloo. Kuigi rohkem lugusid tähendab ka rohkem hääli, siis mõnevõrra on pilt eelmisest heatmapist erinev. Ääremärkusena lisan, et kõige populaarsem lugu on __Tanel Padar & The Sun - Võta Aega__.
+Lisaks lugude arvule edetabelis vaatasin ka artistide poolt saadud häälte arvu kokku läbi ajaloo. Kuigi rohkem lugusid, tähendab ka rohkem hääli, siis mõnevõrra on pilt eelmisest heatmapist erinev. Üksikud ülipopulaarsed lood aitavad mõne artisti selles nimekirjas ettepoole. Ääremärkusena lisan, et kõige populaarsem lugu 4304 häälega on __Tanel Padar & The Sun - Võta Aega__.
 
 ```{r artistide_haalte_arv, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # häälte arv kokku artistide lõikes
@@ -264,5 +265,5 @@ haalte_arv_kokku %>%
 ```
 
 ## Kuidas?
-Idee selleks analüüsiks andis blogipostitus [50 Years of Pop Music](http://kaylinwalker.com/50-years-of-pop-music/). Andmed aastahiti tulemuste kohta on kogutud R2 veebilehelt [http://r2.err.ee/aastahitt/ajalugureg.php](http://r2.err.ee/aastahitt/ajalugureg.php) ning laulusõnad pärinevad andmebaasist [http://sasslantis.ee/](http://sasslantis.ee/). Lisaks oma tavapärasele töövahendile R, kasutasin seekord esmakordselt eesti keele tekstitöötluseks ka Pythonit ja [Estnltk library't](http://estnltk.github.io/estnltk/1.4/index.html). 
+Idee selleks analüüsiks andis blogipostitus [50 Years of Pop Music](http://kaylinwalker.com/50-years-of-pop-music/). Andmed aastahiti tulemuste kohta on kogutud R2 veebilehelt [http://r2.err.ee/aastahitt/ajalugureg.php](http://r2.err.ee/aastahitt/ajalugureg.php) ning laulusõnad pärinevad andmebaasist [http://sasslantis.ee/](http://sasslantis.ee/). Lisaks oma tavapärasele töövahendile R, kasutasin seekord tekstianalüüsiks esmakordselt ka Pythonit ja [Estnltk library't](http://estnltk.github.io/estnltk/1.4/index.html). 
 Analüüsi skript asub Githubis: [https://github.com/toomase/eesti_muusika](https://github.com/toomase/eesti_muusika).

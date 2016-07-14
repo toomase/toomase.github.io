@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-.libPaths("C:/Users/toomase/Documents/R/win-library/3.2")
+.libPaths("C:/Users/toomase/Documents/R/win-library/3.3")
 library(knitr)
 
 # Get the filename given as an argument in the shell.

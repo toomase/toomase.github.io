@@ -103,7 +103,9 @@ wordcloud(sonapilv_omadussonad$lemmas, sonapilv_omadussonad$n,
           min.freq = 5, max.words = 200, rot.per = 0.2, scale = c(7, 0.2),
           random.order = FALSE)
 ```
-Järgmisel graafikul on võrreldud 20 populaarsemat nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
+
+Järgmisel graafikul on võrreldud 20 populaarsemat nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015.
+
 ```{r slopegraph, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # top 20 omadus- ja tegusõna 20 aasta jooksul
 top_20_sona <- laulusonad_sonapilveks %>%
@@ -135,7 +137,7 @@ bump <- laulusonade_bumpchart %>%
     labs(title = "Populaarsemad sõnad lauludes 1994-2005 vs 2006-2015",
          subtitle = "Top 20 omadus- ja tegusõna on järjestatud selle järgi, \nmitmes erinevas laulus see esineb") +
     # coord_cartesian(xlim = c(1.45, 1.55)) +
-    theme_classic(base_family = "Lucida Sans") +
+    theme_classic(base_family = "Helvetica") +
     scale_y_continuous(breaks = c(1, 5, 10, 15, 20), 
                        labels = c("20", "15", "10", "5", "1")) +
     theme(legend.position = "none",
@@ -185,13 +187,14 @@ laulusonade_arv %>%
     scale_color_manual(values = c("#e34a33", "#e34a33", "#2b8cbe")) +
     labs(title = "Unikaalsete sõnade arv lauludes",
          subtitle = "Iga punkt tähistab ühte laulu") +
-    theme_bw(base_family = "Lucida Sans") +
+    theme_bw(base_family = "Helvetica") +
     theme(panel.border = element_blank(),
           axis.title = element_blank(),
           legend.position = "none")
 ```
-## Artistid 
 
+## Artistid 
+Läbi R2 aastahiti ajaloo on selgelt kaks kõige populaarsemat artisti __Terminaator ja Smilers__, kellel on vastavalt 43 ja 41 lugu edetabelis. Allolev heatmap annab ülevaate 25 populaarsema artisti karjääri kohta. Ka siin eristuvad kaks populaarsemat artisti, kelle lood on peaaegu katkematult aastahiti edetabelisse jõudnud. Alles viimastel aastatel on Terminaatori populaarsus vähenema hakanud. Teised artistid figureerivad edetaelis kõik oluliselt lühemal perioodil. 
 
 ```{r top_artistid, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # top 25 artisti laulude arvu järgi edetabelis
@@ -225,12 +228,14 @@ ggplot(heat, aes(x = aasta, y = artist, fill = n)) +
     labs(title = "Top40 laulud artistide ja aastate lõikes",
          subtitle = "25 populaarsemat artisti, sulgudes edetabelis olevate laulude arv kokku",
          fill = "laule") +
-    theme_tufte(base_family = "Lucida Sans") +
+    theme_tufte(base_family = "Helvetica") +
     theme(axis.ticks = element_blank(),
           axis.title = element_blank(),
           legend.title=element_text(size=8),
           legend.text=element_text(size=7))
 ```
+
+Lisaks lugude arvule edetabelis vaatasin ka artistide poolt saadud häälte arvu kokku läbi ajaloo. Kuigi rohkem lugusid tähendab ka rohkem hääli, siis mõnevõrra on pilt eelmisest heatmapist erinev. Ääremärkusena lisan, et kõige populaarsem lugu on __Tanel Padar & The Sun - Võta Aega__.
 
 ```{r artistide_haalte_arv, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # häälte arv kokku artistide lõikes
@@ -252,11 +257,12 @@ haalte_arv_kokku %>%
     labs(title = "Häälte arv kokku artistide lõikes",
          subtitle = "Arvesse on võetud kogu 21-aastane periood",
          y = "hääli") +
-    theme_tufte(base_family = "Lucida Sans") +
+    theme_bw(base_family = "Helvetica") +
     theme(axis.title.y = element_blank(),
-          axis.title.x = element_text(size = 10))
+          axis.title.x = element_text(size = 10),
+          panel.border = element_blank())
 ```
 
-
 ## Kuidas?
-Andmed on kogutud PPA Facebooki seinalt (API abil). Andmetöötlus ja graafikud on tehtud R-s ning detailsemat skripti näeb Githubis: [https://github.com/toomase/politsei_koned](https://github.com/toomase/politsei_koned).
+Idee selleks analüüsiks andis blogipostitus [50 Years of Pop Music](http://kaylinwalker.com/50-years-of-pop-music/). Andmed aastahiti tulemuste kohta on kogutud R2 veebilehelt [http://r2.err.ee/aastahitt/ajalugureg.php](http://r2.err.ee/aastahitt/ajalugureg.php) ning laulusõnad pärinevad andmebaasist [http://sasslantis.ee/](http://sasslantis.ee/). Lisaks oma tavapärasele töövahendile R, kasutasin seekord esmakordselt eesti keele tekstitöötluseks ka Pythonit ja [Estnltk library't](http://estnltk.github.io/estnltk/1.4/index.html). 
+Analüüsi skript asub Githubis: [https://github.com/toomase/eesti_muusika](https://github.com/toomase/eesti_muusika).

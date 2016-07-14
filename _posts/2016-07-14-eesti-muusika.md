@@ -19,20 +19,25 @@ Selleks, et võtta kokku, millest populaarsemad laulud räägivad, koostasin ees
 
 <img src="{{ site.url }}/img/eesti-muusika-sonapilv_nimisonad-1.png" style="display: block; margin: auto;" />
 <img src="{{ site.url }}/img/eesti-muusika-sonapilv_omadussonad-1.png" style="display: block; margin: auto;" />
-Järgmisel graafikul on võrreldud 20 populaarsemat nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015. 
+
+Järgmisel graafikul on võrreldud 20 populaarsemat nimi- omadus- ja tegusõnu kahel perioodi 1994-2005 ja 2006-2015.
+
 <img src="{{ site.url }}/img/eesti-muusika-slopegraph-1.png" style="display: block; margin: auto;" />
 
 ## Erinevad sõnad lauludes
 Keskmiselt on ühes laulus 82 unikaalset sõna. Kõige suurema sõnavaraga paistavad silma hip-hop ja räpi lood. Esimesel kohal on __373_ erineva sõnaga Ä-Rühma Popmuusik. 
 
 <img src="{{ site.url }}/img/eesti-muusika-sonade_arv_laulus-1.png" style="display: block; margin: auto;" />
-## Artistid 
 
+## Artistid 
+Läbi R2 aastahiti ajaloo on selgelt kaks kõige populaarsemat artisti __Terminaator ja Smilers__, kellel on vastavalt 43 ja 41 lugu edetabelis. Allolev heatmap annab ülevaate 25 populaarsema artisti karjääri kohta. Ka siin eristuvad kaks populaarsemat artisti, kelle lood on peaaegu katkematult aastahiti edetabelisse jõudnud. Alles viimastel aastatel on Terminaatori populaarsus vähenema hakanud. Teised artistid figureerivad edetaelis kõik oluliselt lühemal perioodil. 
 
 <img src="{{ site.url }}/img/eesti-muusika-top_artistid-1.png" style="display: block; margin: auto;" />
 
+Lisaks lugude arvule edetabelis vaatasin ka artistide poolt saadud häälte arvu kokku läbi ajaloo. Kuigi rohkem lugusid tähendab ka rohkem hääli, siis mõnevõrra on pilt eelmisest heatmapist erinev. Ääremärkusena lisan, et kõige populaarsem lugu on __Tanel Padar & The Sun - Võta Aega__.
+
 <img src="{{ site.url }}/img/eesti-muusika-artistide_haalte_arv-1.png" style="display: block; margin: auto;" />
 
-
 ## Kuidas?
-Andmed on kogutud PPA Facebooki seinalt (API abil). Andmetöötlus ja graafikud on tehtud R-s ning detailsemat skripti näeb Githubis: [https://github.com/toomase/politsei_koned](https://github.com/toomase/politsei_koned).
+Idee selleks analüüsiks andis blogipostitus [50 Years of Pop Music](http://kaylinwalker.com/50-years-of-pop-music/). Andmed aastahiti tulemuste kohta on kogutud R2 veebilehelt [http://r2.err.ee/aastahitt/ajalugureg.php](http://r2.err.ee/aastahitt/ajalugureg.php) ning laulusõnad pärinevad andmebaasist [http://sasslantis.ee/](http://sasslantis.ee/). Lisaks oma tavapärasele töövahendile R, kasutasin seekord esmakordselt eesti keele tekstitöötluseks ka Pythonit ja [Estnltk library't](http://estnltk.github.io/estnltk/1.4/index.html). 
+Analüüsi skript asub Githubis: [https://github.com/toomase/eesti_muusika](https://github.com/toomase/eesti_muusika).

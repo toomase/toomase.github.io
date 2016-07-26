@@ -101,10 +101,10 @@ temp %>%
                      size = 3,
                      # fontface = "bold",
                      color = "black",
-                     box.padding = unit(0.5, "lines"),
+                     box.padding = unit(0.7, "lines"),
                      point.padding = unit(0.5, "lines"),
                      arrow = arrow(length = unit(0.01, 'npc')),
-                     force = 2,
+                     force = 4,
                      alpha = 0.7) +
     theme_bw() +
     theme(panel.border = element_blank(),

@@ -39,7 +39,7 @@ Nägin blogipostituses [The Weather of My Life](http://livingwithdata.com/life_w
 
 Alloleval graafikul tähistab iga punkt ühte päeva. Kokku on graafikule kantud perioodist 29.07.1984 - 31.12.2015 __'r temp %>% ungroup() %>% tally() %>% .$n'__ päeva. Välistatud on liigaastate 29. veebruarid.
 
-```{r minu_elu_termomeetris, fig.width = 7, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
+```{r minu_elu_termomeetris, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # x-teljele aastaaegade nimede asukohad
 aastaaegade_asukoht <- temp %>%
     group_by(aastaaeg) %>%

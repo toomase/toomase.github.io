@@ -35,9 +35,9 @@ load("C:/Users/toomase/Dropbox/DataScience/R/minu_elu_termomeetris/data/temp.Rda
 
 ```
 
-Nägin blogipostituses [The Weather of My Life](http://livingwithdata.com/life_weather.html) ühte graafikut, mis kujutab autori elu läbi temperatuuri prisma. Kuna tulemus tundus väga lahe, siis Otsustasin samsuguse pildi ka oma elust teha.
+Nägin blogipostituses [The Weather of My Life](http://livingwithdata.com/life_weather.html) ühte graafikut, mis kujutab autori elu läbi temperatuuri prisma. Kuna tulemus tundus väga lahe, siis otsustasin samsuguse pildi ka oma elust teha.
 
-Alloleval graafikul tähistab iga punkt ühte päeva. Kokku on graafikule kantud perioodist 29.07.1984 - 31.12.2015 __`r temp %>% ungroup() %>% tally() %>% .$n`__ päeva. Välistatud on liigaastate 29. veebruarid.
+Alloleval graafikul tähistab iga punkt ühe päeva keskmist temperatuuri (ööpäevased miinimumid ja maksimumid erinevad sellest oluliselt). Kokku on graafikule kantud __`r temp %>% ungroup() %>% tally() %>% .$n`__ päeva perioodist 29.07.1984 - 31.12.2015. Lihtsustuse mõttes vaatasin ainult ühe asukoha, Tallinna, andmeid. Välistatud on liigaastate 29. veebruarid.
 
 ```{r minu_elu_termomeetris, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # x-teljele aastaaegade nimede asukohad
@@ -97,7 +97,7 @@ temp %>%
     # olulisemad sündumused tekstina
     geom_label_repel(data = tahtpaevad, aes(x = paev_aastas, y = mean_temp, 
                                             label = tahtpaevad_label), 
-                     fill = "grey",
+                     fill = "#f0f0f0",
                      size = 3,
                      # fontface = "bold",
                      color = "black",
@@ -112,9 +112,10 @@ temp %>%
           legend.position = "none",
           axis.ticks = element_blank(),
           panel.grid.minor.x = element_blank(),
-          panel.grid.major.x = element_blank())
+          panel.grid.major.x = element_blank(),
+          axis.text.x = element_text(size = 15),
+          axis.title.y = element_text(size = 10))
 ```
 
 ## Kuidas?
-Idee selleks analüüsiks andis blogipostitus [50 Years of Pop Music](http://kaylinwalker.com/50-years-of-pop-music/). Andmed aastahiti tulemuste kohta on kogutud R2 veebilehelt [http://r2.err.ee/aastahitt/ajalugureg.php](http://r2.err.ee/aastahitt/ajalugureg.php) ning laulusõnad pärinevad andmebaasist [http://sasslantis.ee/](http://sasslantis.ee/). Lisaks oma tavapärasele töövahendile R, kasutasin seekord tekstianalüüsiks esmakordselt ka Pythonit ja [Estnltk library't](http://estnltk.github.io/estnltk/1.4/index.html). 
-Analüüsi skript asub Githubis: [https://github.com/toomase/eesti_muusika](https://github.com/toomase/eesti_muusika).
+Nagu ka eelnevalt mainisin, siis suures osas põhineb see graafik blogipostituses [The Weather of My Life](http://livingwithdata.com/life_weather.html) nähtul. Temperatuuri andmete pärimiseks kasutasin R library't [stationaRy](https://github.com/rich-iannone/stationaRy). Kogu skript andmete laadimise ja graafiku joonistamisega asub Githubis: [https://github.com/toomase/minu_elu_termomeetris](https://github.com/toomase/minu_elu_termomeetris).

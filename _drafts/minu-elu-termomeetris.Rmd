@@ -37,7 +37,7 @@ load("C:/Users/toomase/Dropbox/DataScience/R/minu_elu_termomeetris/data/temp.Rda
 
 Nägin blogipostituses [The Weather of My Life](http://livingwithdata.com/life_weather.html) ühte graafikut, mis kujutab autori elu läbi temperatuuri prisma. Kuna tulemus tundus väga lahe, siis Otsustasin samsuguse pildi ka oma elust teha.
 
-Alloleval graafikul tähistab iga punkt ühte päeva. Kokku on graafikule kantud perioodist 29.07.1984 - 31.12.2015 __'r temp %>% ungroup() %>% tally() %>% .$n'__ päeva. Välistatud on liigaastate 29. veebruarid.
+Alloleval graafikul tähistab iga punkt ühte päeva. Kokku on graafikule kantud perioodist 29.07.1984 - 31.12.2015 __`r temp %>% ungroup() %>% tally() %>% .$n`__ päeva. Välistatud on liigaastate 29. veebruarid.
 
 ```{r minu_elu_termomeetris, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # x-teljele aastaaegade nimede asukohad

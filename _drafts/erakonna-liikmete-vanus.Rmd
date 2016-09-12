@@ -62,7 +62,7 @@ erakondade_liikmed_toodeldud <- erakondade_liikmed %>%
 
 Twitteris jäi mulle silma üks huvitav postitus, mis kujutas Inglise Premiere League's osalevate jalgpalliklubide mängijate vanuselist jaotust ([link](https://pbs.twimg.com/media/CrREWoPWEAAk2Jc.jpg:large)). Selle peale tekkis mul mõte teha sarnane vaade Eesti erakondade liikmete vanuselise jaotuse kohta. Kuna erakonna liikmete andmed on avalikud, siis oli vajalik info mul pärast väikest pusimist [Äriregistrist](https://ariregister.rik.ee/erakonnad) käes. Eesti 11-st aktiivsest erakonnast otsustasin keskenduda Riigikogus esindatud 6-le parteile.
 
-Koalitsiooni erakondade (Reformierakond, IRL, Sotsiaaldemokraadid) hulgas paistab välja selge erisus liikmete vanuselise jaotuse osas. Kui nii Reformierakonnnas kui ka IRL-s domineerivad noored, siis Sotside liikmeskond on ühtlasem ja pigem natukene kaldu kesk- ja vanemaealiste poole.
+Koalitsiooni erakondade (Reformierakond, IRL, Sotsiaaldemokraadid) hulgas paistab välja selge erisus liikmete vanuselise jaotuse osas. Kui nii Reformierakonnnas kui ka IRL-s domineerivad noored, siis Sotside liikmeskond on ühtlasem ja pigem kaldu kesk- ja vanemaealiste poole.
 
 ```{r vanuseline_jaotus, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # Riigikogu erakondade liikmete vanuseline jaotus
@@ -81,6 +81,7 @@ erakondade_liikmed_toodeldud %>%
           strip.text = element_text(size = 11))
 ```
 
+Meeste ja naiste vanuseline jaotus on kõigis erakondades üsna ühesugune. See tähendab, et ühesgi parteis ei ole samaaegselt näiteks rohkem noori naisi ja vanemaid mehi.
 
 ```{r vanuseline_sooline_jaotus, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # Riigikogu erakondade liikmete vanuseline ja sooline jaotus
@@ -89,7 +90,7 @@ erakondade_liikmed_toodeldud %>%
     filter(!is.na(jrk), !is.na(sugu)) %>%
     ggplot(aes(vanus, ..density.., group = sugu, colour = sugu)) +
     scale_colour_manual(values = c("#2b8cbe", "#fc9272")) +
-    geom_density(size = 1.3) +
+    geom_density(size = 1) +
     facet_wrap(~erakond, ncol = 2) +
     theme_tufte() +
     ylab("tihedus") +
@@ -102,6 +103,7 @@ erakondade_liikmed_toodeldud %>%
           strip.text = element_text(size = 11))
 ```
 
+Huvitav pilt joonistub välja erakondade liikmete staaži järgi. Graafikutelt paistavad hästi välja parteide paremad päevad, mil rohkem uusi liikmeid ligi tõmmatakse. Näiteks EKRE pildilt on näha eelkäija Rahvaliidu tõus (2000'ndate alguses) ja langus (2010).
 
 ```{r staaz, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # Riigikogu erakondade liikmete staaž
@@ -124,4 +126,4 @@ erakondade_liikmed_toodeldud %>%
 ```
 
 ## Kuidas?
-Erakonna liikmete andmed pärinevad [Äriregistrist](https://ariregister.rik.ee/erakonnad). Kuna nimekirjades ei ole isikute sugu, siis kasutasin soo tuvastamiseks eesnimesid ning lehekülje [nimi.ee](http://nimi.ee/) abi. Kogu script koos veebist andmete kraapimise osaga asub Githubis[https://github.com/toomase/erakonnaliikmed](https://github.com/toomase/erakonnaliikmed).
+Erakonna liikmete andmed pärinevad [Äriregistrist](https://ariregister.rik.ee/erakonnad). Kuna nimekirjades ei ole isikute sugu, siis kasutasin soo tuvastamiseks eesnimesid ning lehekülje [nimi.ee](http://nimi.ee/) abi. Kogu script koos veebist andmete kraapimise osaga asub Githubis [https://github.com/toomase/erakonnaliikmed](https://github.com/toomase/erakonnaliikmed).

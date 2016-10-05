@@ -1,0 +1,79 @@
+---
+title: "Autovärvide populaarsus"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/autovarv-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(ggthemes)
+library(extrafont)
+library(forcats)
+
+load("C:/Users/toomase/Dropbox/DataScience/R/autovarv/output/autode_andmed.RData")
+
+autode_andmed_graafikuks <- autode_andmed %>%
+    filter(aasta >= 1995, !is.na(varv), varv != "") %>%
+    mutate(aasta = as.numeric(aasta),
+           varv = word(varv, -1),
+           varv = ifelse(varv == "golden", "yellow", 
+                         ifelse(varv == "silver", "gray", varv))) %>%
+    filter(varv != "emeral")
+
+varvide_sagedus <- autode_andmed_graafikuks %>%
+    mutate(varv = fct_rev(fct_infreq(varv))) %>%
+    .$varv %>%
+    summary()
+
+varvid_fill <- c("#c51b8a", "#d95f0e", "#feb24c", "#fff7bc", "#a63603", "#31a354", "#de2d26",
+                 "white", "#045a8d", "#252525", "#969696")
+```
+
+Umbes aasta tagasi nägin Twitteris visualisatsiooni Lego klotside värvigamma muutusest läbi aegade ([link](https://github.com/kingjr/lego_chart)). Sellest tuli mõte proovida ise teha midagi, kus värv graafikul vastab värvile reaalses maailmas. Lisa inspiratsiooni sain blogipostitusest [Historical evolution of the color of family cars on the Dutch roads](http://www.datagraver.com/case/historical-development-of-the-color-of-family-cars-on-the-dutch-roads).
+Kuna otseselt selliseid andmeid, mis kajastaksid kõikide Eestis registreeritud autode värvi ja registreerimise aastat, kahjuks leida ei õnnestunus, siis tuli teemale läheneda loominguliselt. Võtsin aluseks portaalis [auto24.ee](http://auto24.ee) üleal olevad kasutatud sõiduautode kuulutused (kokku ca 17 000 tk) ja kasutasin visualisatsiooni alusena nende sõidukite värve. Autode registreerimise aasta järgi joonistub välja ka trend värvieelistuste muutuse kohta. Sarnased värvitoonid (näit sinine, helesinine ja tumesinine) grupeerisin kokku, et pilt oleks selgem.
+Nagu graafikult näha, on viimase 20 aasta jooksul kõige populaarsem autovärv olnud hall/hõbedane. Sellele järgnevad musta värvi sõidukid. Huvitav trend on rohelist värvi autode kahanev ja valgete sõidukite kasvav populaarsus.
+
+```{r autovarv, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
+# joonista graafik
+autode_andmed_graafikuks %>%
+    ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(varv)), 
+               colour = fct_rev(fct_infreq(varv)))) +
+    geom_density(position = "fill") +
+    scale_fill_manual(values = varvid_fill) +
+    scale_colour_manual(values = varvid_fill) +
+    # kaota graafiku ümbere jääv tühi ruum ära (expand funktsioon) 
+    scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    labs(title = "Eesti populaarsemad autovärvid viimase 20 a jooksul",
+         subtitle = "auto24.ee lehel müügil olevate kasutatud autode värv registreerimise aasta lõikes \n(andmed seisuga okt 2016)") +
+    theme_tufte() +
+    theme(axis.text = element_text(size = 9),
+          text = element_text(family = "Chivo"),
+          plot.title = element_text(size = 12, face = "bold"),
+          axis.title = element_blank(),
+          legend.position = "none")
+```
+
+## Kuidas?
+Kood andmete kraapimisega [auto24.ee](http://auto24.ee) lehelt ja graafiku tegemisega saab täpsemalt tutvuda R scriptis Githubis [https://github.com/toomase/autovarv](https://github.com/toomase/autovarv).

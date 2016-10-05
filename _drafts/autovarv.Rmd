@@ -68,7 +68,7 @@ autode_andmed_graafikuks %>%
     scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0)) +
     labs(title = "Eesti populaarsemad autovärvid viimase 20 a jooksul",
-         subtitle = "auto24.ee lehel müügil olevate kasutatud autode värv registreerimise aasta lõikes \n(andmed seisuga okt 2016)") +
+         subtitle = "auto24.ee lehel müügil olevate kasutatud autode värv registreerimise aasta lõikes. \nKokku ca 17 000 kuulutuse andmed seisuga okt 2016.") +
     theme_tufte() +
     theme(axis.text = element_text(size = 9),
           text = element_text(family = "Chivo"),

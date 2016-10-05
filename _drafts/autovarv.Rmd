@@ -78,4 +78,4 @@ autode_andmed_graafikuks %>%
 ```
 
 ## Kuidas?
-Kood andmete kraapimisega [auto24.ee](http://auto24.ee) lehelt ja graafiku tegemisega saab täpsemalt tutvuda R scriptis Githubis [https://github.com/toomase/autovarv](https://github.com/toomase/autovarv).
+R script, millega andmed on [auto24.ee](http://auto24.ee) lehelt kraabitud ja graafik joonistatud asub Githubis [https://github.com/toomase/autovarv](https://github.com/toomase/autovarv).

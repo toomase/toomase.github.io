@@ -51,8 +51,10 @@ varvid_fill <- c("#c51b8a", "#d95f0e", "#feb24c", "#fff7bc", "#a63603", "#31a354
 ```
 
 Umbes aasta tagasi nägin Twitteris visualisatsiooni Lego klotside värvigamma muutusest läbi aegade ([link](https://github.com/kingjr/lego_chart)). Sellest tuli mõte proovida ise teha midagi, kus värv graafikul vastab värvile reaalses maailmas. Lisa inspiratsiooni sain blogipostitusest [Historical evolution of the color of family cars on the Dutch roads](http://www.datagraver.com/case/historical-development-of-the-color-of-family-cars-on-the-dutch-roads).
+
 Kuna otseselt selliseid andmeid, mis kajastaksid kõikide Eestis registreeritud autode värvi ja registreerimise aastat, kahjuks leida ei õnnestunus, siis tuli teemale läheneda loominguliselt. Võtsin aluseks portaalis [auto24.ee](http://auto24.ee) üleal olevad kasutatud sõiduautode kuulutused (kokku ca 17 000 tk) ja kasutasin visualisatsiooni alusena nende sõidukite värve. Autode registreerimise aasta järgi joonistub välja ka trend värvieelistuste muutuse kohta. Sarnased värvitoonid (näit sinine, helesinine ja tumesinine) grupeerisin kokku, et pilt oleks selgem.
-Nagu graafikult näha, on viimase 20 aasta jooksul kõige populaarsem autovärv olnud hall/hõbedane. Sellele järgnevad musta värvi sõidukid. Huvitav trend on rohelist värvi autode kahanev ja valgete sõidukite kasvav populaarsus.
+
+Nagu graafikult näha, on viimase 20 aasta jooksul kõige populaarsem autovärv olnud hall/hõbedane. Sellele järgnevad musta värvi sõidukid. Tähelepanuväärne on rohelist värvi autode kahanev- ja valgete sõidukite kasvav populaarsus.
 
 ```{r autovarv, fig.width = 7, fig.height = 5, fig.align = "center", message = FALSE, warning = FALSE}
 # joonista graafik

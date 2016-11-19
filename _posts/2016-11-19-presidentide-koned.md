@@ -36,7 +36,7 @@ Kui graafikule kanda presidentidele iseloomulikud sõnad ja bigrammid kõigist 1
 
 Arnold Rüütli puhul äratab tähelepanu esikohal olev __Armeenia__. Tegemist ei ole aga ülevoolava Armeenia lembusega vaid paaril visiidil Armeeni presidendi auks peetud kõnega. Hoopis iseloomulikumad on ilmselt __põllumajandusele, maaelanikele, regionaalarengule ja ühiskondlikule leppele__ viitavad sõnad.
 
-Lennart Merile iseloomulike sõnade nimekirja tipus on __CSCE__ (hilisem OSCE), organisatsioon, mida president väga oluliseks pidas. Lisaks annavad tooni ajastule vastavad sõnad nagu vägede __väljaviimine__, riigi __reforimid__, __Paldiskiga__ seotud teemad ja viited __Venemaale__.
+Lennart Merile iseloomulike sõnade nimekirja tipus on __CSCE__ (hilisem OSCE), organisatsioon, mida president väga oluliseks pidas. Lisaks annavad tooni ajastule vastavad sõnad nagu vägede __väljaviimine__, riigi __reformid__, __Paldiskiga__ seotud teemad ja viited __Venemaale__.
 
 ![]({{ site.url }}/img/presidentide-koned-kokku_kone_tf_idf-1.png)![]({{ site.url }}/img/presidentide-koned-kokku_kone_tf_idf-2.png)
 

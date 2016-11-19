@@ -132,7 +132,7 @@ Seoses huviga tekstianalüüsi ja teksti visualiseerimise vastu, tekkis mõte uu
 
 Alustuseks vaatan kõiki 24. veebruari kõnesid kokku ning neis enamlevinud sõnasid ja bigramme (kahest järjestikusest sõnast koosevada sõnaühendid). Üksikutest sõnadest domineerib __eesti__, mida on järgmisest sõnast __euroopa__ kasutatud üle kolme korra rohkem. Ka bigrammide puhul on esikohal eesti ja euroopaga seotud sõnaühendid. Samas detailsemat tunnetust kõnede sisust need enamlevinud sõnad siiski ei anna.
 
-```{r graafik_top_sonad_bigrammid, warning = FALSE, message = FALSE}
+```{r graafik_top_sonad_bigrammid, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5}
 # top 20 sõna graafikul
 top_sonad <- konede_sonad %>%
     count(word, sort = TRUE) %>%
@@ -250,7 +250,7 @@ Kui graafikule kanda presidentidele iseloomulikud sõnad ja bigrammid kõigist 1
 
 Arnold Rüütli puhul äratab tähelepanu esikohal olev __Armeenia__. Tegemist ei ole aga ülevoolava Armeenia lembusega vaid paaril visiidil Armeeni presidendi auks peetud kõnega. Hoopis iseloomulikumad on ilmselt __põllumajandusele, maaelanikele, regionaalarengule ja ühiskondlikule leppele__ viitavad sõnad.
 
-Lennart Merile iseloomulike sõnade nimekirja tipus on __CSCE__ (hilisem OSCE), organisatsioon, mida president väga oluliseks pidas. Lisaks annavad tooni ajastule vastavad sõnad nagu vägede __väljaviimine__, riigi __reforimid__, __Paldiskiga__ seotud teemad ja viited __Venemaale__.
+Lennart Merile iseloomulike sõnade nimekirja tipus on __CSCE__ (hilisem OSCE), organisatsioon, mida president väga oluliseks pidas. Lisaks annavad tooni ajastule vastavad sõnad nagu vägede __väljaviimine__, riigi __reformid__, __Paldiskiga__ seotud teemad ja viited __Venemaale__.
 
 ```{r kokku_kone_tf_idf, message=FALSE, warning=FALSE, fig.width = 8, fig.height = 7}
 

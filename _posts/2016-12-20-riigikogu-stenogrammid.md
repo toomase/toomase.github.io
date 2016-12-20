@@ -29,11 +29,9 @@ Alustuseks vaatan, milline on Riigikogu liikmete sõnavõttude emotsioon (positi
 
 
 Lisan ühe näite sõnavõtu kohta, kus domineerivad positiivsed sõnad:
-
 * __Urmas Reinsalu__ 30.03.2015: "*Palju õnne Eiki Nestorile! Me leidsime Isamaa ja Res Publica Liidus samuti, et Riigikogu juhatus peab olema tugev ja otsustuskindel, ning me esitame väga hea kandidaadi Riigikogu juhatusse. Ma sean üles Helir-Valdor Seederi kandidatuuri. Kes meist teda ei teaks! Palun hääletada ja toetada! Aitäh!*""  
 
 ja teise näite, kus domineerivad negatiivsed sõnad:
-
 * __Märt Sults__ 14.11.2016: "*Aitäh, härra spiiker! Hea minister! Mu küsimus on sutsu küüniline, aga see on selline. Kust kohast läheb haigekassa punane joon ja kust kohast hakkavad pihta nõndanimetatud ravimatud haigused, mida haigekassa ei finantseeri, kui lihtne haigus muutub varsti rahapuuduse tõttu ravimatuks haiguseks?*"
 
 
@@ -58,15 +56,11 @@ Kuna Riigikogu liikmete sõnavõtud sisaldavad väga palju viiteid keerulistele 
 
 
 Kui hinnata sõnavõttude lõikes nende loetavust, siis paar näidet lihtsalt mõistetavatest tekstidest on siin:
-
 * __Henn Põlluaas__ 14.09.2015: *"Palun mikrofoni, jah! Hallo-hallo! Kas kostab? Kas ei kuule? Hallo!"* (SMOG = 5,7)
-
 * __Martin Helme__ 26.10.2016: *"Aitäh! Meile lubati kolme ministrit, me näeme ainult kahte. Mis nüüd saab?"* (SMOG = 7,8)
 
 Mõned näited keerulistest sõnavõttudest on järgmised:
-
 * __Peeter Ernits__ 11.02.2016: *"Küsimus on see: kas kahekordne peaminister Tiit Vähi ei mõista rahvusvahelisi suhteid ja räägib riigivaenulikku juttu, nimetades Eestit tupikriigiks ning väites, et meil valitseb sõjahüsteeria ja selle tõttu takistab valitsus investeeringuid Ida-Virumaale?"* (SMOG = 24,5)
-
 * __Viktor Vassiljev__ 19.01.2016: *"See on muidugi väga kurb, aga ma palun eelnõu toetada, sest seda ootavad tõesti väga paljud inimesed, kes tahaksid teile, lugupeetud koalitsioonisaadikud, ja ka meile, opositsioonisaadikutele, valimispäeval säravalt naeratada, demonstreerides oma loomulikke hambaid."* (SMOG = 24,5)
 
 

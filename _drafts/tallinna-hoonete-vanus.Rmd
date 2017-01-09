@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 Alloleval kaardil on ~15K hoone vanus Tallinnas. Konkreetsel hoonel klikkides kuvatakse selle aadress ja esmase kasutuse aasta. Interaktiivse kaardi nägemiseks kliki alloleval pildil või sellel <a href="http://toomase.github.io/files/tallinna_hoonete_vanus.html" target="_blank">lingil</a>.
 
-<a href="http://toomase.github.io/files/tallinna_hoonete_vanus.html" target="_blank"><img border="0" alt="Hoonete-vanus-Tallinnas" src="http://toomase.github.io/img/tallinna-honete-vanus.png"></a>
+<a href="http://toomase.github.io/files/tallinna_hoonete_vanus.html" target="_blank"><img border="0" alt="tallinna-hoonete-vanus" src="http://toomase.github.io/img/tallinna-hoonete-vanus.png"></a>
 
 
 ## Kuidas?

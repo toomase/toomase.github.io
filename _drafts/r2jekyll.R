@@ -1,6 +1,10 @@
 #!/usr/bin/env Rscript
 
-.libPaths("C:/Users/toomase/Documents/R/win-library/3.3")
+## lokaalsest R-st käivitades path
+#.libPaths("C:/Users/toomase/Documents/R/win-library/3.3")
+
+## R serverist käivitades path
+.libPaths("/home/rstudio/R/x86_64-pc-linux-gnu-library/3.3")
 library(knitr)
 
 # Get the filename given as an argument in the shell.

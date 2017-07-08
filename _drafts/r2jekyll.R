@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+
 .libPaths("C:/Users/toomase/Documents/R/win-library/3.3")
 library(knitr)
 

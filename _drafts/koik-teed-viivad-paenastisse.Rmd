@@ -1,0 +1,68 @@
+---
+title: "Kõik teed viivad Paenastisse"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path = '{{ site.url }}/img/koik-teed-viivad-paenastisse-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(ggmap)
+library(ggthemes)
+
+# lae kõik teekonnad Paenastisse
+load("~/Dropbox/DataScience/R/koik_teed_laulasmaale/output/teekonnad.RData")
+```
+
+Tegin selle postituse inspireerituna erinevatest visuaalidest, mis kujutavad seda kuidas kõik teed viivad Rooma (või mõnda muusse linna), [This Map Shows That All Roads Basically Do Lead to Rome](https://www.citylab.com/design/2015/12/this-map-shows-that-all-roads-basically-do-lead-to-rome/420093/). Otsustasin sarnase pildi teha Eesti geograafilise keskpunkti, __Paenasti__, kohta.
+
+Kaardi joonsitamiseks leidsin kõik Eesti linnad, vallad, alevid, alavikud, linnaosad ja random 1000 küla. Seejärel arvutasin Google maps API abil välja teekonna igast asukohast Paenastisse ja saadud teed kandsin ühele kaardile.
+
+```{r teed_paenastisse, fig.width = 8, fig.height = 6, fig.align = "center", message = FALSE, warning = FALSE}
+
+# Eesti piiride koordinaadid aluskaardi laadimiseks
+estonia <- c(left = 21.749245, bottom = 57.493472, right = 28.192426, 
+             top = 59.689290)
+
+# Eesti aluskaart
+eesti_kaart <- get_map(estonia, zoom = 8, maptype = "toner-background")
+
+# Paenasti koordinaadid
+paenasti <- geocode("Paenasti")
+
+# joonista kaart kõigi leitud teekondadega
+ggmap(eesti_kaart, darken = 0.7) +  # alusaakrt tumedat tooni 
+  geom_path(data = teekonnad %>% 
+              distinct(lahtepunkt, lon, lat), 
+            aes(x = lon, y = lat, group = lahtepunkt),
+            colour = "#FFFF33", alpha = 0.2) +  # joonesd kollased ja peenikesed
+  theme_map() +
+  geom_point(data = paenasti, aes(x = lon, y = lat),
+             colour = "red", size = 5) +
+  # pealkiri graafiku sees
+  annotate("text", x = 21.749245, y = 59.689290,
+           hjust = -0.03, vjust = 1.3, label = "Kõik teed viivad Paenastisse",
+          colour = "grey", size = 5)
+```
+
+
+## Kuidas?
+Alusandmetena kasutasin [Eesti kohanimeregistris](http://xgis.maaamet.ee/knravalik/) sisalduvad andmeid linnade, valdade, külade jne kohta. Andmetöötluseks ja visualiseerimiseks kasutasin R programmeerimiskeelt. Koodiga võib tutvuta siin: [https://github.com/toomase/koik_teed_laulasmaale](https://github.com/toomase/koik_teed_laulasmaale) (esimeses versioonis leidsin teekonna Laulasmaale).

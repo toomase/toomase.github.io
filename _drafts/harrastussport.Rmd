@@ -94,9 +94,9 @@ spordiala_est <- tribble(
 ```
 
 Olen pikalt tahtnud analüüsida eestlaste sporditegemise- ja liikumisharjumusi. Väga sobiva andmestiku selleks pakub populaarne spordi äpp [Endomondo](https://www.endomondo.com/). Kuigi otseselt Endomondo andmeid läbi API ei jaga, on paljude kasutajate trenni andmed avalikud ja seetõttu ka veebist kraabitavad. Täpsemalt kirjeldan andmete kogumise protsessi postituse lõpus. 
-Lisaks huvile spordi ja sporditegemisega seotud andmete vastu oli analüüsi ajendiks ka twitteris viimastel nädalatel trendinud uus graafiku tüüp [joyplot](https://twitter.com/hnrklndbrg/status/883675698300420098). 
+Lisaks huvile spordi ja sporditegemisega seotud andmete vastu, oli analüüsi ajendiks ka twitteris viimastel nädalatel trendinud uus graafiku tüüp [joyplot](https://twitter.com/hnrklndbrg/status/883675698300420098). 
 
-Kokku kasutasin analüüsis Endomondos logitud `r trennid_toodeldud %>% summarise(n = n_distinct(profile)) %>% .$n` eestlase `r trennid_toodeldud %>% summarise(n = n_distinct(workout)) %>% .$n` trenni andmeid peamiselt 2017. aastast. Alloleval graafikul on detailsem pilt top 30 spordiala lõikes. Selgelt kõige populaarsemad on käimine, jooksmine ja rattasõit.
+Kokku kasutasin analüüsis Endomondos logitud `r trennid_toodeldud %>% summarise(n = n_distinct(profile)) %>% .$n` eestlase `r trennid_toodeldud %>% summarise(n = n_distinct(workout)) %>% .$n` trenni andmeid, peamiselt 2017. aastast. Alloleval graafikul on detailsem pilt top 30 spordiala lõikes. Selgelt kõige populaarsemad on käimine, jooksmine ja rattasõit.
 
 ```{r top_spordialad, fig.height = 8, fig.width = 8}
 trennid_toodeldud %>% 
@@ -124,9 +124,9 @@ trennid_toodeldud %>%
 
 ### Millal trenni tehakse?
 
-Võrdlesin 15 populaarsema spordiala lõikes, mis kellaajal trenni peamiselt tehakse. Esmalt vaatan ajalist jaotust nädalavahetusel. Tööpäevi ja nädalavahetusi on mõistlik eraldi vaadata kuna tööpäevade trennid on tõenäoliselt tugevalt mõjutatud tööajast. Pildilt eristuvad selgelt mõned spordialad:
+Võrdlesin 15 populaarsema spordiala lõikes, mis kellaajal trenni peamiselt tehakse. Esmalt vaatan ajalist jaotust nädalavahetusel. Tööpäevi ja nädalavahetusi on mõistlik eraldi uurida kuna tööpäevade trennid on tõenäoliselt tugevalt mõjutatud tööajast. Pildilt eristuvad selgelt mõned spordialad:
   * aeroobikal, ringtreeningul ja tantsimisel on päevas kaks tippu, kella 12 ja 7 ajal
-  * jooksmine, käimine ja jalgrattasõit on kella 12-8 üsna ühtlaselt jaotunud
+  * jooksmine, käimine ja jalgrattasõit on kella 12-st 8-ni üsna ühtlaselt jaotunud
   * maastikuratta sõit, golf, suusatamine ja matkamine on ühe tipuga kella 3 ajal
 
 ```{r nadalavehtus_kell, fig.width = 8, fig.height = 8}
@@ -169,7 +169,7 @@ top_trennid_nadalavahetusel %>%
 
 ```
 
-Tööpäevadel langeb suure enamuse spordialade harrastamise tippaeg kella 7-8 juurde. Üldisest mustrist erinevad kogu päev populaarne käimine, matkamine ja suusatamine. Samuti hakkab silma väga terava tipuga kella 6-7 vahel orienteerumine (päevakute algusaeg?). Pisut üllatav on hiline golfimängimine, aga see on ilmselt seletatav pikema sõiduajaga Tallinnast.
+Tööpäevadel langeb suure enamuse spordialade harrastamise tippaeg kella 7-8 juurde. Üldisest mustrist erinevad kogu päev populaarne käimine, matkamine ja suusatamine. Samuti hakkab silma kella 6-7 vahel terava tipuga orienteerumine (päevakute algusaeg?). Pisut üllatav on hiline golfimängimine, aga see on ilmselt seletatav pikema sõiduajaga Tallinnast.
 
 ```{r toopaev_kell, fig.width = 8, fig.height = 8}
 top_trennid_toopaevadel <- trennid_toodeldud %>% 
@@ -212,7 +212,7 @@ top_trennid_toopaevadel %>%
 
 Lisaks kellaajale vaatasin ka nädalapäevade lõikes erinevate spordialade harrastamist. Kõige rohkem tehakse sporti kolmapäeval ja pühapäeval ning kõige vähem reedel.
 
-```{r trenni_paev}
+```{r trenni_paev, fig.height = 5}
 trennid_toodeldud %>% 
   filter(!is.na(workout_date)) %>% 
   # nädalapäeva number (1 = esmaspäev)
@@ -258,7 +258,7 @@ top_trennid_paevade_loikes %>%
   ggplot(aes(nadalapaev, spordiala_est)) +
   geom_joy(aes(fill = spordiala_est), scale = 2, colour = "white", size = 0.7) +
   geom_vline(xintercept = 5.5) +
-  annotate("text", x = 6.5, y = 16.5, label = "nädalavahetuse") +
+  annotate("text", x = 6.5, y = 16.5, label = "nädalavahetus") +
   theme_ipsum_rc() +
   scale_y_discrete(expand = c(0.01, 0)) +
   scale_x_continuous(breaks = seq(1, 7, by = 1),
@@ -312,7 +312,7 @@ top_trennid_vanus %>%
                         " 000 Endomondo konto andmetel"))
 ```
 
-Lisaks tegelikele trenni andmetele uhurisin ka kasutajate nimetatud lemmik spordiala lõikes vanuselist jaotust. Sellel pildil on huvitavad kolme rattasõidu ala erinevused: jalgratast meeldib transpordiks kasutada pisut noorematel (30 aastased), maastikurattaga meeldib sõita pisut vanematel (40 aastased), aga rattaga meeldib üldiselt sporti teha nii 30 kui 40 aastastel.
+Lisaks tegelikele trenni andmetele uhurisin ka kasutajate nimetatud lemmik spordiala lõikes vanuselist jaotust. Sellel pildil on huvitavad kolme rattasõidu ala erinevused: jalgratast meeldib transpordiks kasutada pisut noorematel (30 aastased), maastikurattaga meeldib sõita pisut vanematel (40 aastased), aga rattaga meeldib sporti teha nii 30 kui 40 aastastel.
 
 ```{r lemmik_spordiala_vanus, fig.width = 8, fig.height = 7}
 top_trennid_lemmik_spordiala_vanus <- trennid_toodeldud %>% 
@@ -359,4 +359,4 @@ top_trennid_lemmik_spordiala_vanus %>%
 
 
 ### Kuidas?
-Selle analüüsi raskus seisnes paljuski andmete saamises. Nagu ma postituse alguses kirjutasin, Endomondo ei paku otseselt oma andmeid läbi API avalikult kasutamiseks. Seetõttu tuli andmestik kraapida läbi Endomondo veebilehe avalike profiilide. Selleks, et saada kätte just eestlaste profiilid, otsisin käsitsi välja hulga Eesti _challangeid_ (a-la "Eesti jookseb 2017"). Sealt edasi kraapisin _challangitel_ osalenud avalikelt profiilidelt viimase 20 trenni andmed. Täpsema andmete kraapimise, -töötlemise ja visualiseerimise R koodiga saab tutvuda githubis: [https://github.com/toomase/harrastussport](https://github.com/toomase/harrastussport).
+Selle analüüsi raskus seisnes paljuski andmete kogumises. Nagu ma postituse alguses kirjutasin, ei paku Endomondo andmeid läbi API avalikult kasutamiseks. Seetõttu tuli andmestik kraapida Endomondo veebilehel olevatelt avalikelt profiilidelt. Selleks, et saada kätte just eestlaste profiilid, otsisin käsitsi välja hulga Eesti _challangeid_ (a-la "Eesti jookseb 2017"). Sealt edasi kraapisin _challangitel_ osalenud profiilidelt viimase 20 trenni andmed. Täpsema andmete kraapimise, -töötlemise ja visualiseerimise R koodiga saab tutvuda githubis: [https://github.com/toomase/harrastussport](https://github.com/toomase/harrastussport).

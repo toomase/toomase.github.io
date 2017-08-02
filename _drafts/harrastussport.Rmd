@@ -1,0 +1,362 @@
+---
+title: "Eestlaste liikumisharjumused"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/harrastussport-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(stringr)
+library(anytime)
+library(lubridate)
+library(skimr)
+library(listviewer)
+library(rlang)
+library(forcats)
+library(ggjoy)
+library(padr)
+library(hrbrthemes)
+library(janitor)
+
+# lae eelnevalt töödeldud trennide andmed
+load("~/Dropbox/DataScience/R/harrastussport/output/trennid_toodeldud.RData")
+```
+
+
+```{r andmetootlus, echo = FALSE, message = FALSE, warning = FALSE}
+## Tee erinevad andmetöötluse liigutused, et tulemusi graafikutel kasutada
+
+# TOP 15 populaarsemat spordiala
+top_15_spordiala <- trennid_toodeldud %>% 
+  filter(spordiala != "exercising") %>%  # välista mittemidagiütlev "exercising"
+  count(spordiala, sort = TRUE) %>% 
+  head(15) %>% 
+  .$spordiala
+
+
+# TOP 10 lemmik spordiala
+top_10_lemmik_spordiala <- trennid_toodeldud %>% 
+  distinct(profile, lemmik_spordiala) %>% 
+  mutate(lemmik_spordiala = case_when(.$lemmik_spordiala == "Walking (Fitness)" ~ "walking",
+                                      .$lemmik_spordiala == "Skiing (Cross country)" ~ "skiing",
+                                      .$lemmik_spordiala == "Football (Soccer)" ~ "soccer",
+                                      TRUE ~ .$lemmik_spordiala),
+         lemmik_spordiala = str_to_lower(lemmik_spordiala)) %>% 
+  count(lemmik_spordiala, sort = TRUE) %>% 
+  head(10) %>% 
+  .$lemmik_spordiala
+
+
+# Populaarsemad spordialad eesti keeles
+spordiala_est <- tribble(
+  ~spordiala, ~spordiala_est,
+  "walking", "käimine",
+  "running", "jooksmine",
+  "cycling", "jalgrattasõit",
+  "cycling (sport)", "jalgrattasõit (sport)",
+  "cycling (transport)", "jalgrattasõit (transport)",
+  "mountain biking", "maastikuratta sõit",
+  "skating", "rulluisutamine",
+  "roller skating", "rulluisutamine",
+  "doing weight training", "jõutrenn",  
+  "weight training", "jõutrenn",  
+  "skiing", "suusatamine",  
+  "hiking", "matkamine",  
+  "dancing", "tantsimine",  
+  "doing aerobics", "aeroobika",
+  "doing circuit training", "ringtreening",
+  "swimming", "ujumine",  
+  "orienteering", "orienteerumine",  
+  "roller skiing", "rullsuusatamine",  
+  "golfing", "golf",
+  "soccer", "jalgpall"
+)
+
+```
+
+Olen pikalt tahtnud analüüsida eestlaste sporditegemise- ja liikumisharjumusi. Väga sobiva andmestiku selleks pakub populaarne spordi äpp [Endomondo](https://www.endomondo.com/). Kuigi otseselt Endomondo andmeid läbi API ei jaga, on paljude kasutajate trenni andmed avalikud ja seetõttu ka veebist kraabitavad. Täpsemalt kirjeldan andmete kogumise protsessi postituse lõpus. 
+Lisaks huvile spordi ja sporditegemisega seotud andmete vastu oli analüüsi ajendiks ka twitteris viimastel nädalatel trendinud uus graafiku tüüp [joyplot](https://twitter.com/hnrklndbrg/status/883675698300420098). 
+
+Kokku kasutasin analüüsis Endomondos logitud `r trennid_toodeldud %>% summarise(n = n_distinct(profile)) %>% .$n` eestlase `r trennid_toodeldud %>% summarise(n = n_distinct(workout)) %>% .$n` trenni andmeid peamiselt 2017. aastast. Alloleval graafikul on detailsem pilt top 30 spordiala lõikes. Selgelt kõige populaarsemad on käimine, jooksmine ja rattasõit.
+
+```{r top_spordialad, fig.height = 8, fig.width = 8}
+trennid_toodeldud %>% 
+  filter(!is.na(spordiala)) %>% 
+  group_by(spordiala) %>% 
+  summarise(trennide_arv = n(),
+            kasutajate_arv = n_distinct(profile)) %>% 
+  ungroup() %>% 
+  mutate(label = str_c(trennide_arv, " (", kasutajate_arv, ")")) %>% 
+  arrange(desc(trennide_arv)) %>% 
+  head(30) %>% 
+  ggplot(aes(fct_reorder(spordiala, trennide_arv), trennide_arv)) +
+  geom_col() +
+  geom_text(aes(label = label), hjust = -0.1) +
+  scale_y_continuous(breaks = (seq(0, 35000, by = 10000)),
+                     limits = c(0, 35000),
+                     expand = c(0, 0)) +
+  coord_flip() +
+  theme_ipsum_rc() +
+  labs(y = "trennide arv",
+       x = "spordiala",
+       title = "Trennide ja treenijate arv kokku",
+       subtitle = "TOP 30 spordiala\nSulgudes on spordialaga tegelenud inimeste arv")
+```
+
+### Millal trenni tehakse?
+
+Võrdlesin 15 populaarsema spordiala lõikes, mis kellaajal trenni peamiselt tehakse. Esmalt vaatan ajalist jaotust nädalavahetusel. Tööpäevi ja nädalavahetusi on mõistlik eraldi vaadata kuna tööpäevade trennid on tõenäoliselt tugevalt mõjutatud tööajast. Pildilt eristuvad selgelt mõned spordialad:
+  * aeroobikal, ringtreeningul ja tantsimisel on päevas kaks tippu, kella 12 ja 7 ajal
+  * jooksmine, käimine ja jalgrattasõit on kella 12-8 üsna ühtlaselt jaotunud
+  * maastikuratta sõit, golf, suusatamine ja matkamine on ühe tipuga kella 3 ajal
+
+```{r nadalavehtus_kell, fig.width = 8, fig.height = 8}
+top_trennid_nadalavahetusel <- trennid_toodeldud %>% 
+  filter(spordiala %in% top_15_spordiala) %>%  # ainult top 15 alad
+  left_join(spordiala_est) %>% 
+  filter(!is.na(workout_date)) %>%  # välista ilma kellaajata trennid
+  mutate(nadalapaev = weekdays(workout_date)) %>%  # leia trenni nädalapäev
+  filter(nadalapaev %in% c("Saturday", "Sunday")) %>%  # ainult nädalavahetused
+  thicken(by = "workout_date",  interval = "15 mins") %>%  # ümarda kõik kellaajad 15 min täpsusega
+  # asenda kõik kuupäevad 01.01.2017
+  # nii on lihtsam andmed ühele skaalale viia
+  mutate(aeg = ymd_hms(str_replace(workout_date_15_min, "201.-..-..", "2017-01-01"))) %>% 
+  select(spordiala_est, aeg) %>% 
+  group_by(spordiala_est) %>%
+  mutate(n = n()) %>% 
+  filter(aeg > ymd_hms("2017-01-01 06:00:00")) %>%  # ainult pärast kl 6 tehtud trennid
+  ungroup() %>% 
+  mutate(n_total = n(),  # kogu trenni arvu kuvamiseks
+         spordiala_est = fct_reorder(spordiala_est, n)) %>% 
+  arrange(spordiala_est, aeg)
+
+
+top_trennid_nadalavahetusel %>% 
+  ggplot(aes(aeg, spordiala_est)) +
+  geom_joy(aes(fill = spordiala_est), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  # formati x-teljel kellaaeg
+  scale_x_datetime(labels = function(x) format(x, "%H:%M"),
+                   breaks = seq(ymd_hms("2017-01-01 06:00:00"),
+                                ymd_hms("2017-01-01 24:00:00"), "3 hours"),
+                   expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +  # vahelduvad värvitoonid
+  labs(x = "kellaaeg",
+       y = "spordiala",
+       title = "Mis kell tehakse trenni nädalavahetusel?",
+       subtitle = str_c("ca ", round(max(top_trennid_nadalavahetusel$n_total, na.rm = TRUE) / 1000, 0),
+                        " 000 Endomondos logitud trenni põhjal"))
+
+```
+
+Tööpäevadel langeb suure enamuse spordialade harrastamise tippaeg kella 7-8 juurde. Üldisest mustrist erinevad kogu päev populaarne käimine, matkamine ja suusatamine. Samuti hakkab silma väga terava tipuga kella 6-7 vahel orienteerumine (päevakute algusaeg?). Pisut üllatav on hiline golfimängimine, aga see on ilmselt seletatav pikema sõiduajaga Tallinnast.
+
+```{r toopaev_kell, fig.width = 8, fig.height = 8}
+top_trennid_toopaevadel <- trennid_toodeldud %>% 
+  filter(spordiala %in% top_15_spordiala) %>% 
+  left_join(spordiala_est) %>% 
+  filter(!is.na(workout_date)) %>% 
+  mutate(nadalapaev = weekdays(workout_date)) %>% 
+  filter(!nadalapaev %in% c("Saturday", "Sunday")) %>% 
+  thicken(by = "workout_date",  interval = "15 mins") %>% 
+  mutate(aeg = ymd_hms(str_replace(workout_date_15_min, "201.-..-..", "2017-01-01"))) %>% 
+  select(spordiala_est, aeg, profile) %>% 
+  group_by(spordiala_est) %>%
+  mutate(n = n()) %>% 
+  select(-profile) %>% 
+  filter(aeg > ymd_hms("2017-01-01 06:00:00")) %>% 
+  ungroup() %>% 
+  mutate(n_total = n(),
+         spordiala_est = fct_reorder(spordiala_est, n)) %>% 
+  arrange(spordiala_est, aeg)
+
+
+top_trennid_toopaevadel %>% 
+  ggplot(aes(aeg, spordiala_est)) +
+  geom_joy(aes(fill = spordiala_est), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_datetime(labels = function(x) format(x, "%H:%M"),
+                   breaks = seq(ymd_hms("2017-01-01 06:00:00"),
+                                ymd_hms("2017-01-01 24:00:00"), "3 hours"),
+                   expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(x = "kellaaeg",
+       y = "spordiala",
+       title = "Mis kell tehakse trenni tööpäevadel?",
+       subtitle = str_c("ca ", round(max(top_trennid_toopaevadel$n_total, na.rm = TRUE) / 1000, 0),
+                        " 000 Endomondos logitud trenni põhjal"))
+
+```
+
+
+Lisaks kellaajale vaatasin ka nädalapäevade lõikes erinevate spordialade harrastamist. Kõige rohkem tehakse sporti kolmapäeval ja pühapäeval ning kõige vähem reedel.
+
+```{r trenni_paev}
+trennid_toodeldud %>% 
+  filter(!is.na(workout_date)) %>% 
+  # nädalapäeva number (1 = esmaspäev)
+  mutate(nadalapaev = wday(workout_date, week_start = 1)) %>% 
+  distinct(nadalapaev, workout) %>% 
+  count(nadalapaev, sort = TRUE) %>% 
+  mutate(top = ifelse(n == max(n) | nadalapaev == "7", 1, 0)) %>% 
+  ggplot(aes(nadalapaev, n, fill = as.factor(top))) +
+  geom_col() +
+  scale_x_continuous(breaks = seq(1, 7, by = 1),
+                     labels = c("esmasp", "teisip", "kolmap", "neljap", "reede", "laup", "pühap")) +
+  scale_y_continuous(breaks = (seq(0, 12500, by = 2500)),
+                     limits = c(0, 12500),
+                     expand = c(0, 0)) +
+  scale_fill_manual(values = c("#636363", "#2b8cbe")) +
+  guides(fill = "none") +
+  theme_ipsum_rc() +
+  labs(y = "trennide arv",
+       title = "Mis päeval sporditakse kõige rohkem?") +
+  theme(axis.title.x = element_blank())
+```
+
+Spordialad jagunevad laias laastus kolmeks selle järgi, mis päevadel neid harrastatakse: rohkem tööpäevadel (trennid siseruumides), rohkem nädalavahetusel (trennid õues) ja võrdselt läbi nädala.
+
+```{r trenni_paev_spordiala, fig.width = 8, fig.height = 8}
+top_trennid_paevade_loikes <- trennid_toodeldud %>% 
+  filter(spordiala %in% top_15_spordiala) %>% 
+  left_join(spordiala_est) %>% 
+  filter(!is.na(workout_date)) %>% 
+  # nädalapäeva number (1 = esmaspäev)
+  mutate(nadalapaev = wday(workout_date, week_start = 1)) %>% 
+  select(spordiala_est, nadalapaev, profile) %>% 
+  group_by(spordiala_est) %>%
+  mutate(n = n()) %>% 
+  select(-profile) %>% 
+  ungroup() %>% 
+  mutate(n_total = n(),
+         spordiala_est = fct_reorder(spordiala_est, n)) %>% 
+  arrange(spordiala_est, nadalapaev)
+
+
+top_trennid_paevade_loikes %>% 
+  ggplot(aes(nadalapaev, spordiala_est)) +
+  geom_joy(aes(fill = spordiala_est), scale = 2, colour = "white", size = 0.7) +
+  geom_vline(xintercept = 5.5) +
+  annotate("text", x = 6.5, y = 16.5, label = "nädalavahetuse") +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(1, 7, by = 1),
+                     labels = c("esmasp", "teisip", "kolmap", "neljap", "reede", "laup", "pühap"),
+                     expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(y = "spordiala",
+       title = "Mis päeval spordiala harrastatakse?",
+       subtitle = str_c("ca ", round(max(top_trennid_paevade_loikes$n_total, na.rm = TRUE) / 1000, 0),
+                        " 000 Endomondos logitud trenni põhjal")) +
+  theme(axis.title.x = element_blank())
+```
+
+
+### Inimese vanus ja spordiala
+
+Alloleval graafikul on inimeste vanuseline jaotus spordialade lõikes. Väga sarnane on vanuseline jaotus kolmel kõige populaarsemal spordialal (käimine, jooksmine, rattasõit). Teistest spordialadest eristuvad suusatamine väga ühtlase jaotusega läbi vanusegruppide ja näiteks golf kahe küüruga (populaarsem 25 ja 37 aastaste hulgas).
+
+```{r trenn_vanus, fig.width = 8, fig.height = 8}
+top_trennid_vanus <- trennid_toodeldud %>% 
+  filter(spordiala %in% top_15_spordiala) %>% 
+  left_join(spordiala_est) %>% 
+  mutate(vanus_praegu = round(as.numeric(difftime(today(), synnipaev, units = "days")) / 365, 0)) %>% 
+  filter(!is.na(synnipaev), 
+         vanus_praegu >= 10,
+         vanus_praegu <= 70) %>%
+  select(spordiala_est, vanus_praegu, profile) %>% 
+  group_by(spordiala_est) %>%
+  mutate(n = n()) %>% 
+  distinct(profile, spordiala_est, .keep_all = TRUE) %>% 
+  ungroup() %>% 
+  mutate(n_total = n_distinct(profile),
+         spordiala_est = fct_reorder(spordiala_est, n)) %>% 
+  select(-profile) %>% 
+  arrange(spordiala_est, vanus_praegu)
+
+
+top_trennid_vanus %>% 
+  ggplot(aes(vanus_praegu, spordiala_est)) +
+  geom_joy(aes(fill = spordiala_est), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(10, 70, by = 10),
+                     limits = c(10, 70),
+                     expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(x = "vanus",
+       y = "spordiala",
+       title = "Mis vanuses trenni tehakse?",
+       subtitle = str_c("ca ", round(max(top_trennid_vanus$n_total, na.rm = TRUE) / 1000, 0),
+                        " 000 Endomondo konto andmetel"))
+```
+
+Lisaks tegelikele trenni andmetele uhurisin ka kasutajate nimetatud lemmik spordiala lõikes vanuselist jaotust. Sellel pildil on huvitavad kolme rattasõidu ala erinevused: jalgratast meeldib transpordiks kasutada pisut noorematel (30 aastased), maastikurattaga meeldib sõita pisut vanematel (40 aastased), aga rattaga meeldib üldiselt sporti teha nii 30 kui 40 aastastel.
+
+```{r lemmik_spordiala_vanus, fig.width = 8, fig.height = 7}
+top_trennid_lemmik_spordiala_vanus <- trennid_toodeldud %>% 
+  # grupeeri mõned spordialad kokku
+  mutate(lemmik_spordiala = case_when(.$lemmik_spordiala == "Walking (Fitness)" ~ "walking",
+                                      .$lemmik_spordiala == "Skiing (Cross country)" ~ "skiing",
+                                      .$lemmik_spordiala == "Football (Soccer)" ~ "soccer",
+                                      TRUE ~ .$lemmik_spordiala),
+         lemmik_spordiala = str_to_lower(lemmik_spordiala)) %>% 
+  filter(lemmik_spordiala %in% top_10_lemmik_spordiala) %>% 
+  left_join(spordiala_est, by = c("lemmik_spordiala" = "spordiala")) %>% 
+  mutate(vanus_praegu = round(as.numeric(difftime(today(), synnipaev, units = "days")) / 365, 0)) %>% 
+  filter(!is.na(synnipaev), 
+         vanus_praegu >= 10,
+         vanus_praegu <= 70,
+         !is.na(lemmik_spordiala)) %>%
+  select(lemmik_spordiala_est = spordiala_est, vanus_praegu, profile) %>% 
+  group_by(lemmik_spordiala_est) %>%
+  mutate(n = n()) %>% 
+  # iga kasutaja ühekordselt
+  distinct(profile, lemmik_spordiala_est, .keep_all = TRUE) %>% 
+  ungroup() %>% 
+  mutate(n_total = n_distinct(profile),
+         lemmik_spordiala_est = fct_reorder(lemmik_spordiala_est, n)) %>% 
+  select(-profile) %>% 
+  arrange(lemmik_spordiala_est, vanus_praegu)
+
+
+top_trennid_lemmik_spordiala_vanus %>% 
+  ggplot(aes(vanus_praegu, lemmik_spordiala_est)) +
+  geom_joy(aes(fill = lemmik_spordiala_est), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(10, 70, by = 10),
+                     limits = c(10, 70),
+                     expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(x = "vanus",
+       y = "lemmik spordiala",
+       title = "Lemmik spordiala vs vanus",
+       subtitle = str_c("ca ", round(max(top_trennid_lemmik_spordiala_vanus$n_total, na.rm = TRUE) / 1000, 0),
+                        " 000 Endomondo konto andmetel"))
+```
+
+
+### Kuidas?
+Selle analüüsi raskus seisnes paljuski andmete saamises. Nagu ma postituse alguses kirjutasin, Endomondo ei paku otseselt oma andmeid läbi API avalikult kasutamiseks. Seetõttu tuli andmestik kraapida läbi Endomondo veebilehe avalike profiilide. Selleks, et saada kätte just eestlaste profiilid, otsisin käsitsi välja hulga Eesti _challangeid_ (a-la "Eesti jookseb 2017"). Sealt edasi kraapisin _challangitel_ osalenud avalikelt profiilidelt viimase 20 trenni andmed. Täpsema andmete kraapimise, -töötlemise ja visualiseerimise R koodiga saab tutvuda githubis: [https://github.com/toomase/harrastussport](https://github.com/toomase/harrastussport).

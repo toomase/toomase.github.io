@@ -51,7 +51,7 @@ Andmeallikana kasutan eesti keele [ilukirjanduse korpusest](http://www.cl.ut.ee/
 
 Allolevalt graafikult on näha, et näiteks P-täht esineb eesti keeles enamasti sõna alguses, D-täht pigem sõna lõpus ja kõige populaarsem, A-täht, on jaotunud ühtlasemalt, aga on enam levinud sõnade teises pooles.
 
-```{r tahtede_esinemissagedus, fig.height = 12, fig.width = 5}
+```{r tahtede_esinemissagedus, fig.height = 12, fig.width = 6.5}
 tahe_asukoht_sonad %>% 
   left_join(tahe_esinemissagedus) %>% 
   mutate(taht = fct_rev(factor(str_to_upper(taht), 

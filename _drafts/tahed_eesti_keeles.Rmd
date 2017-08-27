@@ -1,0 +1,94 @@
+---
+title: "Tähtede jaotus eestikeelsetes sõnades"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/tahed-eesti-keeles')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(ggjoy)
+library(forcats)
+library(hrbrthemes)
+library(viridis)
+library(stringr)
+library(scales)
+
+# kuva numbrid komakohtadega
+options(scipen = 99)
+
+load("~/Dropbox/DataScience/R/tahed_eesti_keeles/data/tahe_asukoht_sonad.RData")
+```
+
+```{r eesti_tahestik,  echo = FALSE, message = FALSE, warning = FALSE}
+# Tähestiku sorteerimiseks Eesti tähestik
+eesti_tahestik <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", 
+                    "m", "n", "o", "p", "q", "r", "s", "š", "z", "ž", "t", "u", 
+                    "v", "w", "õ", "ä", "ö", "ü", "x", "y")
+```
+
+Otustsasin teha veel ühe postituse, kus esikohal on uus ja huvitav graafikutüüp [joyplot](https://twitter.com/hnrklndbrg/status/883675698300420098). Kasutan seda, et visualiseerida tähtede jaotust eestikeelsetes sõnades. Eesmärgiks on näidata iga tähe kohta, kas see esineb eesti keeles rohkem sõna alguses, keskpaigas või lõpus.
+
+Andmeallikana kasutan eesti keele [ilukirjanduse korpusest](http://www.cl.ut.ee/korpused/segakorpus/eesti_ilukirjandus_1990/) random 1 miljonit sõna. Igas sõnas tuvastan kõigi tähtede suhtelise asukoha ning summeritud tulemusest tulebki kokku joyplot. Inspiratsiooni sain blogipostitusest [Graphing the distribution of English letters towards the beginning, middle or end of words](http://www.prooffreader.com/2014/05/graphing-distribution-of-english.html).
+
+Allolevalt graafikult on näha, et näiteks P-täht esineb eesti keeles enamasti sõna alguses, D-täht pigem sõna lõpus ja kõige populaarsem, A-täht, on jaotunud ühtlasemalt, aga on enam levinud sõnade teises pooles.
+
+```{r tahtede_esinemissagedus, fig.height = 12, fig.width=6}
+tahe_asukoht_sonad %>% 
+  left_join(tahe_esinemissagedus) %>% 
+  mutate(taht = fct_rev(factor(str_to_upper(taht), 
+                               level = str_to_upper(eesti_tahestik)))) %>%
+  ggplot(aes(tahe_asukoht, taht, fill = percent)) +
+  geom_joy(aes(fill = percent), scale = 2, colour = "white", size = 0.7, alpha = 0.8) +
+  scale_fill_viridis(labels = percent) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(limits = c(1, 15), expand = c(0.01, 0.01)) +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        legend.position = "bottom") +
+  guides(fill = guide_legend(title.position = "top", title.hjust = 0.5)) +
+  labs(fill = "tähe esinemissagedus",
+       title = "Tähteda jaotus eestikeelsete sõnade \nalguses, keskel ja lõpus",
+       caption = "algallikas: Eesti ilukirjanduse korpus\nwww.cl.ut.ee/korpused/segakorpus/eesti_ilukirjandus_1990/") +
+  annotate("text", x = 1, y = 33.5,
+           label="sõna algus", 
+           size = 3.5, hjust = 0, vjust = 1) +
+  annotate("segment", x = 2, xend = 1.2, y = 33, yend = 32.3, 
+           colour = "gray", size = 0.5, arrow = arrow(length = unit(0.2, "cm"))) +
+  annotate("text", x = 6.3, y = 33.5,
+           label = "sõna keskpaik", 
+           size = 3.5, hjust = 0, vjust = 1) +
+  annotate("segment", x = 7.5, xend = 7.5, y = 33, yend = 32.3, 
+           colour = "gray", size = 0.5, arrow = arrow(length = unit(0.2, "cm"))) +
+  annotate("text", x = 13.5, y = 33.5,
+           label = "sõna lõpp", 
+           size = 3.5, hjust = 0, vjust = 1) +
+  annotate("segment", x = 14.3, xend = 14.8, y = 33, yend = 32.7, 
+           colour = "gray", size = 0.5, arrow = arrow(length = unit(0.2, "cm")))
+  
+```
+
+
+### Kuidas?
+
+Lühidalt kirjeldasin metoodikat juba postituse alguses, aga täpsemalt saab andmeanalüüsi detailidega tutvuda [githubis](https://github.com/toomase/tahed_eesti_keeles).

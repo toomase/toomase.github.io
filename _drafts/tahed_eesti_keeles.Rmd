@@ -51,7 +51,7 @@ Andmeallikana kasutan eesti keele [ilukirjanduse korpusest](http://www.cl.ut.ee/
 
 Allolevalt graafikult on näha, et näiteks P-täht esineb eesti keeles enamasti sõna alguses, D-täht pigem sõna lõpus ja kõige populaarsem, A-täht, on jaotunud ühtlasemalt, aga on enam levinud sõnade teises pooles.
 
-```{r tahtede_esinemissagedus, fig.height = 12, fig.width = 6.5}
+```{r tahtede_esinemissagedus, fig.height = 12, fig.width = 5.5}
 tahe_asukoht_sonad %>% 
   left_join(tahe_esinemissagedus) %>% 
   mutate(taht = fct_rev(factor(str_to_upper(taht), 
@@ -68,7 +68,7 @@ tahe_asukoht_sonad %>%
         legend.position = "bottom") +
   guides(fill = guide_legend(title.position = "top", title.hjust = 0.5)) +
   labs(fill = "tähe esinemissagedus",
-       title = "Tähteda jaotus eestikeelsete sõnade \nalguses, keskel ja lõpus",
+       title = "Tähteda jaotus eestikeelsete \nsõnade alguses, keskel ja lõpus",
        caption = "algallikas: Eesti ilukirjanduse korpus\nwww.cl.ut.ee/korpused/segakorpus/eesti_ilukirjandus_1990/") +
   annotate("text", x = 1, y = 33.5,
            label="sõna algus", 
@@ -80,7 +80,7 @@ tahe_asukoht_sonad %>%
            size = 3.5, hjust = 0, vjust = 1) +
   annotate("segment", x = 7.5, xend = 7.5, y = 33, yend = 32.3, 
            colour = "gray", size = 0.5, arrow = arrow(length = unit(0.2, "cm"))) +
-  annotate("text", x = 13.5, y = 33.5,
+  annotate("text", x = 13.2, y = 33.5,
            label = "sõna lõpp", 
            size = 3.5, hjust = 0, vjust = 1) +
   annotate("segment", x = 14.3, xend = 14.8, y = 33, yend = 32.7, 

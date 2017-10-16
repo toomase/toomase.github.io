@@ -39,9 +39,9 @@ load("~/Dropbox/DataScience/R/erakondade_programm_tallinnas/data/sonade_emotsioo
 load("~/Dropbox/DataScience/R/erakondade_programm_tallinnas/data/programmid.RData")
 ```
 
-Leidsin ühe huvitava R paketi [ggpage](https://github.com/EmilHvitfeldt/ggpage), mis võimaldab korraga visualiseerida pikemaid tekste. Kuna parasjagu olid käimas kohalikud valimised, siis otsustasin katsetada seda visualiseerimise viisi erakondade Tallinna valimisprogrammide tekstidel. Selleks laadisin alla kõigi Tallinnas kandideerinud erakondade programmide tekstid.
+Leidsin ühe huvitava R paketi [ggpage](https://github.com/EmilHvitfeldt/ggpage), mis võimaldab korraga visualiseerida pikemaid tekste. Kuna parasjagu on käimas kohalikud valimised, siis otsustasin katsetada seda visualiseerimise viisi erakondade Tallinna valimisprogrammide tekstidel. Selleks laadisin alla kõigi Tallinnas kandideerinud erakondade programmide tekstid.
 
-Allolevatel visuaalidel on iga erakonna kogu valimisprogramm tallinnas. Punase värviga on tähistatud negatiivse tooniga sõnad ja sinisega positiivsed.
+Allolevatel visuaalidel on iga erakonna kogu valimisprogramm Tallinnas. <span style="color:red">Punase</span> värviga on tähistatud negatiivse tooniga sõnad ja sinisega positiivsed.
 
 ```{r teksti_visuaal,  echo = FALSE, message = FALSE, warning = FALSE}
 # Fuktsioon, mis koostab programmi tekstist grrafilise ülevaate
@@ -77,7 +77,7 @@ tootle_programme(irl_programm, "IRL programm")
 tootle_programme(rohelised_programm, "Roheliste programm")
 ```
 
-KLisaks lihtsalt programmi teksti visualiseerimisele võrdlesin omavahel kõiki programme ja tuvastasin igale erakonnale kõige iseloomulikumad sõnad. Selleks kasutasin mõõdikut *tf-idf* (term frequency–inverse document frequency). Sisuliselt aitab see tuvastada sõnu, mis on kõigi erakondade programmides kokku suhteliselt haruldased, aga konkreetse erakonna puhul sagedasemad. Sama meetodit kasutasin ka näites ühes varasemas postituses [Eesti presidentide kõned](http://eilat.ee/2016-11-19-presidentide-koned/).
+Lisaks võrdlen omavahel erakondade programme ja tuvastan igale erakonnale kõige iseloomulikumad sõnad. Selleks kasutan mõõdikut *tf-idf* (term frequency–inverse document frequency). Sisuliselt aitab see tuvastada sõnu, mis on kõigi erakondade programmides kokku suhteliselt haruldased, aga konkreetse erakonna puhul sagedasemad. Sama meetodit kasutasin ka näites ühes varasemas postituses [Eesti presidentide kõned](http://eilat.ee/2016-11-19-presidentide-koned/).
 
 ```{r erakondade_iseloomulikud_sonad, fig.height=8, fig.width=10}
 valistamised <- c("window", "to", "share", "opens", "new", "in", "click",

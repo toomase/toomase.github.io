@@ -11,9 +11,9 @@ layout: post
 
 
 
-Leidsin ühe huvitava R paketi [ggpage](https://github.com/EmilHvitfeldt/ggpage), mis võimaldab korraga visualiseerida pikemaid tekste. Kuna parasjagu on käimas kohalikud valimised, siis otsustasin katsetada seda visualiseerimise viisi erakondade Tallinna valimisprogrammide tekstidel. Selleks laadisin alla kõigi Tallinnas kandideerinud erakondade programmide tekstid.
+Leidsin ühe huvitava R paketi [ggpage](https://github.com/EmilHvitfeldt/ggpage), mis võimaldab korraga visualiseerida pikemaid tekste. Kuna parasjagu on käimas kohalikud valimised, siis otsustasin katsetada seda visualiseerimise viisi erakondade Tallinna valimisprogrammide tekstidel. Alustuseks laadisin alla kõigi Tallinnas kandideerinud erakondade programmid.
 
-Allolevatel visuaalidel on iga erakonna kogu valimisprogramm Tallinnas. <span style="color:red">Punase</span> värviga on tähistatud negatiivse tooniga sõnad ja sinisega positiivsed.
+Allolevatel visuaalidel on iga erakonna kogu valimisprogramm Tallinnas. <span style="color:red">Punase</span> värviga on tähistatud negatiivse tooniga sõnad ja <span style="color:blue">sinisega</span> positiivsed.
 
 
 

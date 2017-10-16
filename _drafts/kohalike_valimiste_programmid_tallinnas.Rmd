@@ -1,0 +1,127 @@
+---
+title: "Erakondade 2017.a kohalike valimiste programmid Tallinnas"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/kohalike-valimiste-programmid-tallinnas-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(ggpage)
+library(tidytext)
+library(forcats)
+library(scales)
+library(drlib)
+library(hrbrthemes)
+
+# positiivsed ja negatiivsed sõnad eesti keeles
+load("~/Dropbox/DataScience/R/erakondade_programm_tallinnas/data/sonade_emotsioon_est.RData")
+
+# erakondade programmid
+load("~/Dropbox/DataScience/R/erakondade_programm_tallinnas/data/programmid.RData")
+```
+
+Leidsin ühe huvitava R paketi [ggpage](https://github.com/EmilHvitfeldt/ggpage), mis võimaldab korraga visualiseerida pikemaid tekste. Kuna parasjagu olid käimas kohalikud valimised, siis otsustasin katsetada seda visualiseerimise viisi erakondade Tallinna valimisprogrammide tekstidel. Selleks laadisin alla kõigi Tallinnas kandideerinud erakondade programmide tekstid.
+
+Allolevatel visuaalidel on iga erakonna kogu valimisprogramm tallinnas. Punase värviga on tähistatud negatiivse tooniga sõnad ja sinisega positiivsed.
+
+```{r teksti_visuaal,  echo = FALSE, message = FALSE, warning = FALSE}
+# Fuktsioon, mis koostab programmi tekstist grrafilise ülevaate
+tootle_programme <- function(x, nm){
+  nm_name <- quo_name(nm)  # erakonna nimi, joonise pealkirjaks
+  
+  data_frame(programm = x) %>% 
+    # jaga kogu tekst 8-st sõnast koosnevateks ridadeks
+    unnest_tokens(rida, programm, token = "ngrams", n = 8, to_lower = FALSE) %>% 
+    mutate(rea_nr = row_number()) %>% 
+    filter(rea_nr %in% seq(1, 50000, 8)) %>% 
+    select(-rea_nr) %>% 
+    rename(text = rida) %>% 
+    ggpage_build() %>% 
+    # lisa sõna emotsiooni tunnus
+    left_join(sonade_emotsioon_est, by = c("word" = "sona")) %>% 
+    # kui emotsiooni pole, siis muu
+    mutate(emotsioon_sona = ifelse(is.na(emotsioon_sona), "muu", emotsioon_sona)) %>% 
+    ggpage_plot(aes(fill = emotsioon_sona)) +
+    labs(title = nm_name) +
+    scale_fill_manual(values = c("grey70", "red", "blue")) +
+    guides(fill = FALSE)
+}
+```
+
+
+```{r programmi_visuaal}
+tootle_programme(keskerakond_programm, "Keskerakonna programm")
+tootle_programme(reform_programm, "Reformierakonna programm")
+tootle_programme(sotsid_programm, "Sotsiaaldemokraatide programm")
+tootle_programme(ekre_programm, "EKRE programm")
+tootle_programme(irl_programm, "IRL programm")
+tootle_programme(rohelised_programm, "Roheliste programm")
+```
+
+KLisaks lihtsalt programmi teksti visualiseerimisele võrdlesin omavahel kõiki programme ja tuvastasin igale erakonnale kõige iseloomulikumad sõnad. Selleks kasutasin mõõdikut *tf-idf* (term frequency–inverse document frequency). Sisuliselt aitab see tuvastada sõnu, mis on kõigi erakondade programmides kokku suhteliselt haruldased, aga konkreetse erakonna puhul sagedasemad. Sama meetodit kasutasin ka näites ühes varasemas postituses [Eesti presidentide kõned](http://eilat.ee/2016-11-19-presidentide-koned/).
+
+```{r erakondade_iseloomulikud_sonad, fig.height=8, fig.width=10}
+valistamised <- c("window", "to", "share", "opens", "new", "in", "click",
+                  "res", "publica", "isamaa", "as", "liidu", "rahvaerakond",
+                  "konservatiivne", "aeg")
+
+erakonnale_iseloomulik <- erakondade_programmid %>% 
+  unnest_tokens(word, programm) %>% 
+  count(erakond, word, sort = TRUE) %>% 
+  ungroup() %>% 
+  arrange(erakond) %>%
+  filter(!word %in% valistamised)%>% 
+  bind_tf_idf(word, erakond, n) %>%
+  arrange(erakond, desc(tf_idf)) %>%
+  group_by(erakond) %>% 
+  top_n(7) %>% 
+  group_by(erakond) %>% 
+  mutate(word = factor(word, levels = (unique(word))),
+         word = fct_reorder(word, tf_idf)) %>%
+  ungroup() %>% 
+  mutate(erakond = factor(erakond, levels = c("Keskerakond", "Reformierakond",
+                                              "Sotsiaaldemokraadid",
+                                              "IRL", "EKRE", "Rohelised")))
+
+erakonnale_iseloomulik %>%
+  filter(!word %in% valistamised) %>% 
+  ggplot(aes(reorder_within(word, tf_idf, erakond), tf_idf)) +
+  geom_bar(alpha = 0.8, stat = "identity", show.legend = FALSE, fill = "#feb24c") +
+  labs(title = "Erakondade Tallinna programmidele top 7 iseloomulikku sõna",
+         subtitle = "-Sõnade tähtsuse hindamise mõõtühikuks on term frequency–inverse document frequency",
+         x = NULL, y = NULL) +
+  scale_y_continuous(labels = comma) +
+  scale_x_discrete(labels = function(x) gsub("__.+$", "", x)) +
+  facet_wrap(~erakond, ncol = 2, scales = "free") +
+  coord_flip() +
+  theme_ipsum_rc() +
+  theme(panel.grid = element_blank(),
+          axis.text = element_text(size = 9),
+          text = element_text(family = "Chivo"),
+          plot.title = element_text(size = 14, face = "bold"),
+          strip.text = element_text(size = 11))
+```
+
+
+### Kuidas?
+
+Andmete kraapimise, analüüsi ja visualiseerimise skriptiga saab tutvuda [githubis](https://github.com/toomase/erakondade_programm_tallinnas).

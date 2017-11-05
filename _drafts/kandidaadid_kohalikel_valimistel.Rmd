@@ -118,7 +118,7 @@ kandidaadid_toodeldud %>%
   
 ```
 
-Parlamendierakondadest eristuvas kandidaatide soolise jaotuse osas teistest sotsid ja EKRE. Esimene suhteliselt suure naiste osakaaluga (49%) ja teine väikese (28%). Mitte üheski suuremas nimekirjas ei ole naisi kandidaatide hulgas rohkem kui mehi...
+Parlamendierakondadest eristuvas kandidaatide soolise jaotuse osas teistest sotsid ja EKRE. Esimene suhteliselt suure naiste osakaaluga (49%) ja teine väikesega (28%). Mitte üheski suuremas nimekirjas ei ole naisi kandidaatide hulgas rohkem kui mehi...
 
 ```{r sugu, fig.width = 8, fig.height = 7}
 nimekirju <- kandidaadid_toodeldud %>%

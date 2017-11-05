@@ -22,7 +22,7 @@ Esmalt vaatan kandidaatide vanuselist jaotust erkondade ja suuremate nimekirjade
 
 ![]({{ site.url }}/img/kandidaadid-kohalikel-valimistel-vanus_nimekiri-1.png)
 
-Parlamendierakondadest eristuvas kandidaatide soolise jaotuse osas teistest sotsid ja EKRE. Esimene suhteliselt suure naiste osakaaluga (49%) ja teine väikese (28%). Mitte üheski suuremas nimekirjas ei ole naisi kandidaatide hulgas rohkem kui mehi...
+Parlamendierakondadest eristuvas kandidaatide soolise jaotuse osas teistest sotsid ja EKRE. Esimene suhteliselt suure naiste osakaaluga (49%) ja teine väikesega (28%). Mitte üheski suuremas nimekirjas ei ole naisi kandidaatide hulgas rohkem kui mehi...
 
 ![]({{ site.url }}/img/kandidaadid-kohalikel-valimistel-sugu-1.png)
 

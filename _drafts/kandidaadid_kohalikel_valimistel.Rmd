@@ -1,0 +1,285 @@
+---
+title: "Kandidaadid 2017.a kohalikel valimistel"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/kandidaadid-kohalikel-valimistel-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(rvest)
+library(stringr)
+library(janitor)
+library(lubridate)
+library(ggjoy)
+library(hrbrthemes)
+library(forcats)
+library(scales)
+library(drlib)
+
+# lae kandidaatide andmed
+load("~/Dropbox/DataScience/R/kohalikud_valimised_2017/output/kandidaadid.RData")
+
+# lae erakondade nimekiri
+load("~/Dropbox/DataScience/R/kohalikud_valimised_2017/output/erakonnaliikmed.RData")
+
+# lae andmed eesnime ja soo seose kohta
+# selle põhjal saab tuletada erakonnaliikmete soo
+load("~/Dropbox/DataScience/R/kohalikud_valimised_2017/data/nimed_sooga.RData")
+```
+
+Enne 2017. a kohalikke valimisi otsustasin analüüsida kandidaatidega seotud andmeid. [Valimiste kodulehe](https://kov2017.valimised.ee/kandidaadid) on üleval päris detailne info kõigi ~11 000 kandidaadi kohta (sünniaeg, amet, haridus jne). See tundus piisavalt huvitav andmestik, et erakondi ja nimekirju omavahel võrrelda. Kuigi analüüs sai tehtud suures osas septembris (enne valimisi), jõudsin blogipostituseni alles novembris (pärast valimisi). Sellegipoolest tundub mõistlik tehtud töö ära vormistada.
+
+```{r andmetootlus, echo = FALSE, message = FALSE, warning = FALSE}
+kandidaadid_toodeldud <- kandidaadid %>% 
+  left_join(erakonnaliikmed %>% 
+              mutate(nimi = str_to_upper(str_c(eesnimi, perenimi, sep = " "))) %>% 
+              select(nimi, synniaeg, erakond, liikmeks_astumise_aeg), by = c("nimi", "synniaeg")) %>% 
+  select(-erakondlik_kuuluvus) %>% 
+  rename(erakondlik_kuuluvus = erakond) %>% 
+  group_by(erakondlik_kuuluvus) %>% 
+  mutate(kandidaate_erakonnast = n()) %>% 
+  ungroup() %>% 
+  group_by(nimekiri_voi_yksikkandidaat) %>% 
+  mutate(kandidaate_nimekirjast = n()) %>% 
+  ungroup() %>% 
+  mutate(vanus = floor(interval(start = synniaeg, end = Sys.Date())
+           / duration(num = 1, units = "years")),
+         erakondlik_kuuluvus = fct_reorder(erakondlik_kuuluvus, kandidaate_erakonnast),
+         nimekiri_voi_yksikkandidaat = fct_reorder(nimekiri_voi_yksikkandidaat, kandidaate_nimekirjast),
+         eesnimi = word(nimi, 1),
+         email = str_trim(str_extract(kontaktandmed, "(?<=E-post: ).*")),
+         domeen = str_extract(email, "(?<=@).*"),
+         tel = as.numeric(str_trim(str_extract(kontaktandmed, "(?<=Tel: ).*"))),
+         amet_1 = str_extract(tookoht_ja_amet, "(?<=, ).*$|Riigikogu,? liige"),
+         amet_2 = str_replace_all(tookoht_ja_amet, "[A-ZÕÄÖÜ]\\S*\\s", ""),
+         amet = coalesce(amet_1, amet_2),
+         amet = str_replace_all(amet, "[[:punct:]]", ""),
+         amet = str_trim(str_to_lower(ifelse(str_count(amet, "\\s") > 1, 
+                       word(amet, 2, -1),
+                       amet))),
+         amet = ifelse(amet == "", NA, amet)) %>% 
+  left_join(nimed_sooga, by = c("eesnimi" = "nimi")) %>% 
+  select(-amet_1, -amet_2)
+```
+
+Esmalt vaatan kandidaatide vanuselist jaotust erkondade ja suuremate nimekirjade (+75 kandidaati) lõikes.
+
+```{r vanus_erakond, fig.width = 8, fig.height = 7}
+kandidaadid_toodeldud %>%
+  filter(!is.na(erakondlik_kuuluvus)) %>% 
+  ggplot(aes(vanus, erakondlik_kuuluvus)) +
+  geom_joy(aes(fill = erakondlik_kuuluvus), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(20, 90, by = 10),
+                     limits = c(18, 90),
+                     expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(x = "vanus",
+       y = "erakondlik kuuluvus",
+       title = "Vanuseline jaotus erakonnas")
+  
+```
+
+
+```{r vanus_nimekiri, fig.width = 8, fig.height = 7}
+kandidaadid_toodeldud %>%
+  filter(kandidaate_nimekirjast >= 75) %>% 
+  ggplot(aes(vanus, nimekiri_voi_yksikkandidaat)) +
+  geom_joy(aes(fill = nimekiri_voi_yksikkandidaat), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(20, 90, by = 10),
+                     limits = c(18, 90),
+                     expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(x = "vanus",
+       y = "nimekiri",
+       title = "Vanuseline jaotus nimekirjas")
+  
+```
+
+Parlamendierakondadest eristuvas kandidaatide soolise jaotuse osas teistest sotsid ja EKRE. Esimene suhteliselt suure naiste osakaaluga (49%) ja teine väikese (28%). Mitte üheski suuremas nimekirjas ei ole naisi kandidaatide hulgas rohkem kui mehi...
+
+```{r sugu, fig.width = 8, fig.height = 7}
+nimekirju <- kandidaadid_toodeldud %>%
+  filter(kandidaate_nimekirjast >= 50,
+         !is.na(sugu)) %>% 
+  summarise(n = n_distinct(nimekiri_voi_yksikkandidaat)) %>% 
+  pull(n)
+
+kandidaadid_toodeldud %>%
+  filter(kandidaate_nimekirjast >= 50,
+         !is.na(sugu)) %>% 
+  mutate(naine = ifelse(sugu == "naine", 1, 0)) %>% 
+  group_by(nimekiri_voi_yksikkandidaat, sugu) %>% 
+  summarise(n = n()) %>%
+  ungroup() %>% 
+  group_by(nimekiri_voi_yksikkandidaat) %>% 
+  mutate(naiste_meeste_osakaal = n / sum(n),
+         naiste_osakaal_label = ifelse(sugu == "naine", str_c(round(naiste_meeste_osakaal, 2) * 100, "%"), 
+                                 ""),
+         naiste_osakaal = ifelse(sugu == "naine", naiste_meeste_osakaal, "")) %>% 
+  ggplot(aes(nimekiri_voi_yksikkandidaat, y = naiste_meeste_osakaal, fill = sugu)) + 
+  geom_bar(position = "fill", stat = "identity") +
+  geom_text(aes(label = naiste_osakaal_label, y = naiste_meeste_osakaal - 0.05), size = 3) +
+  annotate("text", y = 0.1, x = nimekirju + 1.5, label = "naised", colour = "#fc9272", fontface = "bold") +
+  annotate("text", y = 0.9, x = nimekirju + 1.5, label = "mehed", colour = "#2b8cbe", fontface = "bold") +
+  coord_flip() +
+  theme_ipsum_rc() +
+  scale_y_continuous(labels = percent_format()) +
+  expand_limits(x = c(nimekirju + 2, 0)) +
+  geom_hline(yintercept =  0.5) +
+  scale_fill_manual(values = c("#2b8cbe", "#fc9272")) +
+  labs(title = "Sooline jaotus nimekirjades",
+       x = "nimekiri") +
+  theme(axis.title.x = element_blank()) +
+  guides(fill = FALSE)
+```
+
+Hariduse osas eristub teistest erakondadest samuti EKRE, kus kõrgharidusega kandidaate on suhteliselt vähe, 35% (teistes kõigis üle poole kandidaatidest).
+
+```{r haridus, fig.width = 8, fig.height = 7}
+nimekirju_haridus <- kandidaadid_toodeldud %>%
+  filter(kandidaate_nimekirjast >= 50,
+         !is.na(haridus)) %>% 
+  summarise(n = n_distinct(nimekiri_voi_yksikkandidaat)) %>% 
+  pull(n)
+
+kandidaadid_toodeldud %>%
+  filter(kandidaate_nimekirjast >= 50,
+         !is.na(haridus)) %>% 
+  group_by(nimekiri_voi_yksikkandidaat, haridus) %>% 
+  summarise(n = n()) %>%
+  ungroup() %>% 
+  group_by(nimekiri_voi_yksikkandidaat) %>% 
+  mutate(hariduse_osakaal = n / sum(n),
+         haridus = fct_rev(factor(haridus, levels = c("Kõrgharidus", "Keskharidus (sh keskeriharidus)",
+                                                 "Põhiharidus", "Algharidus"))),
+         korghariduse_osakaal_label = ifelse(haridus == "Kõrgharidus", 
+                                             str_c(round(hariduse_osakaal, 2) * 100, "%"), ""),
+         korghariduse_osakaal = ifelse(haridus == "Kõrgharidus", hariduse_osakaal, "")) %>% 
+  ggplot(aes(nimekiri_voi_yksikkandidaat, y = hariduse_osakaal, fill = haridus)) + 
+  geom_bar(position = "fill", stat = "identity") +
+  coord_flip() +
+  theme_ipsum_rc() +
+  guides(fill = FALSE) +
+  geom_hline(yintercept =  0.5) +
+  geom_text(aes(label = korghariduse_osakaal_label, 
+                y = hariduse_osakaal - 0.05), size = 3) +
+  annotate("text", y = 0.2, x = nimekirju + 1.5, label = "kõrg", colour = "#2b8cbe", fontface = "bold") +
+  annotate("text", y = 0.7, x = nimekirju + 1.5, label = "kesk", colour = "#7bccc4", fontface = "bold") +
+  annotate("text", y = 0.95, x = nimekirju + 1.5, label = "põhi", colour = "#bae4bc", fontface = "bold") +
+  expand_limits(x = c(nimekirju + 2, 0)) +
+  scale_y_continuous(labels = percent_format(), expand = c(0, 0)) +
+  scale_fill_manual(values = c("#f0f9e8", "#bae4bc", "#7bccc4", "#2b8cbe")) +
+  labs(title = "Hariduslik jaotus nimekirjades",
+       x = "nimekiri") +
+  theme(axis.title.x = element_blank())
+```
+
+Kõige populaarsem amet kandidaatide hulgas on pensionär (~10%).
+
+```{r amet}
+
+kandidaadid_toodeldud %>% 
+  filter(!is.na(amet), amet != "oü") %>%  # ainult suuremad nimekirjad
+  tabyl(amet, sort = TRUE) %>% 
+  top_n(20) %>% 
+  ggplot(aes(fct_reorder(amet, n), n)) +
+  geom_bar(alpha = 0.8, stat = "identity", fill = "#2b8cbe") +
+  coord_flip() +
+  theme_ipsum_rc() +
+  guides(fill = FALSE) +
+  labs(title = "TOP20 populaarsemat ametit",
+       y = "kandidaatide arv",
+       x = "amet")
+```
+
+Erakondadest eristuvad teineteisest pensionäride osakaalu poolest Keskerakond (16%). Võrdluseks Reformierakonna ridades kandideerib 4% pensionäre. Samas on Keskerakonna kandidaatide hulgas suhteliselt vähem juhatuse liikmeid ja juhatajaid.
+
+```{r amet_erakond, fig.height=9, fig.width=10}
+ametite_osakaal <- kandidaadid_toodeldud %>% 
+  filter(!is.na(amet), amet != "oü") %>%  # ainult suuremad nimekirjad
+  tabyl(amet, sort = TRUE) 
+
+ameti_populaarsus_erakonnas <- kandidaadid_toodeldud %>% 
+  filter(kandidaate_nimekirjast >= 700, !is.na(amet)) %>%  # ainult suuremad nimekirjad
+  group_by(nimekiri_voi_yksikkandidaat, amet, kandidaate_nimekirjast) %>% 
+  summarise(ameti_arv = n()) %>% 
+  ungroup () %>% 
+  mutate(ameti_osakaal = ameti_arv / kandidaate_nimekirjast) %>% 
+  group_by(nimekiri_voi_yksikkandidaat) %>% 
+  top_n(7) %>% 
+  group_by(amet) %>% 
+  arrange(desc(ameti_osakaal)) %>% 
+  ungroup() %>% 
+  mutate(nimekiri_voi_yksikkandidaat = fct_reorder(nimekiri_voi_yksikkandidaat, 
+                                                   kandidaate_nimekirjast, .desc = TRUE)) %>%
+  ungroup() %>%
+  left_join(ametite_osakaal %>% 
+              select(amet, percent), by = "amet")
+
+ameti_populaarsus_erakonnas %>% 
+  ggplot(aes(reorder_within(amet, ameti_osakaal, nimekiri_voi_yksikkandidaat), ameti_osakaal, 
+             fill = nimekiri_voi_yksikkandidaat)) +
+  geom_bar(alpha = 0.8, stat = "identity", show.legend = FALSE) +
+  geom_point(data = ameti_populaarsus_erakonnas, aes(reorder_within(amet, ameti_osakaal, nimekiri_voi_yksikkandidaat), percent, shape = "a"), alpha = 0.7) +
+  facet_wrap(~nimekiri_voi_yksikkandidaat, scales = "free_y", ncol = 2) +
+  coord_flip() +
+  guides(fill = FALSE, shape = FALSE) +
+  scale_x_discrete(labels = function(x) gsub("__.+$", "", x)) +
+  scale_y_continuous(limits = c(0, 0.2), labels = percent_format(), expand = c(0, 0)) +
+      # scale_y_continuous(limits = c(0, 25000), 
+      #                  breaks = seq(from = 0, to = 30000, by = 5000)) 
+  scale_fill_manual(values = c("#33a02c", "#ffb912", "#1f78b4", "#e31a1c", "#a63603")) +
+  geom_text(aes(label = str_c(round(ameti_osakaal, 2) * 100, "%"),
+                y = ameti_osakaal, hjust = -0.2), size = 3.5) +
+  theme_ipsum_rc() +
+  labs(title = "Populaarsemad ametid erakondade nimekirjades",
+       subtitle = "% näitab ameti osakaalu erakonna nimekirjas kandideerijatest\nmust punkt näitab vastava ameti populaarsust kõigi kandidaatide hulgas",
+       y = "ameti osakaal nimekirjas",
+       x = "amet") 
+```
+
+Ühe huvitava tunnusena toon eraldi välja e-maili domeenide jaotuse kandidaatide hulgas. Mitte nii üllatavalt jõuavad enamusele e-kirjad kohele google gamaili vahendusel. Teist ja kolmandat kohta jagavad aga kodumaised hot.ee ja mail.ee.
+
+```{r domeenid}
+
+kandidaadid_toodeldud %>% 
+  filter(!is.na(domeen)) %>%  # ainult suuremad nimekirjad
+  tabyl(domeen, sort = TRUE) %>% 
+  top_n(20) %>% 
+  ggplot(aes(fct_reorder(domeen, n), n)) +
+  geom_bar(alpha = 0.8, stat = "identity", fill = "#2b8cbe") +
+  coord_flip() +
+  theme_ipsum_rc() +
+  guides(fill = FALSE) +
+  labs(title = "TOP20 populaarsemat e-maili domeeni",
+       y = "kandidaatide arv",
+       x = "domeen")
+```
+
+
+### Kuidas?
+
+Andmete kraapimise, analüüsi ja visualiseerimise skriptiga saab tutvuda [githubis](https://github.com/toomase/kohalikud_valimised_2017).

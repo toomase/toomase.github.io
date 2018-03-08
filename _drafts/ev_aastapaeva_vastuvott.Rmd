@@ -1,0 +1,310 @@
+---
+title: "Presidendi vastuvõtu värvid"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/ev_aastapaeva_vastuvott-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(hrbrthemes)
+library(patchwork)
+library(ggjoy)
+library(scales)
+
+# lae vastuvõtu galeriidest eraldatud andmete tabel ja värvipaletid
+load("~/Dropbox/DataScience/R/ev_100/data/pildi_info.RData")
+```
+
+EV100 presidendi vastuvõtu vaatamisega tekkis mõte analüüsida peol tehtud pildigaleriisid. See on hea võimalus viia ennast pisut kurssi piltidelt info kogumisega. Esimene eesmärk on leida trende külaliste piduriiete värvitoonides läbi aastate. Samuti võimaldab [Kairos](https://www.kairos.com/) näotuvastus API tuvastada piltidelt teisi analüüsiväärseid tunnuseid (inimese vanus, sugu, prillide olemasolu jne). Pisut täpsemalt metoodikast postituse lõpus.
+
+Kokku õnnestus mul [ERR-i](https://err.ee) ja [Õhtulehe]() presidendi vastuvõtu galeriidest perioodi 2013-2018 kohta kraapida ~2500 pilti. Kuigi huvitav oleks uurida pikemat perioodi, ei õnnestunud mul lihtsa vaevaga leida varasemate aastate kohta fotoseina ääres tehtud galeriisid.
+
+
+### Populaarsed värvitoonid riietuses
+
+```{r andmetootlus, echo = FALSE, message = FALSE, warning = FALSE}
+pildi_info_toodeldud <- pildi_info %>% 
+  left_join(varvipalett_holdout %>% select(hex, color_title_2 = title),
+            by = c("color_hex_2" = "hex"))
+
+# värvipalett (17 peamise värviga) graafikutel kasutamiseks
+cols <- structure(as.character(varvipalett_holdout$hex), 
+                  names = as.character(varvipalett_holdout$title))
+
+# värvipalett (143 värviga) graafikutel kasutamiseks
+cols_143 <- structure(as.character(varvipalett_2_raw$hex), 
+                  names = as.character(varvipalett_2_raw$title))
+```
+
+Igalt pildilt tuvastasin kõigi inimeste kohta 2 kõige domineerivamat värvitooni. Järgnevatel graafikutel ongi kujutatud nende värvide esinemissagedust aastate lõikes.
+
+Milline on domineeriv riietuse värvitoon kõigi külaliste peale kokku? Ettearvatult on kõige populaarsem värv must, mis domineerib umbes 60% külaliste riietuses. Erisusena paistab välja 2015.a, kus osa musta populaarsusest on üle võtnud hallid toonid. Seda fenomeni uurin kohe pisut detailsemalt.
+
+```{r domineeriv_varv_kokku}
+pildi_info_toodeldud %>%
+  ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(color_title_1)), 
+             colour = fct_rev(fct_infreq(color_title_1)))) +
+  geom_density(position = "fill") +
+  scale_fill_manual(values = cols) +
+  scale_colour_manual(values = cols) +
+  # kaota graafiku ümbere jääv tühi ruum ära (expand funktsioon) 
+  scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(title = "Riiete domineeriv värvitoon",
+       subtitle = "Mehed ja naised kokku",
+       caption = "ERR ja Õhtuleht galeriide põhjal") +
+  theme_ipsum_rc() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+```
+
+Milline on meestel domineeriv riietuse värvitoon? 80% meestest on selleks must ülikond ning kõigile teistele värvitoonidele jääb sealt kõrvalt üsna vähe ruumi. Erandina paistab välja halli värvi suhteline populaarsus 2015. aastal. Kui pisteliselt galeriist pilt vaadata, siis tundub, et see on osaliselt seletatav fotoseina valgustusega - osad mustad ülikonnad paistavad pildilt halli tooni. Teine tähelepanek on tumesiniste ülikondade populaarsuse kasv läbi aastate.
+
+
+```{r domineeriv_varv_mehed, fig.width=11}
+mehed_koik_varvid <- pildi_info_toodeldud %>%
+  filter(gender_type == "M") %>% 
+  ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(color_title_1)), 
+             colour = fct_rev(fct_infreq(color_title_1)))) +
+  geom_density(position = "fill") +
+  scale_fill_manual(values = cols) +
+  scale_colour_manual(values = cols) +
+  # kaota graafiku ümbere jääv tühi ruum ära (expand funktsioon) 
+  scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(title = "Meeste riiete domineeriv värvitoon",
+       subtitle = "Kõik värvitoonid kokku") +
+  theme_ipsum_rc() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+
+mehed_ilma_mustata <- pildi_info_toodeldud %>%
+  filter(gender_type == "M",
+         color_title_1 != "Black") %>% 
+  ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(color_title_1)), 
+             colour = fct_rev(fct_infreq(color_title_1)))) +
+  geom_density(position = "fill") +
+  scale_fill_manual(values = cols) +
+  scale_colour_manual(values = cols) +
+  # kaota graafiku ümbere jääv tühi ruum ära (expand funktsioon) 
+  scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0.1)) +
+  labs(title = "",
+       subtitle = "Ilma mustata") +
+  theme_ipsum_rc() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+
+mehed_koik_varvid + mehed_ilma_mustata
+```
+
+Kui kõige domineerivam on meeste riietuses must värvitoon, siis järgmisena paistavad silma valge ja hallid toonid (trijiksärk).
+```{r domineeriv_varv_2_mehed}
+pildi_info_toodeldud %>%
+  filter(gender_type == "M") %>% 
+  ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(color_title_2)), 
+             colour = fct_rev(fct_infreq(color_title_2)))) +
+  geom_density(position = "fill") +
+  scale_fill_manual(values = cols) +
+  scale_colour_manual(values = cols) +
+  # kaota graafiku ümbere jääv tühi ruum ära (expand funktsioon) 
+  scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(title = "Meeste riiete teine domineeriv värvitoon") +
+  theme_ipsum_rc() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+```
+
+
+Milline on naiste kleitide domineeriv värvitoon? Kõige domineerivam on endiselt must, aga mitte enam mäekõrguse ülekaaluga (40%).
+
+```{r domineeriv_varv_naised, fig.width=11}
+naised_koik_varvid <- pildi_info_toodeldud %>%
+  filter(gender_type == "F") %>% 
+  ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(color_title_1)), 
+             colour = fct_rev(fct_infreq(color_title_1)))) +
+  geom_density(position = "fill") +
+  scale_fill_manual(values = cols) +
+  scale_colour_manual(values = cols) +
+  # kaota graafiku ümbere jääv tühi ruum ära (expand funktsioon) 
+  scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(title = "Naiste kleitide domineeriv värvitoon",
+       subtitle = "Kõik värvitoonid kokku") +
+  theme_ipsum_rc() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+
+naised_ilma_mustata <- pildi_info_toodeldud %>%
+  filter(gender_type == "F",
+         color_title_1 != "Black") %>% 
+  ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(color_title_1)), 
+             colour = fct_rev(fct_infreq(color_title_1)))) +
+  geom_density(position = "fill") +
+  scale_fill_manual(values = cols) +
+  scale_colour_manual(values = cols) +
+  # kaota graafiku ümbere jääv tühi ruum ära (expand funktsioon) 
+  scale_y_continuous(labels = scales::percent, expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0.1)) +
+  labs(title = "",
+       subtitle = "Ilma mustata") +
+  theme_ipsum_rc() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+
+naised_koik_varvid + naised_ilma_mustata
+```
+
+Kuna naiste kleitides on oluliselt rohkem värvi kui meeste riietuses, siis kasutan nende kirjeldamiseks ka laiemat värvipaletti. Alloleval graafikul tähistab iga mull ühte värvitooni vastaval aastal ning mulli suurus iseloomustab värvi populaarsust.
+```{r domineeriv_varv_mullid_naised}
+pildi_info_toodeldud %>% 
+  filter(gender_type == "F",
+         color_title_1 != "Black") %>%
+  left_join(varvipalett_2_raw %>% select(title, rowid), by = c("color_title_143_1" = "title")) %>% 
+  count(aasta, rowid, color_title_143_1) %>% 
+  ggplot(aes(as.factor(aasta), rowid, color = color_title_143_1)) +
+  geom_jitter(aes(size = n)) +
+  scale_size_continuous(range = c(1, 20)) +
+  scale_colour_manual(values = cols_143) +
+  theme_ipsum_rc() +
+  labs(title = "Naiste riiete domineeriv värvitoon",
+       subtitle = "Mulli suurus iseloomustab värvitooni esinemissagedust vastaval aastal\nVälistatud on must värv") +
+  theme(axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = "none",
+        panel.grid = element_blank())
+```
+
+### Külalisi iseloomustavad tunnused
+
+Kuna [Kairos](https://www.kairos.com/) näotuvastus API tuvastab pildilt veel erinevaid tunnuseid, siis tundub huvitav ka neid pisut lähemalt uurida.
+
+Milline on meeste ja naiste osakaal aastate lõikes?
+
+```{r kylalised_sugu}
+pildi_info_toodeldud %>% 
+  count(aasta, gender_type) %>% 
+  ungroup() %>% 
+  group_by(aasta) %>% 
+  mutate(percentage = n / sum(n),
+         naiste_osakaal_label = ifelse(gender_type == "F", str_c(round(percentage, 2) * 100, "%"), 
+                                 ""),
+         naiste_osakaal = ifelse(gender_type == "F", percentage, "")) %>% 
+  mutate(naine = ifelse(gender_type == "F", 1, 0)) %>% 
+  ggplot(aes(aasta, y = percentage, fill = gender_type)) + 
+  geom_bar(position = "fill", stat = "identity") +
+  geom_text(aes(label = naiste_osakaal_label, y = percentage - 0.05), size = 4) +
+  annotate("text", y = 0.1, x = 2018.8, label = "naised", colour = "#fc9272", fontface = "bold") +
+  annotate("text", y = 0.9, x = 2018.8, label = "mehed", colour = "#2b8cbe", fontface = "bold") +
+  coord_flip() +
+  theme_ipsum_rc() +
+  scale_y_continuous(labels = percent_format(),
+                     expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(2013, 2018, by = 1)) +
+  # expand_limits(x = c(nimekirju + 2, 0)) +
+  geom_hline(yintercept =  0.5) +
+  scale_fill_manual(values = c("#fc9272", "#2b8cbe")) +
+  labs(title = "Külaliste sooline jaotus",
+       x = "aasta") +
+  theme(axis.title.x = element_blank()) +
+  guides(fill = FALSE)
+```
+
+Kui pildil on mees ja naine, siis kummal pool kumbki on? Kui enamasti on mees vasakul pool, siis millegipärast eristub 2016.a, kui mehed seisid meelsamini paremal ja naised vasakul pool.
+```{r mees_parem_vasak}
+pildi_info %>% 
+  mutate(female = ifelse(gender_type == "F", 1, 0)) %>% 
+  group_by(pildi_url) %>% 
+  filter(max(face_id) == 2, sum(female) == 1) %>% 
+  group_by(pildi_url) %>% 
+  mutate(kummal_pool = ifelse(chin_tip_x < max(chin_tip_x), "parem", "vasak")) %>% 
+  ungroup() %>% 
+  filter(gender_type == "M") %>% 
+  count(aasta, kummal_pool) %>% 
+  ungroup() %>% 
+  group_by(aasta) %>% 
+  mutate(percentage = n / sum(n),
+         vasakul_osakaal_label = ifelse(kummal_pool == "vasak", str_c(round(percentage, 2) * 100, "%"), 
+                                 ""),
+         vasakul_osakaal = ifelse(kummal_pool == "vasak", percentage, "")) %>% 
+  arrange(aasta, desc(kummal_pool)) %>% 
+  ggplot(aes(aasta, y = percentage, fill = fct_rev(kummal_pool))) + 
+  geom_bar(position = "fill", stat = "identity") +
+  geom_text(aes(label = vasakul_osakaal_label, y = percentage - 0.05), size = 4) +
+  annotate("text", y = 0.1, x = 2018.8, label = "vasakul", colour = "#fc9272", fontface = "bold") +
+  annotate("text", y = 0.9, x = 2018.8, label = "paremal", colour = "#2b8cbe", fontface = "bold") +
+  coord_flip() +
+  theme_ipsum_rc() +
+  scale_y_continuous(labels = percent_format(),
+                     expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(2013, 2018, by = 1)) +
+  # expand_limits(x = c(nimekirju + 2, 0)) +
+  geom_hline(yintercept =  0.5) +
+  scale_fill_manual(values = c("#fc9272", "#2b8cbe")) +
+  labs(title = "Mehe asukoht pildil",
+       x = "aasta") +
+  theme(axis.title.x = element_blank()) +
+  guides(fill = FALSE)
+```
+
+Kuigi pildi pealt näo järgi inimese vanuse ennustamine võib olla väga ebatäpne, kandsin tulemused siiski graafikule. Eristuvana paistab sealt välja 2014.a, kui Presidendi külaliste hulgas oli erakordselt palju 45-aastaseid (või 45-sena näivaid inimesi).
+
+```{r kylaliste_vanus, fig.width = 10}
+meeste_vanus  <- pildi_info_toodeldud %>% 
+  filter(gender_type == "M") %>% 
+  ggplot(aes(age, as.factor(aasta))) +
+  geom_joy(aes(fill = as.factor(aasta)), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(20, 70, by = 10),
+                     limits = c(20, 70),
+                     expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(x = "vanus",
+       y = "aasta",
+       title = "Milline on külaliste vanus?",
+       subtitle = "Mehed")
+
+
+naiste_vanus  <- pildi_info_toodeldud %>% 
+  filter(gender_type == "F") %>% 
+  ggplot(aes(age, as.factor(aasta))) +
+  geom_joy(aes(fill = as.factor(aasta)), scale = 2, colour = "white", size = 0.7) +
+  theme_ipsum_rc() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(20, 70, by = 10),
+                     limits = c(20, 70),
+                     expand = c(0, 0)) +
+  scale_fill_cyclical(values = c("#3182bd", "#6baed6")) +
+  labs(x = "vanus",
+       y = "aasta",
+       title = "",
+       subtitle = "Naised")
+
+meeste_vanus + naiste_vanus
+```
+
+
+### Kuidas?
+
+Analüüsiks vajalikud galeriid otsisin käsitsi välja ERR ja Õhtulehe veebilehtedelt. Kasutasin just neid allikalid, kuna sealt oli kõige mugavam kraapida kogu galerii iga pildi url. Kui umbes 2500 pildi lingid olid olemas, siis jooksutasin need paari lainena läbi [Kairos](https://www.kairos.com/) näotuvastus API (tasuta päevalimiit 1500 päringut). Selle abil tuvastasin inimeste asukoha koordinaadid igal pildil ja muud tunnused (sugu, vanus jne). Inimeste asukohast lähtuvalt lõikasin välja 100x300px suuruse ala pildilt, et sealt automaatselt tuvastada riietuse värvitoonid. Selleks, et väga suurt hulka erinevaid värvitoone rohkem kokku grupeerida kasutasin k-nearest neighbors algoritmi. Selle abil leidsin igal pikslil olevale värvitoonile temale lähima värvitooni kahest värvipaletist: [COLORS - A nicer color palette for the web](https://htmlcolorcodes.com/color-names/) ja [Color Names - HTML Color Codes](http://clrs.cc/). Saadud tulemustest valisin iga inimese kohta välja 2 kõige populaarsemat värvitooni. Nii olid vajalikud toorandmed käes ja edasi võis tegeleda andmete ettevalmistamise ja visualiseerimisega. Detailsemalt saab R skriptiga tutvuda [githubis](https://github.com/toomase/ev_100).

@@ -34,9 +34,9 @@ library(scales)
 load("~/Dropbox/DataScience/R/ev_100/data/pildi_info.RData")
 ```
 
-EV100 presidendi vastuvõtu vaatamisega tekkis mõte analüüsida peol tehtud pildigaleriisid. See on hea võimalus viia ennast pisut kurssi piltidelt info kogumisega. Esimene eesmärk on leida trende külaliste piduriiete värvitoonides läbi aastate. Samuti võimaldab [Kairos](https://www.kairos.com/) näotuvastus API tuvastada piltidelt teisi analüüsiväärseid tunnuseid (inimese vanus, sugu, prillide olemasolu jne). Pisut täpsemalt metoodikast postituse lõpus.
+EV100 presidendi vastuvõtu vaatamisega tekkis mõte analüüsida peol tehtud pildigaleriisid. See on hea võimalus viia ennast pisut kurssi piltidelt info kogumisega. Esimene eesmärk on leida trende külaliste peoriiete värvitoonides läbi aastate. Samuti võimaldab [Kairos](https://www.kairos.com/) näotuvastus API tuvastada piltidelt teisi analüüsiväärilisi tunnuseid (inimese vanus, sugu, prillide olemasolu jne). Pisut täpsemalt kirjeldan metoodikat postituse lõpus.
 
-Kokku õnnestus mul [ERR-i](https://err.ee) ja [Õhtulehe]() presidendi vastuvõtu galeriidest perioodi 2013-2018 kohta kraapida ~2500 pilti. Kuigi huvitav oleks uurida pikemat perioodi, ei õnnestunud mul lihtsa vaevaga leida varasemate aastate kohta fotoseina ääres tehtud galeriisid.
+Kokku õnnestus mul [ERR-i](https://err.ee) ja [Õhtulehe]() presidendi vastuvõtu galeriidest (2013-2018) kraapida ~2500 pilti. Kuigi huvitav oleks uurida pikemat perioodi, tunuds varasemate aastate galeriide leidmine ja kraapimine keerulisem.
 
 
 ### Populaarsed värvitoonid riietuses
@@ -57,9 +57,10 @@ cols_143 <- structure(as.character(varvipalett_2_raw$hex),
 
 Igalt pildilt tuvastasin kõigi inimeste kohta 2 kõige domineerivamat värvitooni. Järgnevatel graafikutel ongi kujutatud nende värvide esinemissagedust aastate lõikes.
 
-Milline on domineeriv riietuse värvitoon kõigi külaliste peale kokku? Ettearvatult on kõige populaarsem värv must, mis domineerib umbes 60% külaliste riietuses. Erisusena paistab välja 2015.a, kus osa musta populaarsusest on üle võtnud hallid toonid. Seda fenomeni uurin kohe pisut detailsemalt.
+Milline on domineeriv riietuse värvitoon kõigi külaliste peale kokku? 
+Ettearvatult on kõige populaarsem värv must, mis domineerib umbes 60% külaliste riietuses. Erisusena paistab välja 2015. a, kus osa musta populaarsusest on üle võtnud hallid toonid. Seda fenomeni uurin allpool pisut detailsemalt.
 
-```{r domineeriv_varv_kokku}
+```{r domineeriv_varv_kokku, fig.height=5, fig.width=7}
 pildi_info_toodeldud %>%
   ggplot(aes(x = aasta, y = ..count.., fill = fct_rev(fct_infreq(color_title_1)), 
              colour = fct_rev(fct_infreq(color_title_1)))) +

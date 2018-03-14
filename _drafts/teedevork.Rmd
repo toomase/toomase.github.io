@@ -1,0 +1,101 @@
+---
+title: "Eesti linnade teedevõrk"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/teedevork-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(patchwork)
+library(ggthemes)
+library(sf)
+
+# lae vastuvõtu galeriidest eraldatud andmete tabel ja värvipaletid
+load("~/Dropbox/DataScience/R/linnade_km2/data/teedevorgustik.RData")
+```
+
+Ajendatuna blogipostituse [Square-Mile Street Network Visualization](http://geoffboeing.com/2017/01/square-mile-street-network-visualization/) kenadest visuaalidest soovisin sarnaselt kujutada teedevõrgustikku ka Eesti linnades. Allolevatel kaartidel on näidatud 1km raadiusega ringi sees teed ja tänavad eri Eestis piirkondades. 
+
+Esimene kaartide kogumik kujutab 8 vabalt valitud linna teedevõrgustikku.
+
+```{r funktsioon_visualiseeri_teed, echo = FALSE, message = FALSE, warning = FALSE}
+visualiseeri_teed <- function(df){
+  # kui palju sf objekte listis on?
+  len <- length(df)
+  
+  # funktsioon iga SF objekti visualiseerimiseks
+  visualiseeri <- function(x){
+    df[[x]] %>% 
+      ggplot() +
+      geom_sf(size = 0.5, color = "red") +
+      theme_map() +
+      # vajalik, et mitte kuvada koorninaatvõrgustikku
+      coord_sf(crs = st_crs(df[[x]]), datum = NA) +
+      # pealkirjas asukoha nimiest esimene sõna
+      labs(title = str_replace(word(unique(df[[x]]$asukoht), 1), ",", "")) +
+      theme(
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  size = 15)) +
+      guides(size = FALSE)
+  }
+  
+  # visualiseeri iga listi kuuluv SF objekt
+  visuaal <- map(seq(1:len), visualiseeri)
+  
+  return(visuaal)
+}
+```
+
+```{r visualiseeri_teed, echo = FALSE, message = FALSE, warning = FALSE}
+# Visualiseeri linnaosade teedevõrgustik ühte listi
+linnaosad_teed_kaart <- visualiseeri_teed(linnaosad_teed)
+
+linnad_teed_kaart <- visualiseeri_teed(linnad_teed)
+
+tallinn_teed_kaart <- visualiseeri_teed(tallinn_teed)
+```
+
+```{r linnad, fig.width=8, fig.height=16}
+# Linnade teedevõrgustik kaardil
+wrap_plots(linnad_teed_kaart, ncol = 2)
+```
+
+Järgmistel kaartidel on kõigi Tallinna linnaosade teede ja tänavate vaade.
+
+```{r linnaosad, fig.width=8, fig.height=16}
+# Tallinna linnaosade teedevõrgustik kaardil
+wrap_plots(linnaosad_teed_kaart, ncol = 2)
+```
+
+Lisaks kujutasin veel 4 vabalt valitud Tallinna piirkonda.
+
+```{r tallinn_muud, fig.width=8, fig.height=8}
+# Tallinna muude asukohtade teedevõrgustik kaardil
+wrap_plots(tallinn_teed_kaart, ncol = 2)
+```
+
+
+### Kuidas?
+
+Visualiseerimiseks kasutasin endale huvitavamana ja tuttavamana tunduvaid piirkondasid Eestis. [Google Maps API](https://developers.google.com/maps/) abil tuvastasin märksõna järgi vastava asukoha koordinaadid. Seejärel tekitasin asukoha ümber 1 km raadiusega ringi, mille sees on kuvatud [OpenStreetMap](https://www.openstreetmap.org/) teedevõrgustik.
+Detailsemalt saab R skriptiga tutvuda [githubis](https://github.com/toomase/linnade_km2).

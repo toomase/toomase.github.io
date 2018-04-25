@@ -55,7 +55,7 @@ As the distribution chart shows, tram lines are quite different when it comes to
 
 Charts below are interactive, with tool tips, zoom etc.
 
-<iframe frameborder="0" width="1000" height="1500" 
+<iframe frameborder="0" width="800" height="1700" 
         sandbox="allow-same-origin allow-scripts"
         scrolling="no" seamless="seamless"
         src="/files/tram_delay.html">

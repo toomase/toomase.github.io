@@ -13,7 +13,7 @@ Selles analüüsis proovisin leida punktid Mandri-Eestis ja suurte saartel, mis 
 
 Allolev kaart on interaktiivne. Paremalt ülevalt nurgast saab sisse lülitada Esri ortofoto aluskaardi ning kuvada välja igale punktile lähedal olevad sood ja rabad. Kaardi avamiseks täisekraanil kliki sellel <a href="http://toomase.github.io/files/perifeeria.html" target="_blank">lingil</a>.
 
-<iframe frameborder="0" width="800" height="700" 
+<iframe frameborder="0" width="700" height="500" 
         sandbox="allow-same-origin allow-scripts"
         scrolling="no" seamless="seamless"
         src="/files/perifeeria.html">

@@ -1,0 +1,26 @@
+---
+title: "Teekond lasteaeda ja kooli Tallinnas"
+author: "Toomas Eilat"
+date: "2018-06-03"
+layout: post
+---
+
+
+
+
+
+Analüüsisin jalgsi teekonna pikkust eri Tallinna piirkondadest lähimasse kooli ja lasteaeda. Tegemist ei ole linnulennulise kaugusega vaid reaalse teekonnaga mööda teid.
+
+Interaktiivsetel kaartidel on võimalik näha igast arvutatud punktist kaugust lähima koolini ja lasteaiani ning punastel ringidel klikkides ka koolide ja lasteaedade nimesid. Lisaks saab paremalt ülevalt nurgast vahetada aluskaarti ning vasakult ülevalt otsida mõnda konkreetset aadressi või piirkonda.
+
+Interaktiivsete kaartide nägemiseks kliki allolevatel piltidel või nendel linkidel: <a href="http://toomase.github.io/files/teekond_kooli.html" target="_blank">teekond kooli</a>, <a href="http://toomase.github.io/files/teekond_lasteaeda.html" target="_blank">teekond lasteaeda</a>.
+
+### Teekond lähimasse kooli
+<a href="http://toomase.github.io/files/teekond_kooli.html" target="_blank"><img border="0" alt="teekond-kooli" src="http://toomase.github.io/img/teekond-kooli.png"></a>
+
+### Teekond lähimasse lasteaeda
+<a href="http://toomase.github.io/files/teekond_lasteaeda.html" target="_blank"><img border="0" alt="teekond-lasteaeda" src="http://toomase.github.io/img/teekond-lasteaeda.png"></a>
+
+
+## Kuidas?
+Analüüsi tegemisel võtsin aluseks [OpenStreetMap](https://www.openstreetmap.org/) Eesti teede kaardid ning R paketi [dodgr](https://github.com/ATFutures/dodgr), mille abil arvutasin jalgsi teekonnad koolidesse ja lasteadadesse. Koolide ja lasteaedade andmed on pärit [Eesti Hariduse Infosüsteemist](https://koolikaart.hm.ee/). Detailsemalt saab andmetöötluse ja analüüsiga tutvuda Githubis:  [https://github.com/toomase/kaugus_kohast](https://github.com/toomase/kaugus_kohast). 

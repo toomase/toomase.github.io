@@ -9,7 +9,7 @@ layout: post
 
 
 
-Analüüsisin jalgsi teekonna pikkust eri Tallinna piirkondadest lähimasse kooli ja lasteaeda. Tegemist ei ole linnulennulise kaugusega vaid reaalse teekonnaga mööda teid.
+Analüüsisin jalgsi teekonna pikkust eri Tallinna piirkondadest lähimasse kooli ja lasteaeda. Tegemist ei ole linnulennulise kaugusega vaid reaalse teekonnaga mööda teid. Huvitavad on nendel kaartidel murrangu kohad, kus kooli- või lasteaia tee pikeneb järsult. Peamiselt on need põhjustatud erinevatest füüsilistest takistustest (jõed, raudtee jms). Näiteks asub Pirita jõe ääres Tallinna Konstantin Pätsi Vabaõhukool, aga teiselt poolt jõge on sinna suhteliselt pikk teekond. Sellistes kohtades oleks linnulennuline kaugus väga eksitav. Samas esineb ka anomaaliaid, kus tegelikult on jalgsi ligipääs kooli või lasteaiani olemas, aga kuna OSM aluskaardi andmetest see ei kajastu, siis on ka marsruut leitud mööda teisi teid ringiga.
 
 Interaktiivsetel kaartidel on võimalik näha igast arvutatud punktist kaugust lähima koolini ja lasteaiani ning punastel ringidel klikkides ka koolide ja lasteaedade nimesid. Lisaks saab paremalt ülevalt nurgast vahetada aluskaarti ning vasakult ülevalt otsida mõnda konkreetset aadressi või piirkonda.
 

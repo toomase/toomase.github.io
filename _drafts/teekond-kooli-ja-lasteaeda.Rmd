@@ -27,13 +27,13 @@ Analüüsisin jalgsi teekonna pikkust eri Tallinna piirkondadest lähimasse kool
 
 Interaktiivsetel kaartidel on võimalik näha igast arvutatud punktist kaugust lähima koolini ja lasteaiani ning punastel ringidel klikkides ka koolide ja lasteaedade nimesid. Lisaks saab paremalt ülevalt nurgast vahetada aluskaarti ning vasakult ülevalt otsida mõnda konkreetset aadressi või piirkonda.
 
-Interaktiivsete kaartide nägemiseks kliki allolevatel piltidel või nendel linkidel: <a href="http://toomase.github.io/files/teekond_kooli.html" target="_blank">teekond kooli</a>, <a href="http://toomase.github.io/files/teekond_lasteaeda.html" target="_blank">teekond lasteaeda</a>.
+Interaktiivsete kaartide nägemiseks kliki allolevatel piltidel või nendel linkidel: <a href="http://eilat.ee/files/teekond_kooli.html" target="_blank">teekond kooli</a>, <a href="http://eilat.ee/files/teekond_lasteaeda.html" target="_blank">teekond lasteaeda</a>.
 
 ### Teekond lähimasse kooli
-<a href="http://toomase.github.io/files/teekond_kooli.html" target="_blank"><img border="0" alt="teekond-kooli" src="http://toomase.github.io/img/teekond-kooli.png"></a>
+<a href="http://eilat.ee/files/teekond_kooli.html" target="_blank"><img border="0" alt="teekond-kooli" src="http://toomase.github.io/img/teekond-kooli.png"></a>
 
 ### Teekond lähimasse lasteaeda
-<a href="http://toomase.github.io/files/teekond_lasteaeda.html" target="_blank"><img border="0" alt="teekond-lasteaeda" src="http://toomase.github.io/img/teekond-lasteaeda.png"></a>
+<a href="http://eilat.ee/files/teekond_lasteaeda.html" target="_blank"><img border="0" alt="teekond-lasteaeda" src="http://toomase.github.io/img/teekond-lasteaeda.png"></a>
 
 
 ## Kuidas?

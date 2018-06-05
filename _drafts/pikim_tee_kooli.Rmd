@@ -29,7 +29,7 @@ Lõpptulemustena on näidatud igast piirkonnast kõige kaugema hoone asukoht. Se
 
 Kuigi suures pildid tunduvad tulemused realistlikud, siis mõned anomaaliad hakkasid silma. Näiteks ei ole algoritm suutnud tuvastada Vahastu külas, Kuusalu vallas asuvast hoonest teed üle Narva mnt lähimasse kooli. Ilmselt on tegemist arvutuste aluseks oleva kaardiandmete puudusega.
 
-Allolev kaart on interaktiivne. Värvilised ringid tähistavad top ~20 hoone asukohta, millest on lähimasse kooli kõige pikem teekond. <span style="color:red">Punased</span> ringid tähistavad koole, milleni need pikad teekonnad viivad ning väiksemad <span style="color:grey">hallid</span> ringid tähistavad kõiki ülejäänud Eesti koole. Hiirega kaardil liikudes kuvatakse erinevat infot objektide kohta. Lisaks saab paremalt ülevalt nurgast vahetada aluskaarti ja sisse-välja lülitada kõigi koolide kuvamine. Vasakult ülevalt saab aga otsida mõnda konkreetset aadressi või piirkonda.
+Allolev kaart on interaktiivne. <span style="color:#440154FF">Vä</span>rvilised ringid tähistavad top ~20 hoone asukohta, millest on lähimasse kooli kõige pikem teekond. <span style="color:red">Punased</span> ringid tähistavad koole, milleni need pikad teekonnad viivad ning väiksemad <span style="color:grey">hallid</span> ringid tähistavad kõiki ülejäänud Eesti koole. Hiirega kaardil liikudes kuvatakse erinevat infot objektide kohta. Lisaks saab paremalt ülevalt nurgast vahetada aluskaarti ja sisse-välja lülitada kõigi koolide kuvamine. Vasakult ülevalt saab aga otsida mõnda konkreetset aadressi või piirkonda.
 
 Kaardi avamiseks täisekraanil kliki sellel <a href="http://eilat.ee/files/pikim_tee_kooli.html" target="_blank">lingil</a>.
 

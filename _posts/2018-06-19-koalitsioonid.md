@@ -11,7 +11,7 @@ layout: post
 
 
 
-Mõnda aega tagasi jäi mulle silma üks huvitav graafik Bloombergist, mis kujutas Saksamaa koalitsioonivalitsusi viimase 70 aasta jooksul ( [Germany’s Most Likely Coalitions Probably Won’t Help the Economy](https://www.bloomberg.com/news/articles/2017-09-17/merkel-coalition-conundrum-best-chance-isn-t-best-for-economy?utm_content=graphics&utm_campaign=socialflow-organic&utm_source=twitter&utm_medium=social&cmpid%3D=socialflow-twitter-graphics) ). Sellest ajendatuna proovisin sarnase pildi teha ka Eesti koalitsioonivalitsuste kohta viimasel 25-l aastal. Eraldi tõin graafikul välja pikima ametiajaga peaministri, Andrus Ansipi, valitsusaja. 
+Mõnda aega tagasi jäi mulle silma üks huvitav graafik Bloombergist, mis kujutas Saksamaa koalitsioonivalitsusi viimase 70 aasta jooksul ( [Germany’s Most Likely Coalitions Probably Won’t Help the Economy](https://www.bloomberg.com/news/articles/2017-09-17/merkel-coalition-conundrum-best-chance-isn-t-best-for-economy?utm_content=graphics&utm_campaign=socialflow-organic&utm_source=twitter&utm_medium=social&cmpid%3D=socialflow-twitter-graphics) ). Sellest ajendatuna proovisin sarnase pildi teha ka Eesti koalitsioonide kohta viimasel 25-l aastal. Eraldi tõin graafikul välja pikima ametiajaga peaministri, Andrus Ansipi, valitsusaja. 
 
 ![]({{ site.url }}/img/koalitsioonid-koalitsioonid-1.png)
 

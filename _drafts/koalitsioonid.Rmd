@@ -32,7 +32,7 @@ valitsus_koalitsioonid <- readRDS(file = "~/Dropbox/DataScience/R/koalitsioonid/
 
 Mõnda aega tagasi jäi mulle silma üks huvitav graafik Bloombergist, mis kujutas Saksamaa koalitsioonivalitsusi viimase 70 aasta jooksul ( [Germany’s Most Likely Coalitions Probably Won’t Help the Economy](https://www.bloomberg.com/news/articles/2017-09-17/merkel-coalition-conundrum-best-chance-isn-t-best-for-economy?utm_content=graphics&utm_campaign=socialflow-organic&utm_source=twitter&utm_medium=social&cmpid%3D=socialflow-twitter-graphics) ). Sellest ajendatuna proovisin sarnase pildi teha ka Eesti koalitsioonivalitsuste kohta viimasel 25-l aastal. Eraldi tõin graafikul välja pikima ametiajaga peaministri, Andrus Ansipi, valitsusaja. 
 
-```{r koalitsioonid, fig.width=12, fig.height=4}
+```{r koalitsioonid, fig.width=9, fig.height=4}
 # vektor kuupäevadega, mida graafiku x-teljel kuvada
 kp_graafikul <- c(as.Date("01.01.1992", "%d.%m.%Y"),
                   seq.Date(from = as.Date("01.01.1995", "%d.%m.%Y"), 

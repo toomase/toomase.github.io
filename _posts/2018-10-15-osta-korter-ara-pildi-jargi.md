@@ -1,5 +1,5 @@
 ---
-title: "Osta koret ära (pildi järgi)"
+title: "Osta korter ära (pildi järgi)"
 author: "Toomas Eilat"
 date: "2018-10-15"
 layout: post

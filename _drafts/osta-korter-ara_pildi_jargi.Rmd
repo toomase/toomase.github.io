@@ -1,0 +1,166 @@
+---
+title: "Osta koret ära (pildi järgi)"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/osta-korter-ara-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(lime)
+library(hrbrthemes)
+
+# lae ettevalmistatud andmed
+naidis_tubade_selgitused <- readRDS(file = "~/Dropbox/kinnisvara_kuulutused/data/naidis_tubade_selgitused.rds")
+
+kuulutused <- read_rds("~/Dropbox/kinnisvara_kuulutused/data/kuulutused.rds")
+```
+
+Olen pikka aega soovinud mõnes analüüsis kasutada [Keras't](https://keras.rstudio.com/) ja *deep learning'ut*. Otsustasin selle õppimiseks kasutada piltide klassifitseerimist. Kraapisin ühel 2018.a augustikuu päeval info kõigi [kv.ee](https://kinnisvaraportaal-kv-ee.postimees.ee/) korteri müügikuulutuste kohta (~11K) koos iga kuulutuse ava-pildiga. Eesmärk oli ehitada mudel, mis suudaks kõik pildid jagada 6 klassi: elutuba, magamistuba, köök, vannituba, tühi tuba, (pilt tehtud)õuest. Kuna antud analüüsis oligi minu jaoks huvitavam mudeli ehitamise ja treenimise protsess kui lõpptulemus, siis kirjeldan seekord pisut põhjalikumalt just seda KUIDAS protsessi.
+
+Nagu öeldus alustasin ca 11K pildi allalaadimisega. Selleks, et deep learning mudelit treenida oli mul vaja aga maksimaalselt suurt hulka treeningandmeid (pildid koos õigete tunnustega). See oli kogu analüüsis ka kõige aeganõudvam faas. Ehitasin eraldi väikese veebirakenduse, mille abil sain pilte manuaalselt TAG'da. Kokku TAG'sin ära ~1500 pilti. Kuna kuulutuste ava-piltideks on toad väge eri kaaluga (enamlevinud pilt õuest ja harvad pildid vannitoast), siis genereerisin harvemini esinenud tubade pilte juurde.
+
+Mudeli treenimiseks kasutasin lisaks oma TAG'tud piltidele ka eeltreenitud piltide klassifitseerimise mudelit vgg16. Kuna sellise mudeli treenimine on CPU-põhises masinas väga aeganõudev, siis kasutasin AWS masinat GPU-dega. Mudeli ennustuste täpsuseks sain ~85%. Samas tundus, et harva esinevaid vanni- ja magamistoa pilte mudel väga täpselt siiski ennustada ei suuda. Pistelise tulemuste kontrolli põhjal võis aga tulemuste täpsusega täitsa rahule jääda.
+
+Allolevatel piltidel on näide igast toast. Rohelisega on märgitud see ala pildil, mille põhjal mudel oma ennustuse peamiselt tegi.
+
+Antud näite puhul on kööki peamiselt iseloomustanud pliit ja kraanikause ümbrus.
+```{r kook, fig.height=3, echo=FALSE}
+map(naidis_tubade_selgitused[1], plot_image_explanation)[[1]]
+```
+
+Elutoas on mudel ennustuse teinud diivanite ja teleka põhjal.
+```{r elutuba, fig.height=3, echo=FALSE}
+map(naidis_tubade_selgitused[2], plot_image_explanation)[[1]]
+```
+
+Magamistoas on kõige olulisem roll voodil.
+```{r magamistuba, fig.height=3, echo=FALSE}
+map(naidis_tubade_selgitused[3], plot_image_explanation)[[1]]
+```
+
+Vannitoas on tähtsal kohal plaaditud seinad ning wc-pott, kraanikauss ja pesumasin.
+```{r vannituba, fig.height=3, echo=FALSE}
+map(naidis_tubade_selgitused[4], plot_image_explanation)[[1]]
+```
+
+Õuest tehtud pildi puhul on ennustamisel abi olnud maja fassaadist ja taevast.
+```{r ouest, fig.height=3, echo=FALSE}
+map(naidis_tubade_selgitused[5], plot_image_explanation)[[1]]
+```
+
+Tühja tuba on selle näite puhul iseloomustanud suur põranda pind.
+```{r tyhi_tuba, fig.height=3, echo=FALSE}
+map(naidis_tubade_selgitused[6], plot_image_explanation)[[1]]
+```
+
+
+## Tulemuste analüüs
+
+Selleks, et mitte ainult metoodikat kirjeldada, lisan ka mõned huvitavamad graafikud kuulutuste ava-piltide ja korteri tunnuste vaheliste seoste kohta.
+
+Pisut üle poole kuulutuste ava-piltidest on tehtud õuest (maja välisvaated).
+```{r ava_pilt}
+kuulutused %>% 
+  filter(!is.na(tuba)) %>% 
+  count(tuba) %>% 
+  mutate(protsent = round(n / sum(n), 3),
+         tuba = fct_reorder(tuba, protsent),
+         label = str_c(protsent * 100, "% \n(", n, ")")) %>% 
+  ggplot(aes(tuba, protsent)) +
+  geom_col(fill = "#fec44f") +
+  theme_ipsum_rc() +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     expand = expand_scale(add = c(0, 0.15))) +
+  geom_text(aes(label = label), hjust = -0.2) +
+  labs(title = "Kuulutuste ava-piltide jaotus",
+       x = "",
+       y = "% korteritest")
+```
+
+Uuemate korterite (2015+) puhul on üle 2/3 kuulutuste ava-pilt tehtud õuest. Varasemate ehitusaastatega korterite puhul on pisut rohkem pilte toast.
+```{r ehitusaasta, fig.height=5, fig.width=10}
+kuulutused %>% 
+  mutate(tuba = ifelse(tuba == "õuest", "õuest", "toast")) %>% 
+  mutate(ehitusaasta_bin = case_when(ehitusaasta >= 2019 ~ "2019-...",
+                                     ehitusaasta >= 2015 ~ "2015-2018",
+                                     ehitusaasta >= 1990 ~ "1990-2014",
+                                     ehitusaasta >= 1970 ~ "1970-1989",
+                                     ehitusaasta >= 1950 ~ "1950-1969",
+                                     ehitusaasta < 1950 ~ "...-1950")) %>% 
+  filter(!is.na(ehitusaasta)) %>% 
+  count(tuba, ehitusaasta_bin) %>% 
+  group_by(ehitusaasta_bin) %>% 
+  mutate(protsent = round(n / sum(n), 3)) %>% 
+  ggplot(aes(tuba, protsent, group = ehitusaasta_bin)) +
+  geom_col(fill = "#fec44f") +
+  theme_ipsum_rc() +
+  facet_wrap(~ehitusaasta_bin) +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     expand = expand_scale(add = c(0, 0.15))) +
+  geom_text(aes(label = scales::percent(protsent, accuracy = 1)), hjust = -0.2) +
+  labs(title = "Kuulutuste ava-piltide jaotus ehitusaastate lõikes",
+       x = "",
+       y = "% korteritest")
+```
+
+Huvitav on see, et nii päris odavatele korteritele (maksumus ...-20K) kui ka kallimatele korteritele (maksumus 100K-...) on iseloomulikud õuest tehtud kuulutuse ava-pildid. Keskmise hinnaga korterite puhul on pilte pisut rohkem tehtud toast. 
+```{r maksumus, fig.height=5, fig.width=10}
+kuulutused %>%
+  mutate(tuba = ifelse(tuba == "õuest", tuba, "toast")) %>% 
+  filter(!is.na(maksumus)) %>% 
+  mutate(maksumus_bin = case_when(maksumus < 20000 ~ "...-20K",
+                                  maksumus < 50000 ~ "30K-50K",
+                                  maksumus < 75000 ~ "50K-75K",
+                                  maksumus < 100000 ~ "75K-100K",
+                                  maksumus < 150000 ~ "100K-150K",
+                                  maksumus < 200000 ~ "150K-200K",
+                                  TRUE ~ "200K-...")) %>% 
+  group_by(maksumus_bin) %>% 
+  mutate(maksumus_min = min(maksumus)) %>% 
+  ungroup() %>% 
+  mutate(maksumus_bin = fct_reorder(maksumus_bin, maksumus_min)) %>% 
+  count(tuba, maksumus_bin) %>% 
+  group_by(maksumus_bin) %>% 
+  mutate(protsent = round(n / sum(n), 3)) %>% 
+  ggplot(aes(tuba, protsent, group = maksumus_bin)) +
+  geom_col(fill = "#fec44f") +
+  theme_ipsum_rc() +
+  facet_wrap(~maksumus_bin) +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     expand = expand_scale(add = c(0, 0.1))) +
+  geom_text(aes(label = scales::percent(protsent, accuracy = 1)), hjust = -0.2) +
+  labs(title = "Kuulutuste ava-piltide jaotus korteri maksumuse lõikes",
+       x = "",
+       y = "% korteritest")
+```
+
+
+## Kuidas?
+Analüüsi tegemisel sain abi raamatust [Deep Learning with R](https://www.amazon.com/Deep-Learning-R-Francois-Chollet) ning paljudest blogipostitustest. Kõige enam väärivad äramärkimist järgmised:
+  - [Explaining Keras image classification models with lime](https://shirinsplayground.netlify.com/2018/06/keras_fruits_lime/)
+  - [lime v0.4: The Kitten Picture Edition](https://blogs.rstudio.com/tensorflow/posts/2018-03-09-lime-v04-the-kitten-picture-edition/)
+  - [It's that easy! Image classification with keras in roughly 100 lines of code.](https://shirinsplayground.netlify.com/2018/06/keras_fruits/)
+Detailsemalt saab R koodiga tutvuda Githubis: [https://github.com/toomase/kinnisvara_kuulutused](https://github.com/toomase/kinnisvara_kuulutused).

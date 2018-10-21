@@ -1,0 +1,81 @@
+---
+title: "7500 km"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/7500-km')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 90,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(patchwork)
+
+# lae ettevalmistatud andmed
+jooks_5 <- read_rds("~/Dropbox/DataScience/R/trennid/data/jooks_5.rds")
+```
+
+Sattusin twitteris ühe huvitava viisi peale kuidas trennide gps andmed visualiseerida ([https://github.com/marcusvolz/strava](https://github.com/marcusvolz/strava)). Kuigi olen juba varem oma jooksutrennide gps andm,ete põhjal video-kaardi teinud ([Jooks Kardioru pargis](http://eilat.ee/2017-02-06-jooks-kadrioru-pargis/)), tundus see piisavalt põnev viis kordamiseks.
+
+Huvitava faktina sain teada, et 2011-2018 olen kokku jooksmas käinud ~700 korda ja läbinud ~7500km. Allolevalt pildilt paistavad üsna hästi välja sellesse ajavahemikku jäänud elu- ja töökoha vahetused.
+
+```{r ettevalmistused, echo = FALSE, message = FALSE, warning = FALSE}
+# Koosta eraldi pilt aastaarvudega, et see hiljem legendiks grafaiku külge panna.
+# Asukohad on katsetamistega välja timmitud.
+labels <- tribble(
+  ~x, ~y, ~label,
+  0, 0, "2011",
+  0, -1, "2012",
+  0, -3, "2013",
+  0, -5, "2014",
+  0, -7.5, "2015",
+  0, -10, "2016",
+  0, -12, "2017",
+  0, -14, "2018",
+)
+
+aastad <- labels %>% 
+  ggplot(aes(x, y)) +
+  geom_text(aes(label = label, colour = label), size = 5) +
+  theme_void() +
+  guides(colour = "none") +
+  theme(plot.margin = unit(c(-2, 0, 0, 0), "cm"))
+
+
+# Visualiseeri kõik oma jooksud
+jooksud <- jooks_5 %>%
+  ggplot(aes(longitude, latitude, group = fail, colour = aasta)) +
+  geom_path(size = 0.35, lineend = "round") +
+  facet_wrap(~fail, scales = "free", ncol = 15) +
+  theme_void() +
+  guides(colour = "none") +
+  theme(panel.spacing = unit(0, "lines"),
+        strip.background = element_blank(),
+        strip.text = element_blank(),
+        plot.margin = unit(rep(1, 4), "cm"),
+        aspect.ratio = 1)
+```
+
+```{r jooksud, fig.height=28, fig.width=10}
+wrap_plots(aastad, jooksud, widths = c(1, 20))
+```
+
+## Kuidas?
+Kõik andmed jooksutrennide kohta on pärid [Endomondost](https://www.endomondo.com/), kust üsna lihtsalt on võimalik alla laadida kogu oma trennide ajalugu: Settings > Account > Export and Download Your Data. Visualiseerimiseks kasutasin koodi R paketist [strava](https://github.com/marcusvolz/strava), mida pisut modifitseerisin. Kogu skript on leitav Githubist: [https://github.com/toomase/trennid](https://github.com/toomase/trennid).

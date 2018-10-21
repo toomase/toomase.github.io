@@ -32,9 +32,10 @@ library(patchwork)
 jooks_5 <- read_rds("~/Dropbox/DataScience/R/trennid/data/jooks_5.rds")
 ```
 
-Sattusin twitteris ühe huvitava viisi peale kuidas trennide gps andmed visualiseerida ([https://github.com/marcusvolz/strava](https://github.com/marcusvolz/strava)). Kuigi olen juba varem oma jooksutrennide gps andm,ete põhjal video-kaardi teinud ([Jooks Kardioru pargis](http://eilat.ee/2017-02-06-jooks-kadrioru-pargis/)), tundus see piisavalt põnev viis kordamiseks.
+Sattusin twitteris ühe huvitava viisi peale kuidas trennide gps andmed visualiseerida ([https://github.com/marcusvolz/strava](https://github.com/marcusvolz/strava)). Kuigi olen juba varem oma jooksutrennide gps andmete põhjal video-kaardi teinud ([Jooks Kardioru pargis](http://eilat.ee/2017-02-06-jooks-kadrioru-pargis/)), tundus see piisavalt põnev viis kordamiseks.
 
-Huvitava faktina sain teada, et 2011-2018 olen kokku jooksmas käinud ~700 korda ja läbinud ~7500km. Allolevalt pildilt paistavad üsna hästi välja sellesse ajavahemikku jäänud elu- ja töökoha vahetused.
+Huvitava faktina sain teada, et 2011-2018 olen kokku jooksmas käinud ~700 korda ja läbinud ~7500km. 
+Alloleval pildil on kõigi nende jooksude track. Üsna hästi paistavad neist välja mu elu- ja töökoha vahetused.
 
 ```{r ettevalmistused, echo = FALSE, message = FALSE, warning = FALSE}
 # Koosta eraldi pilt aastaarvudega, et see hiljem legendiks grafaiku külge panna.

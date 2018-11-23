@@ -1,0 +1,99 @@
+---
+title: "Vali juhuslik number"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/vali-juhuslik-number')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 90,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(hrbrthemes)
+
+# lae ettevalmistatud andmed
+random_numbrid <- read_rds("~/Dropbox/DataScience/R/random_number/output/random_numbrid.rds")
+```
+
+Käisin 21. novembril [Tallinna Õismäe Gümnaasiumi](http://oismae.tln.edu.ee/) reaal- ja loodusainete nädalal rääkimas 9.-12. klassi õpilastele andmeanalüüsist. Ettekande käigus tegin väikese eksperimendi, mille eesmärk oli vaadata, kui hästi oskavad kuulajad juhuslikke numbreid valida. Mõte selleks tekkis twitteri postitusest [Asking 100 people for a random number from 1 to 10](https://twitter.com/MathiasLeroy_/status/986253218433896449).
+
+Selleks, et andmeid koguda, ehitasin ühe lihtsa shiny äpi, milles iga kuulaja sai telefonis valida juhuslikke numbreid vahemikust 1-10.
+![](http://toomase.github.io/img/vali-juhuslik-number_shiny.png){width=300px}
+
+Kokku valis numbreid 130 õpilast. Aktiivsemad nendest valisid 20-30 numbrit ning passiivsemad 2-3. Eksperimendi tulemustest selgus, et juhuslikke numbreid ei suuda inimesed väga hästi valida. Selgelt domineerivad "juhuslikus valimis" numbrid 6, 7 ja 8. Väga vähe on aga valitud numbrit 1, mis mingil põhjusel ei tundunud õpilastele piisavalt juhuslik. Väga sarnased olid tulemused ka inspiratsiooniks olnud twitteri postituses.
+
+```{r numbrid_kokku}
+random_numbrid %>%
+  count(value) %>% 
+  mutate(osakaal = n / sum(n)) %>% 
+  ggplot(aes(as.factor(value), osakaal)) +
+  geom_col(fill = "#2b8cbe") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  # geom_text(aes(label = n), vjust = -0.3) +
+  theme_ipsum_rc() +
+  labs(title = "Juhuslikult valitud number vahemikus 1-10",
+       subtitle = "130 vastaja poolt valitud 1152 numbrit",
+       x = "valitud number",
+       y = "valiku %")
+```
+
+Kuna valitud numbrite arv oli vastajate hulgas väga erinev, siis proovisin järgmisel graafikul vähendada kõige aktiivsemate õpilaste mõju lõpptulemustele. Selleks jätsin valikusse alles vastajad, kes olid valinud vähemalt 3 numbrit ning igaühe kohta valisin kuus korda välja kolm juhuslikku numbrit. Üldjoontes on jaotus sarnane esimese pildiga. Peamine erinevus on selles, et ka number 5 liikus populaarsemate juhuslike numbrite hulka.
+
+```{r ettevalmistused, echo = FALSE, message = FALSE, warning = FALSE}
+# Kuna kasutajad valisid väga erineva arvu numbreid, siis jäta alles ainult need, kes tegeid vähemalt 3 valikut. Igalt vastajalt jäta alles juhuslikud 3 vastust. Juhuslik valim võta välja 6 korda ja kirjuta andmed tabelisse, et need hiljem visualiseerida.
+
+genereeri_andmed <- function(x){
+  set.seed(x)
+  
+  random_numbrid %>% 
+    group_by(user_id) %>% 
+    mutate(vastuseid = n()) %>% 
+    filter(vastuseid >= 3) %>% 
+    sample_n(3) %>% 
+    ungroup() %>% 
+    mutate(sample = x) %>% 
+    select(sample, value, user_id)
+}
+
+genereeritud_andmed <- map_df(seq(1, 6, by = 1), genereeri_andmed)
+```
+
+```{r numbrite_valik, fig.height=7, fig.width=8}
+genereeritud_andmed %>% 
+  group_by(sample, value) %>% 
+  summarise(n = n()) %>% 
+  group_by(sample) %>% 
+  mutate(osakaal = n / sum(n)) %>% 
+  ungroup() %>% 
+  mutate(sample = str_c(sample, ". valim")) %>% 
+  ggplot(aes(as.factor(value), osakaal)) +
+  geom_col(fill = "#2b8cbe") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  # geom_text(aes(label = n), vjust = -0.3) +
+  theme_ipsum_rc() +
+  facet_wrap(~ sample, ncol = 2) +
+  labs(title = "Juhuslikult valitud number vahemikus 1-10",
+       subtitle = "kuus korda kolm juhuslikku numbrit igalt vastajalt",
+       x = "valitud number",
+       y = "valiku %")
+```
+
+## Kuidas?
+Andmete kogumist kirjeldasin juba eelnevalt. Kogu skript (koos shiny äpiga) on leitav Githubist: [https://github.com/toomase/random_number](https://github.com/toomase/random_number).

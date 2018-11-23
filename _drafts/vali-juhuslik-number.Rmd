@@ -35,6 +35,7 @@ random_numbrid <- read_rds("~/Dropbox/DataScience/R/random_number/output/random_
 Käisin 21. novembril [Tallinna Õismäe Gümnaasiumi](http://oismae.tln.edu.ee/) reaal- ja loodusainete nädalal rääkimas 9.-12. klassi õpilastele andmeanalüüsist. Ettekande käigus tegin väikese eksperimendi, mille eesmärk oli vaadata, kui hästi suudavad õpilased juhuslikke numbreid valida. Mõte selleks tekkis twitteri postitusest: [Asking 100 people for a random number from 1 to 10](https://twitter.com/MathiasLeroy_/status/986253218433896449).
 
 Selleks, et andmeid koguda, ehitasin ühe lihtsa shiny äpi, milles iga kuulaja sai telefonis valida juhuslikke numbreid vahemikust 1-10.
+
 <img src="http://toomase.github.io/img/vali-juhuslik-number_shiny.png" alt="shiny app" width="300">
 
 

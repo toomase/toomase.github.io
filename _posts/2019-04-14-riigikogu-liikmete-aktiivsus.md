@@ -30,5 +30,5 @@ Kui võrrelda omavahel erinevaid fraktsioone, siis teistest eristuvad Isamaa ja 
 ![]({{ site.url }}/img/riigikogu-liikmete-aktiivsusaktiivsus_fraktsiooniti-1.png)
 
 ## Kuidas?
-Nagu öeldud, siis andmed on kraabitud [Riigikogu kodulehelt](http://riigikogu.ee). Lisaks kasutasin saadikute poolt kirjutatud artiklite loetelu pärimiseks Google Cache andmeid. Põhjus on selles, et andmete kraapimise hetkeks olid osad eelmise koosseisu andmed juba Riigikogu kodulehelt eemaldatud.
+Nagu öeldud, siis andmed on kraabitud [Riigikogu kodulehelt](http://riigikogu.ee). Lisaks kasutasin saadikute poolt kirjutatud artiklite loetelu pärimiseks [Google Cache](https://support.google.com/websearch/answer/1687222?hl=en) andmeid. Põhjus on selles, et andmete kraapimise hetkeks olid osad eelmise koosseisu andmed juba Riigikogu kodulehelt eemaldatud.
 Kogu skript on leitav Githubist: [https://github.com/toomase/riigikogu _aktiivsus](https://github.com/toomase/riigikogu_aktiivsus).

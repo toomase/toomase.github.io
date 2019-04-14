@@ -124,8 +124,8 @@ riigikogu_liikmete_aktiivsus %>%
   mutate(nimi = ifelse(perenimi %in% c("Aru", "Helme", "Korb"), nimi, perenimi)) %>% 
   ggplot(aes(suuliselt, kirjalikult, colour = fraktsioon)) +
   geom_point(size = 2.5) +
-  geom_text_repel(aes(label = nimi), min.segment.length = 3,
-                  segment.alpha = 0.5, segment.size = 0.5,
+  geom_text_repel(aes(label = nimi), min.segment.length = 1,
+                  segment.alpha = 0.5, segment.size = 0.3,
                   show.legend = FALSE, size = 2.5) +
   geom_hline(yintercept = mediaan_aktiivsus$kirjalikult) +
   geom_vline(xintercept = mediaan_aktiivsus$suuliselt) +

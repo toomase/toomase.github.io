@@ -1,0 +1,150 @@
+---
+title: "XIII Riigikogu liikmete aktiivsus"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/riigikogu-liikmete-aktiivsus')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(hrbrthemes)
+library(ggrepel)
+
+# lae Riigikogu liikmete fraktsioonid
+fraktsioonid_raw <- read_rds("~/Dropbox/DataScience/R/riigikogu_aktiivsus/data/fraktsioonid.rds")
+
+# lae andmed Riigikogu liikmete aktiivsusega
+riigikogu_liikmete_aktiivsus <- read_rds("~/Dropbox/DataScience/R/riigikogu_aktiivsus/data/riigikogu_liikmete_aktiivsus.rds")
+```
+
+
+Riigikogu XIII koosseis lõpetas hiljuti tegevuse. Seetõttu tekkis mõtte analüüsida Riigikogu liikmete aktiivsust. Inspiratsiooniallikaks oli blogipostitus [How I built a scraper to measure activity of MPs](http://www.maartenlambrechts.com/2016/10/03/how-i-built-a-scraper-to-measure-activity-of-mps.html?utm_content=bufferc8a3e&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer), kus Maarten Lambrechts analüüsis Belgia parlemenidliikmete aktiivusust.
+
+Selleks, et Riigikogu liikmete aktiivsust hinnata kraapisin [Riigikogu kodulehelt](http://riigikogu.ee) XIII koosseisu kohta iga saadiku sõnavõttude, kirjalike küsimuste, arupärimiste ja kirjutatud artiklite andmed. Seejärel liitsin kokku kirjalike tegevuste andmed ja võrdlesin neid suuliste sõnavõttude arvuga Riigikogu suures saalis. 
+
+Mõned nüansid, millega tuleb analüüsi puhul arvestada:
+  * Välistatud on Riigikogu juhatuse liikmed kuna neil on ebaproportsionaalselt palju sõnavõtte, mille sisu on midagi stiilis "Martin Helme, palun!". Ehk siis sõnavõtud, millega antakse lihtsalt saadikutele sõna.
+  * Arvesse on võetud Riigikogu koosseis seisuga märts 2019. Kui mõni saadik on Riigikogus olnud vähem kui 4 aastat (näit Reformierakonna varasemad ministrid), siis neil ongi lihtsalt lüham aeg olnud sõnavõttude / kirjutiste kogumiseks.
+
+Allolevalt graafikul ton näha, et sellise loogika järgi aktiivsust hinnates, on teistest nii sõnavõttudes kui kirjutiste arvus üle Andres Herkel Vabaerakonnast. Läbinist (mediaan)keskmist saadikut esindab Mart Nutt Isamaast. EKRE tuumik, eesotsas Helmede, Madisoni ja Põlluaasaga paistavad samuti silma suure aktiivsusega.
+
+```{r aktiivsus_kokku, fig.height=10, fig.width=10}
+mediaan_aktiivsus <- riigikogu_liikmete_aktiivsus %>% 
+  ungroup() %>% 
+  summarise(suuliselt = median(suuliselt),
+            kirjalikult = median(kirjalikult))
+
+riigikogu_liikmete_aktiivsus %>% 
+  left_join(fraktsioonid_raw) %>% 
+  mutate(fraktsioon = case_when(riigikogu_liige == "Krista Aru" ~ "Eesti Vabaerakonna fraktsioon",
+                                is.na(fraktsioon) ~ "Eesti Reformierakonna fraktsioon",
+                                TRUE ~ fraktsioon),
+         fraktsioon = case_when(fraktsioon == "Eesti Keskerakonna fraktsioon" ~ "Keskerakond",
+                                fraktsioon == "Eesti Konservatiivse Rahvaerakonna fraktsioon" ~ "EKRE",
+                                fraktsioon == "Eesti Reformierakonna fraktsioon" ~ "Reformierakond",
+                                fraktsioon == "Eesti Vabaerakonna fraktsioon" ~ "Vabaerakond",
+                                fraktsioon == "Fraktsiooni mittekuuluvad saadikud" ~ "Fraktsioonitud",
+                                fraktsioon == "Isamaa fraktsioon" ~ "Isamaa",
+                                fraktsioon == "Sotsiaaldemokraatliku Erakonna fraktsioon" ~ "Sotsid")) %>% 
+  filter(!riigikogu_liige %in% c("Eiki Nestor", "Enn Eesmaa", "Helir-Valdor Seeder",
+                                 "Kalle Laanet")) %>% 
+  mutate(nimi = riigikogu_liige) %>% 
+  separate(riigikogu_liige, into = c("eesnimi", "perenimi"), sep = " ") %>% 
+  mutate(nimi = ifelse(perenimi %in% c("Aru", "Helme", "Korb"), nimi, perenimi)) %>% 
+  ggplot(aes(suuliselt, kirjalikult, colour = fraktsioon)) +
+  geom_point(size = 2.5) +
+  geom_hline(yintercept = mediaan_aktiivsus$kirjalikult) +
+  geom_vline(xintercept = mediaan_aktiivsus$suuliselt) +
+  geom_text_repel(aes(label = nimi), min.segment.length = 3,
+                  segment.alpha = 0.2, segment.size = 0.5,
+                  show.legend = FALSE, size = 3.5) +
+  scale_colour_manual(values = c("Reformierakond" = "#fec44f",
+                                 "Vabaerakond" = "#295AA6",
+                                 "Isamaa" = "#00AEEF",
+                                 "Keskerakond" = "#007F5C",
+                                 "EKRE" = "#993404",
+                                 "Sotsid" = "#E10600",
+                                 "Fraktsioonitud" = "#737373")) +
+  annotate("text", x = mediaan_aktiivsus$suuliselt - 25, y = 550, 
+           label = str_c("sõnavõttude mediaan ", mediaan_aktiivsus$suuliselt), 
+           size = 4, angle = 90) +
+  annotate("text", x = 1200, y = mediaan_aktiivsus$kirjalikult + 15, 
+           label = str_c("kirjalik mediaan ", mediaan_aktiivsus$kirjalikult), 
+           size = 4) +
+  theme_ipsum_rc() +
+  theme(legend.title = element_blank(),
+        legend.position = "top",
+        legend.text = element_text(size = 12), 
+        legend.key.size = unit(1.5, "lines")) +
+  guides(colour = guide_legend(override.aes = list(size = 4), nrow = 1)) +
+  labs(title = "XIII Riigikogu liikmete aktiivsus",
+       subtitle = "Kui palju on Riigikogu liikmed esitanud kirjalikke küsimusi ja arupärimisi \nning kirjutanud artikleid vs kui palju on esinetud sõnavõttudega?",
+       y = "arupärimised + kirjalikud küsimused + artiklid",
+       x = "sõnavõtud")
+```
+
+Kui võrrelda omavahel erinevaid fraktsioone, siis teistest eristuvad Isamaa ja Sotside saadikud üsna ühtlase keskmisest madalama aktiivsusega. Tõenäoliselt on see osaliselt seotud faktiga, et mõlemad erakonnad olid terve 4-aastase perioodi koalitsioonis. See omakorda võiks tähendada väiksemat motivatsiooni sõnavaõttudega esineda ja kirjalikke küsimusi ja arupärimisi esitada. Omapärane on Vabaerakonda iseloomustav graafik, kus hästi aktiivsete saadikute kõrval on 2 väga passiivset.
+
+```{r aktiivsus_fraktsiooniti, fig.height=10, fig.width=8}
+riigikogu_liikmete_aktiivsus %>% 
+  left_join(fraktsioonid_raw) %>% 
+  mutate(fraktsioon = case_when(riigikogu_liige == "Krista Aru" ~ "Eesti Vabaerakonna fraktsioon",
+                                is.na(fraktsioon) ~ "Eesti Reformierakonna fraktsioon",
+                                TRUE ~ fraktsioon),
+         fraktsioon = case_when(fraktsioon == "Eesti Keskerakonna fraktsioon" ~ "Keskerakond",
+                                fraktsioon == "Eesti Konservatiivse Rahvaerakonna fraktsioon" ~ "EKRE",
+                                fraktsioon == "Eesti Reformierakonna fraktsioon" ~ "Reformierakond",
+                                fraktsioon == "Eesti Vabaerakonna fraktsioon" ~ "Vabaerakond",
+                                fraktsioon == "Fraktsiooni mittekuuluvad saadikud" ~ "Fraktsioonitud",
+                                fraktsioon == "Isamaa fraktsioon" ~ "Isamaa",
+                                fraktsioon == "Sotsiaaldemokraatliku Erakonna fraktsioon" ~ "Sotsid")) %>% 
+  filter(!riigikogu_liige %in% c("Eiki Nestor", "Enn Eesmaa", "Helir-Valdor Seeder",
+                                 "Kalle Laanet")) %>% 
+  mutate(nimi = riigikogu_liige) %>% 
+  separate(riigikogu_liige, into = c("eesnimi", "perenimi"), sep = " ") %>% 
+  mutate(nimi = ifelse(perenimi %in% c("Aru", "Helme", "Korb"), nimi, perenimi)) %>% 
+  ggplot(aes(suuliselt, kirjalikult, colour = fraktsioon)) +
+  geom_point(size = 2.5) +
+  geom_hline(yintercept = mediaan_aktiivsus$kirjalikult) +
+  geom_vline(xintercept = mediaan_aktiivsus$suuliselt) +
+  scale_colour_manual(values = c("Reformierakond" = "#fec44f",
+                                 "Vabaerakond" = "#295AA6",
+                                 "Isamaa" = "#00AEEF",
+                                 "Keskerakond" = "#007F5C",
+                                 "EKRE" = "#993404",
+                                 "Sotsid" = "#E10600",
+                                 "Fraktsioonitud" = "#737373")) +
+  facet_wrap(~ fraktsioon, ncol = 2) +
+  theme_ipsum_rc() +
+  theme(legend.title = element_blank(),
+        legend.position = "top",
+        legend.text = element_text(size = 12), 
+        legend.key.size = unit(1.5, "lines")) +
+  guides(colour = "none") +
+  labs(title = "XIII Riigikogu liikmete aktiivsus fraktsioonide kaupa",
+       y = "arupärimised + kirjalikud küsimused + artiklid",
+       x = "sõnavõtud")
+```
+
+## Kuidas?
+Nagu öeldus, siis andmed on kraabitud [Riigikogu kodulehelt]("http://riigikogu.ee"). Lisaks kasutasin saadikute poolt kirjutatud artiklite loetelu pärimiseks Google Cache andmeid. Põhjus on selles, et andmete kraapimise hetkeks olid osad eelmise koosseisu andmed juba Riigikogu kodulehelt eemaldatud.
+Kogu skript on leitav Githubist: [https://github.com/toomase/riigikogu _aktiivsus](https://github.com/toomase/riigikogu_aktiivsus).

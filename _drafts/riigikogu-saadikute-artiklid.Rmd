@@ -85,7 +85,7 @@ top_valjaanded %>%
 
 Kõigi fraktsioonide saadikud on artikleid avaldanud ka venekeelsetes väljaannetes. Proportsionaalselt on seda kõige rohkem teinud sotside parlamendi saadikud (28% kõigist artiklitest) ning kõige vähem Vabaerakonna esindajad (12%).
 
-```{r venekeelsed}
+```{r venekeelsed, fig.height=4, fig.width=7}
 artiklid_fraktsiooniga_toodeldud %>% 
   group_by(fraktsioon, venekeelne_artikkel) %>% 
   summarise(artikleid = n()) %>% 
@@ -118,7 +118,7 @@ artiklid_fraktsiooniga_toodeldud %>%
 
 Kümmekond rahvasaadikut on olnud ka rohkem või vähem aktiivsed blogipidajad. Seejuures kõige rohkem blogipostitusi on teinud Andres Herkel (58 postitust).
 
-```{r blogijad}
+```{r blogijad, fig.height=4, fig.width=7}
 artiklid_fraktsiooniga_toodeldud %>% 
   filter(valjaanne == "blogi") %>% 
   count(riigikogu_liige, fraktsioon, sort = TRUE) %>% 
@@ -144,7 +144,7 @@ artiklid_fraktsiooniga_toodeldud %>%
 
 Nädalapäevade lõikes avaldatakse kõige rohkem artikleid neljapäeviti. 
 
-```{r nadalapaevad}
+```{r nadalapaevad, fig.height=4, fig.width=7}
 artiklid_fraktsiooniga_toodeldud %>% 
   mutate(paeva_nr = wday(kp, week_start = getOption("lubridate.week.start", 1)),
          nadalapaev = weekdays(kp, abbreviate = TRUE),
@@ -172,7 +172,7 @@ artiklid_fraktsiooniga_toodeldud %>%
 
 Kõigi fraktsioonide puhul on üle poole artiklitest avaldatud veebiväljaannetes. Teistest eristub pisut Keskerakond, kelle saadikud on internetis avaldanud proportsionaalselt mõnevõrra vähem artikleid kui teised. Selle taga on peamiselt Kesknädalas ja Pealinnas avaldatud artiklid. 
 
-```{r veeb_paber}
+```{r veeb_paber, fig.height=4, fig.width=7}
 artiklid_fraktsiooniga_toodeldud %>% 
   mutate(veeb_paber = ifelse(str_detect(valjaanne, ".ee|blogi|vabaerakonna"), "veeb", "paber")) %>% 
   filter(!is.na(veeb_paber)) %>% 

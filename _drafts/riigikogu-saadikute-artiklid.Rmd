@@ -1,0 +1,209 @@
+---
+title: "XIII Riigikogu saadikute artiklid"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/riigikogu-saadikute-artiklid-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(hrbrthemes)
+library(lubridate)
+
+# lae Riigikogu liikmete artiklite töödeldud andmed
+artiklid_fraktsiooniga_toodeldud <- read_rds("~/Dropbox/DataScience/R/riigikogu_aktiivsus/data/artiklid_fraktsiooniga_toodeldud.rds")
+```
+
+Oma blogipostituses [XIII Riigikogu liikmete aktiivsus](http://eilat.ee/2019-04-14-riigikogu-liikmete-aktiivsus/) analüüsisin eelmise Riigikogu koosseisu aktiivsust. Selles analüüsis kasutatud andmestikus oli üheks osaks iga saadiku poolt kirjutatud artiklite, blogipostituste jms loetelu. Kuna need andmed tundusid ka eraldiseisvana huvitavad, siis uurisin neid pisut detailsemalt. 
+
+Antud analüüsi eesmärgiks on vaadata, mida huvitavad näitavad saadikute poolt kirjutatud artiklite metaandmed (millal artikkel on kirjutatud, kus avaldatud jne.). Selleks kasutasin [Riigikogu kodulehelt](http://riigikogu.ee) kraabitud andmeid. Pärast töötlemist jäi sõelale 8,5K artiklit.
+
+Esimene graafik annab ülevaate sellest, millistes väljaannetes saadikute artikleid kõige rohkem avaldatakse. Eeltöötluse käigus grupeerisin osaliselt kokku ühe meediamaja väljaanded. Näiteks Ekspress Meedia sisaldab artikleid, mis olid avaldatud Eesti Päevalehes, Eesti Ekspressis, Maalehes ja Delfis.
+Enamuse fraktsioonide puhul on number 1 kanal Ekspress Meedia. Erandiks on Isamaa ja Vabaerakond, mille saadikud on rohkem sõna saanud Postimees grupis väljaannetes. EKRE puhul paistab silma kõrgel kolmandal kohal olev Võrumaa Teataja. Selles väljaandes on üle 80 korra sõna saanud kaks EKRE saadikut, Uno Kaskpeit ja Arno Sild. Mõlemad mehed on ka just Võrumaa piirkonnas tegevad. Võrreldes teiste fraktsioonidega on EKRE saadikute artikleid suhteliselt rohkem avaldanud ka Õhtuleht. Keskerakonna puhul eristuvad oluliste kanalitena ka erakonna häälekandja Kesknädal ja Tallinna munitsipaalmeediast ajaleht Pealinn.
+
+
+```{r valjaanded, fig.height=10, fig.width=8}
+# iga fraktsiooni top 10 väljaannet
+top_valjaanded <- artiklid_fraktsiooniga_toodeldud %>% 
+  group_by(fraktsioon, valjaande_grupp) %>% 
+  summarise(artikleid = n()) %>% 
+  arrange(fraktsioon, desc(artikleid)) %>% 
+  group_by(fraktsioon) %>% 
+  filter(row_number() <= 10) %>% 
+  ungroup() 
+
+# valjaanded, mis jäävad graafikul halli värvi
+valjaanded_hallid <- top_valjaanded %>% 
+  distinct(valjaande_grupp) %>% 
+  filter(!valjaande_grupp %in% c("postimees grupp", "ekspress meedia", "kesknädal", "err",
+                                 "õhtuleht")) %>% 
+  pull(valjaande_grupp)
+
+# hall värvipalett
+vahem_populaarsed_valjaanded <- setNames(rep("#bdbdbd", 12), valjaanded_hallid)
+
+
+top_valjaanded %>% 
+  ggplot(aes(drlib::reorder_within(valjaande_grupp, artikleid, fraktsioon), artikleid, 
+             group = fraktsioon, fill = valjaande_grupp)) +
+  geom_col() +
+  drlib::scale_x_reordered() +
+  coord_flip() +
+  scale_fill_manual(values = c("postimees grupp" = "#51ACE4",
+                               "ekspress meedia" = "#F8CA1A",
+                               "err" = "#051B30",
+                               "kesknädal" = "#00805C",
+                               "õhtuleht" = "#E4000F",
+                               vahem_populaarsed_valjaanded)) +
+  facet_wrap(~fraktsioon, scales = "free", ncol = 2) +
+  theme_ipsum_rc() +
+  labs(title = "TOP 10 väljaannet iga fraktsiooni kohta",
+       subtitle = "saadikute artiklid ajavahemikust 2016-2018",
+       x = "väljaanne",
+       y = "artiklite arv") +
+  guides(fill = "none")
+```
+
+Kõigi fraktsioonide saadikud on artikleid avaldanud ka venekeelsetes väljaannetes. Proportsionaalselt on seda kõige rohkem teinud sotside parlamendi saadikud (28% kõigist artiklitest) ning kõige vähem Vabaerakonna esindajad (12%).
+
+```{r venekeelsed}
+artiklid_fraktsiooniga_toodeldud %>% 
+  group_by(fraktsioon, venekeelne_artikkel) %>% 
+  summarise(artikleid = n()) %>% 
+  ungroup() %>% 
+  group_by(fraktsioon) %>% 
+  mutate(venekeelsete_osakaal = round(artikleid / sum(artikleid), 3)) %>% 
+  filter(venekeelne_artikkel == 1) %>% 
+  ggplot(aes(fct_reorder(fraktsioon, venekeelsete_osakaal), venekeelsete_osakaal, 
+             fill = fraktsioon)) +
+  geom_col() +
+  coord_flip() +
+  theme_ipsum_rc() +
+  scale_fill_manual(values = c("Reformierakond" = "#FFE200",
+                                 "Vabaerakond" = "#295AA6",
+                                 "Isamaa" = "#00AEEF",
+                                 "Keskerakond" = "#007F5C",
+                                 "EKRE" = "#993404",
+                                 "Sotsid" = "#E10600",
+                                 "Fraktsioonitud" = "#737373")) +
+  scale_y_continuous(labels = scales::percent_format(1),
+                     expand = expand_scale(add = c(0, 0.05))) +
+  geom_text(aes(label = str_c(round(venekeelsete_osakaal, 2) * 100, "%")),
+            hjust = -0.2) +
+  guides(fill = "none") +
+  labs(title = "Venekeelsete artiklite osakaal",
+       subtitle = "saadikute artiklid ajavahemikust 2016-2018",
+       x = "fraktsioon",
+       y = "% artiklitest")
+```
+
+Kümmekond rahvasaadikut on olnud ka rohkem või vähem aktiivsed blogipidajad. Seejuures kõige rohkem blogipostitusi on teinud Andres Herkel (58 postitust).
+
+```{r blogijad}
+artiklid_fraktsiooniga_toodeldud %>% 
+  filter(valjaanne == "blogi") %>% 
+  count(riigikogu_liige, fraktsioon, sort = TRUE) %>% 
+  ggplot(aes(fct_reorder(riigikogu_liige, n), n, 
+             fill = fraktsioon)) +
+  geom_col() +
+  coord_flip() +
+  theme_ipsum_rc() +
+  scale_fill_manual(values = c("Reformierakond" = "#FFE200",
+                                 "Vabaerakond" = "#295AA6",
+                                 "Isamaa" = "#00AEEF",
+                                 "Keskerakond" = "#007F5C",
+                                 "EKRE" = "#993404",
+                                 "Sotsid" = "#E10600",
+                                 "Fraktsioonitud" = "#737373")) +
+  geom_text(aes(label = n), hjust = -0.2) +
+  guides(fill = "none") +
+  labs(title = "Saadikutest blogijad",
+       subtitle = "artiklid ajavahemikust 2016-2018",
+       x = "saadik",
+       y = "blogipostitusi")
+```
+
+Nädalapäevade lõikes avaldatakse kõige rohkem artikleid neljapäeviti. 
+
+```{r nadalapaevad}
+artiklid_fraktsiooniga_toodeldud %>% 
+  mutate(paeva_nr = wday(kp, week_start = getOption("lubridate.week.start", 1)),
+         nadalapaev = weekdays(kp, abbreviate = TRUE),
+         nadalapaev = case_when(nadalapaev == "Fri" ~ "reede",
+                                nadalapaev == "Mon" ~ "esmaspäev",
+                                nadalapaev == "Sat" ~ "laupäev",
+                                nadalapaev == "Sun" ~ "pühapäev",
+                                nadalapaev == "Thu" ~ "neljapäev",
+                                nadalapaev == "Tue" ~ "teisipäev",
+                                nadalapaev == "Wed" ~ "kolmappäev"),
+         nadalapaev = fct_reorder(nadalapaev, paeva_nr)) %>% 
+  count(nadalapaev) %>% 
+  ggplot(aes(nadalapaev, n, fill = factor(ifelse(nadalapaev == "neljapäev", 1, 0)))) +
+  geom_col() +
+  theme_ipsum_rc() +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  scale_fill_manual(values = c("#bdbdbd", "#fc8d59")) +
+  geom_text(aes(label = n), vjust = -0.2) +
+  guides(fill = "none") +
+  labs(title = "Neljapäev on kõige populaarsem päev artikli avaldamiseks",
+       subtitle = "artiklid ajavahemikust 2016-2018",
+       x = "nädalapäev",
+       y = "artikleid")
+```
+
+Kõigi fraktsioonide puhul on üle poole artiklitest avaldatud veebiväljaannetes. Teistest eristub pisut Keskerakond, kelle saadikud on internetis avaldanud proportsionaalselt mõnevõrra vähem artikleid kui teised. Selle taga on peamiselt Kesknädalas ja Pealinnas avaldatud artiklid. 
+
+```{r veeb_paber}
+artiklid_fraktsiooniga_toodeldud %>% 
+  mutate(veeb_paber = ifelse(str_detect(valjaanne, ".ee|blogi|vabaerakonna"), "veeb", "paber")) %>% 
+  filter(!is.na(veeb_paber)) %>% 
+  count(fraktsioon, veeb_paber) %>% 
+  group_by(fraktsioon) %>% 
+  mutate(veebi_osakaal = round(n / sum(n), 3)) %>% 
+  filter(veeb_paber == "veeb") %>% 
+  ggplot(aes(fct_reorder(fraktsioon, veebi_osakaal), veebi_osakaal, 
+             fill = fraktsioon)) +
+  geom_col() +
+  coord_flip() +
+  theme_ipsum_rc() +
+  scale_fill_manual(values = c("Reformierakond" = "#FFE200",
+                                 "Vabaerakond" = "#295AA6",
+                                 "Isamaa" = "#00AEEF",
+                                 "Keskerakond" = "#007F5C",
+                                 "EKRE" = "#993404",
+                                 "Sotsid" = "#E10600",
+                                 "Fraktsioonitud" = "#737373")) +
+  scale_y_continuous(labels = scales::percent_format(1),
+                     expand = expand_scale(add = c(0, 0.1))) +
+  geom_text(aes(label = str_c(round(veebi_osakaal, 2) * 100, "%")),
+            hjust = -0.2) +
+  guides(fill = "none") +
+  labs(title = "Veebiväljaannetes ilmunud artiklite osakaal",
+       subtitle = "saadikute artiklid ajavahemikust 2016-2018",
+       x = "fraktsioon",
+       y = "% artiklitest")
+```
+
+
+## Kuidas?
+Analüüsis kasutatud andmed on kraabitud [Riigikogu kodulehelt](http://riigikogu.ee). Lisaks kasutasin saadikute poolt kirjutatud artiklite loetelu pärimiseks [Google Cache](https://support.google.com/websearch/answer/1687222?hl=en) andmeid. Põhjus on selles, et andmete kraapimise hetkeks olid osad eelmise koosseisu andmed juba Riigikogu kodulehelt eemaldatud.
+Kogu skript on leitav Githubist: [https://github.com/toomase/riigikogu _aktiivsus](https://github.com/toomase/riigikogu_aktiivsus).

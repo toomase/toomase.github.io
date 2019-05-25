@@ -148,7 +148,7 @@ artiklid_fraktsiooniga_toodeldud %>%
 
 Nädalapäevade lõikes avaldatakse kõige rohkem artikleid neljapäeviti. 
 
-```{r nadalapaevad, fig.height=4, fig.width=7}
+```{r nadalapaevad, fig.height=5, fig.width=7}
 artiklid_fraktsiooniga_toodeldud %>% 
   mutate(paeva_nr = wday(kp, week_start = getOption("lubridate.week.start", 1)),
          nadalapaev = weekdays(kp, abbreviate = TRUE),

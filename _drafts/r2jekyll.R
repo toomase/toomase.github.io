@@ -4,7 +4,7 @@
 #.libPaths("C:/Users/toomase/Documents/R/win-library/3.3")
 
 ## R serverist käivitades path
-.libPaths("/home/rstudio/R/x86_64-pc-linux-gnu-library/3.5/")
+.libPaths("/home/rstudio/R/x86_64-pc-linux-gnu-library/3.6/")
 library(knitr)
 
 # Get the filename given as an argument in the shell.

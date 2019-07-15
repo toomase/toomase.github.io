@@ -1,0 +1,146 @@
+---
+title: "Tõde ja Õigus I-V osa topic modelling"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/tode-ja-oigus-topic-modelling-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(tidytext)
+library(topicmodels)
+library(hrbrthemes)
+library(drlib)
+
+options(scipen = 99)
+
+# lae eestikeelsed stoppsõnad
+# need pärinevad siit: https://github.com/kristel-/estonian-stopwords/blob/master/estonian-stopwords.txt
+## detailsemalt on kirjeldatud stoppsõnade loetelu koostamist siin: http://www.tekstikaeve.ee/blog/2018-04-18-eestikeelsete-stoppsonade-loend/
+stopp_sonad <- read_csv("~/Dropbox/DataScience/R/tode_ja_oigus/data/estonian-stopwords.txt", col_names = FALSE) %>% 
+  rename(sona = X1)
+
+# lae teised eestikeelsed stoppsõnad, mida olen ise varem kasutanud
+load("~/Dropbox/DataScience/R/presidendi_koned/data/stop_words_est.RData")
+
+
+tode_ja_oigus_raw <- read_rds("~/Dropbox/DataScience/R/tode_ja_oigus/output/tode_jas_oigus_raw.rds")
+```
+
+Seoses Datacamp'i kursuse [Topic Modeling in R](https://www.datacamp.com/courses/topic-modeling-in-r) läbi tegemisega tekkis soov õpitut ka praktikas akendada. Antud kursus annab kiire ülevaate kuidas _topic modelling_ (eesti keeles: teemade modelleerimine) metoodikaid kasutades tuvastada tekstides esinevaid teemasid.
+
+Analüüsiks sobivaks tekstiks valisin Eesti kirjandusklassika Tõde ja Õigus osad I-V. Tekstid on kättesaadavad täismahus [Vikitekstide lehelt](https://et.wikisource.org/wiki/T%C3%B5de_ja_%C3%B5igus_I). 
+Analüüsi käigus ajasin kõigi 5 osa peatükid piltlikult omavahel sassi ja kaotasid viite, mis raamatust mingi peatükk pärineb. Eesmärgiks oli proovida kasutada topic modelling metoodikat selleks, et tuvastada teksti põhjal, millised peatükid kuuluvad ühte teemasse (ühte raamatusse). Lisaks Datacamp'i kursusele oli analüüsi tegemisel palju abi ka raamatu Text Mining with R peatükist [Topic modeling](https://www.tidytextmining.com/topicmodeling.html#library-heist).
+
+Alloleval graafikul on kujutatud iga raamatu peatüki kohta, millise tõenäosusega kuulub see ühte viiest teemast. Enamuse raamatute puhul tuleb välja üks teema, millisse suurem osa peatükke paigutub. Kõige segasem tundub olukord olema III osaga, mille peatükid jagunevad suhteliselt võrdselt kolme teema vahel. Kõige paremini on mudel tuvastanud teemade põhjal aga I ja IV osa.
+
+```{r data_prep, echo = FALSE, message = FALSE, warning = FALSE}
+# Peatükkide pealkirjad rooma numbrites, et need read tekstist eemaldada
+# maksimaalselt on raamatutes kuni 40 paragrahvi
+# väikese varuga tekita tabel rooma numbritest 1-50
+peatukk <- tibble(rooma_number = as.character(as.roman(1:50)),
+                  peatukk = 1:50)
+
+# lisa rooma numbri järgi punkt kuna 2-5 osas on peatükki peakiri just sellises formaadis
+peatukk_punktiga <- peatukk %>% 
+  mutate(rooma_number_punktiga = str_c(rooma_number, "."))
+
+# Eemalda tühja read ja read kus on ainult peatükki number.
+tode_ja_oigus <- tode_ja_oigus_raw %>% 
+  filter(!is.na(text), text != "") %>% 
+  anti_join(peatukk_punktiga, by = c("text" = "rooma_number")) %>% 
+  anti_join(peatukk_punktiga, by = c("text" = "rooma_number_punktiga")) %>% 
+  select(-language, -url, -title)
+
+
+# iga sõna eraldi reale
+tode_ja_oigus_sonad <- tode_ja_oigus %>% 
+  mutate(dokument = str_c(osa, page, sep = "_")) %>% 
+  select(-page, -osa) %>% 
+  unnest_tokens(input = text, output = word)
+
+# eemalda stoppsõnad
+# arvuta osa/peatüki lõikes iga sõna korduste arv
+sonade_arv <- tode_ja_oigus_sonad %>% 
+  anti_join(stopp_sonad, by = c("word" = "sona")) %>% 
+  anti_join(stop_words_est, by = c("word" = "sona")) %>% 
+  count(dokument, word, sort = TRUE) %>%
+  ungroup()
+
+# koosta dtm objekt
+sonade_arv_dtm <- sonade_arv %>% 
+  cast_dtm(dokument, word, n)
+
+# koosta LDA mudel
+# kasuta 5 topicut (k = 5) sest andmetes on 5 erinevat raamatut
+sonade_arv_lda <- LDA(sonade_arv_dtm, 
+                      k = 5,  # osade arv
+                      control = list(seed = 12345))
+```
+
+
+```{r peatykkide_teemad, fig.height=9, fig.width=8}
+pealkiri_rooma <- tibble(title = 1:5,
+                         title_rooma = as.roman(1:5))
+
+tidy(sonade_arv_lda, matrix = "gamma") %>% 
+  separate(document, c("title", "chapter"), sep = "_", convert = TRUE) %>%
+  arrange(topic, desc(gamma)) %>% 
+  left_join(pealkiri_rooma, by = "title") %>% 
+  mutate(title = str_c("Tõde ja Õigus ", title_rooma)) %>% 
+  ggplot(aes(factor(topic), gamma)) +
+  geom_jitter(alpha = 0.2, width = 0.3, height = 0.05, colour = "#de2d26") +
+  facet_wrap(~ title, ncol = 2) +
+  theme_ipsum_rc() +
+  labs(title = "Tõde ja Õigus tekstide teemamustrite leidmine (topic modelling)",
+       subtitle = "Graafik kujutab tõenäosust, iga raamatu peatüki kohta, \nmillisesse teemasse see kuulub.\nNäiteks Tõde ja Õigus I osas enamus peatükke kuulub teemasse 3",
+       x = "teema")
+
+```
+
+Järgmisel graafikul on kujutatud iga tuvastatud teema kohta kõige iseloomulikumad sõnad. Näiteks teema 1 puhul paistavad välja mitmed sõnad, mis viitavad Indreku kooliaastatele. Just seda kajastab Tõda ja Õigus II osa, mille enamus peatükke ka 1 teema alla klassifitseerusid. Teema nr 3 iseloomulikud sõnad nagu Vargamäe, Pearu, Juss, Mari jne. viitavad raamatu I osale, mille enamus peatükid klassifitseeruvad just selle teema alla.
+
+```{r teemade_populaarsemad_sonad, fig.height=12, fig.width=8}
+sonade_arv_topics <- tidy(sonade_arv_lda, matrix = "beta")
+
+sonade_arv_topics %>% 
+  group_by(topic) %>%
+  top_n(20, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta) %>% 
+  ggplot(aes(drlib::reorder_within(term, beta, topic), beta, group = topic)) +
+  geom_col(fill = "#fc9272") +
+  drlib::scale_x_reordered() +
+  coord_flip() +
+  facet_wrap(~topic, scales = "free_y", ncol = 2) +
+  theme_ipsum_rc() +
+  scale_y_continuous(labels = scales::percent_format(0.1)) +
+  labs(title = "Tõde ja Õigus LDA mudeli teemade populaarsemad sõnad",
+       subtitle = "tõenäosus, et sõna on vastavast teemast",
+       x = "sõna",
+       y = "tõenäosus")
+
+```
+
+
+## Kuidas?
+Andmete allalaadimise, puhastamise ja modelleerimise skript on leitav Githubist: [https://github.com/toomase/tode_ja_oigus](https://github.com/toomase/tode_ja_oigus).

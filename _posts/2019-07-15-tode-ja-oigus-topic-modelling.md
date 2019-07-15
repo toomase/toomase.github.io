@@ -12,7 +12,7 @@ layout: post
 
 
 
-Seoses Datacamp'i kursuse [Topic Modeling in R](https://www.datacamp.com/courses/topic-modeling-in-r) läbi tegemisega tekkis soov õpitut ka praktikas akendada. Antud kursus annab kiire ülevaate kuidas _topic modelling_ (eesti keeles: teemade modelleerimine) metoodikaid kasutades tuvastada tekstides esinevaid teemasid.
+Seoses Datacamp'i kursuse [Topic Modeling in R](https://www.datacamp.com/courses/topic-modeling-in-r) läbi tegemisega tekkis soov õpitut ka praktikas rakendada. Antud kursus annab kiire ülevaate, kuidas _topic modelling_ (eesti keeles: teemade modelleerimine) metoodikaid kasutades tuvastada tekstides esinevaid teemasid.
 
 Analüüsiks sobivaks tekstiks valisin Eesti kirjandusklassika Tõde ja Õigus osad I-V. Tekstid on kättesaadavad täismahus [Vikitekstide lehelt](https://et.wikisource.org/wiki/T%C3%B5de_ja_%C3%B5igus_I). 
 Analüüsi käigus ajasin kõigi 5 osa peatükid piltlikult omavahel sassi ja kaotasid viite, mis raamatust mingi peatükk pärineb. Eesmärgiks oli proovida kasutada topic modelling metoodikat selleks, et tuvastada teksti põhjal, millised peatükid kuuluvad ühte teemasse (ühte raamatusse). Lisaks Datacamp'i kursusele oli analüüsi tegemisel palju abi ka raamatu Text Mining with R peatükist [Topic modeling](https://www.tidytextmining.com/topicmodeling.html#library-heist).

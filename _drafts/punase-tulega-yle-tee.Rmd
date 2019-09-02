@@ -40,12 +40,12 @@ viru_valjak_punane_raw_path <- list.files("~/Dropbox/DataScience/R/ristmike_liik
 viru_valjak_tuvastatud_inimesed_path <- list.files("~/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict/", full.names = TRUE)
 ```
 
-Avastasin ühe huvitava mudeli, mille abil piltidelt erinevaid objekte tuvastada, [You only look once (YOLO)](https://pjreddie.com/darknet/yolo/). Antud süsteemi suur pluss on see, et ta võimaldab kiiresti ja täpselt eeltreenitud mudeli abil piltidelt objekte tuvastada. Seejuures ei ole vaja väga palju riistvara.
+Avastasin ühe huvitava mudeli, mille abil piltidelt erinevaid objekte tuvastada, [You only look once (YOLO)](https://pjreddie.com/darknet/yolo/). Antud süsteemi suur pluss on see, et ta võimaldab kiiresti ja täpselt eeltreenitud mudeli abil piltidelt objekte tuvastada. Seejuures ei ole vaja väga võimast riistvara.
 
-Selleks, et YOLO mudelit katsetada otsustasin proovida tuvastada [Tallinna liikluskaameratel](http://ristmikud.tallinn.ee/) punase tulega teed ületavaid jalakäiaid. Plaan oli seda teha läbi paari etapi:
+Selleks, et YOLO mudelit katsetada, otsustasin proovida tuvastada [Tallinna liikluskaameratel](http://ristmikud.tallinn.ee/) punase tulega teed ületavaid jalakäiaid. Plaan oli seda teha läbi nelja etapi:
 
 1. Salvesta maha liikluskaamera pilt
-2. Tuvasta, kas jalakäiatel põleb valgusfooris punane tuli.
+2. Tuvasta, kas jalakäiatel põleb valgusfooris punane tuli ja autodel roheline
 3. Lõika pildist välja ainult sõidutee osa
 4. YOLO mudeli abil tuvasta, kas sõiduteel on mõni inimene
 
@@ -90,7 +90,7 @@ Siin üks näide tiheda liiklusega Viru väljaku ülekäigust 26.08.2019, kl 14:
 
 Kui kõik toorandmed piltide kujul olid olemas, tuli järgmise sammuna neist eristada pildid, kus jalakäiatel on punane tuli ning autodel roheline. Selle tegemiseks lõikasin kõigilt piltidelt välja 8x8 piksliga ruudu, täpselt valgusfoori tule pealt. Sellelt väikselt pildilt tuvastasin RGB värvid. Otsuse tegemine toimus selle põhjal, kas domineeriv on roheline või punane värv.
 
-Kokkuvõttes osutus just see etapp kõige keerulisemaks. Seda seetõttu, et päeva jooksul erinevas päikesevalguses paistab foori tuli nendel suhteliselt madala kvaliteediga piltidelt välja väga erinevalt. Allolevalt pildilt on näha foorituli päeva jooksul iga 2 tunni tagant.
+Kokkuvõttes osutus just see etapp kõige keerulisemaks. Seda seetõttu, et päeva jooksul erinevas päikesevalguses paistab foori tuli nendel suhteliselt madala kvaliteediga piltidelt välja väga erinevalt. Allolevalt pildilt on näha foorituli päeva jooksul iga 2 tunni tagant. Nagu näha ei ole rohelist foorituld ka inimsilmaga väga lihtne tuvastada.
 
 ```{r echo=FALSE, message = FALSE, warning = FALSE}
 # lae igast tunnist üks pilt rohelise fooritulega autodele
@@ -172,7 +172,7 @@ viru_valjak_punase_tule_pildid %>%
 
 ### 3. Lõika pildist välja ainult sõidutee osa
 
-Jalakäiate punase fooritulega piltidest lõikasin välja ainult osa sõiduteest, et sealt siis järgmises sammus tuvastada inimesil. Selle eesmärk oli, et mudel ei tuvastaks jalakäiad kõnniteel vaid ainult sõiduteel.
+Jalakäiate punase fooritulega piltidest lõikasin välja ainult osa sõiduteest, et sealt siis järgmises sammus tuvastada inimesi. Selle eesmärk oli, et mudel ei tuvastaks jalakäiad kõnniteel vaid ainult sõiduteel.
 
 
 ### 4. YOLO mudeli abil tuvasta, kas sõiduteel on mõni inimene
@@ -190,7 +190,7 @@ viru_valjak_tuvastatud_inimeste_pildid <- viru_valjak_tuvastatud_inimesed_path %
   distinct(aeg_nr, .keep_all = TRUE)
 ```
 
-Järgneva sammuna jooksutasin YOLO mudelit kõigil jalakäiate punase tulega sõidutee piltidel. Mudel tuvastas kokku inimesi `r nrow(viru_valjak_tuvastatud_inimeste_pildid)`-lt pildilt. Allolevatel piltidel on mõned näited, kus mudel on tuvastanud õigesti punase tulega teed ületava jalakäia. Ülemisel pildil on toorik, mis on liikluskaamerast alla laetud ning alumisel pildil sõidutee osa koos objekti tuvastusega YOLO mudeli abil.
+Järgneva sammuna jooksutasin YOLO mudelit kõigil jalakäiate punase tulega sõidutee piltidel. Mudel tuvastas kokku inimesi `r nrow(viru_valjak_tuvastatud_inimeste_pildid)`-lt pildilt. Allpool on mõned näited, kus mudel on tuvastanud õigesti punase tulega teed ületava jalakäia. Ülemisel pildil on toorik, mis on liikluskaamerast alla laetud ning alumisel pildil sõidutee osa koos objekti tuvastusega.
 
 ```{r}
 # esimene näide täpsest ennustusest pinase tulega teed ületanud inime kohta

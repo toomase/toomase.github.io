@@ -1,0 +1,251 @@
+---
+title: "Punase tulega üle tee"
+author: "Toomas Eilat"
+date: "`r Sys.Date()`"
+layout: post
+---
+
+```{r, echo=FALSE}
+# Piltide asukoht
+knitr::opts_chunk$set(fig.path='{{ site.url }}/img/punase-tulega-yle-tee-')
+```
+
+```{r setup, include=FALSE}
+# graafikute ja koodi seaded
+# library(svglite)  # vajalik svg formaadis piltide salvestamiseks
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    message = FALSE,
+    # dev = "svglite",
+    dpi = 300,
+    warning = FALSE,
+    fig.cap = ""
+)
+```
+
+
+```{r lae_andmed, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(lubridate)
+library(hrbrthemes)
+library(magick)
+
+# kõik viru väljaku ülekäigurajalt alla laetud pildid
+viru_valjak_raw_path <- list.files("~/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak_raw/", full.names = TRUE)
+
+# viru väljaku ülekäigurajalt tuvastatud punase tulega
+viru_valjak_punane_raw_path <- list.files("~/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light/", full.names = TRUE)
+
+# viru väljaku ülekäigurajalt punase tulega tuvastatud inimesed
+viru_valjak_tuvastatud_inimesed_path <- list.files("~/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict/", full.names = TRUE)
+```
+
+Avastasin ühe huvitava mudeli, mille abil piltidelt erinevaid objekte tuvastada, [You only look once (YOLO)](https://pjreddie.com/darknet/yolo/). Antud süsteemi suur pluss on see, et ta võimaldab kiiresti ja täpselt eeltreenitud mudeli abil piltidelt objekte tuvastada. Seejuures ei ole vaja väga palju riistvara.
+
+Selleks, et YOLO mudelit katsetada otsustasin proovida tuvastada [Tallinna liikluskaameratel](http://ristmikud.tallinn.ee/) punase tulega teed ületavaid jalakäiaid. Plaan oli seda teha läbi paari etapi:
+
+1. Salvesta maha liikluskaamera pilt
+2. Tuvasta, kas jalakäiatel põleb valgusfooris punane tuli.
+3. Lõika pildist välja ainult sõidutee osa
+4. YOLO mudeli abil tuvasta, kas sõiduteel on mõni inimene
+
+Esialgu proovisin kõik need etapid läbi teha nö reaal-ajas. See tähendab, et kohe kui pildi maha salvestasin, jooksutasin läbi ka kõik järgnevad protsessid, kuni inimeste tuvastamiseni välja. Head tulemust see ei andnud, kuna erinevad etapid vajasid palju seadistamist ja nii tuli kogu tegevust korduvalt otsast alata. Seetõttu otsustasin iga etapi läbi jooksutada eraldi.
+
+
+### 1. Salvesta maha liikluskaamera pilt
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+viru_valjak_pildid <- viru_valjak_raw_path %>% 
+  as_tibble() %>% 
+  mutate(aeg_nr = as.numeric(str_extract(value, "\\d+")),
+         aeg = as.POSIXct(aeg_nr, origin = "1970-01-01"),
+         kp = as.Date(aeg)) %>% 
+  filter(kp == as.Date("2019-08-26")) %>% 
+  mutate(tund = floor_date(aeg, unit = "hour"),
+         tund = format(tund, "%H")) 
+```
+
+
+Üsna suurest hulgast ristmike kaameratest valisin [Viru väljaku ülekäiguraja kaamera](http://ristmikud.tallinn.ee/last/cam104.jpg). Peamine põhjus oli selles, et antud kaamerapilt on võrreldes teistega suhteliselt selge ning proovimise käigus suutis mudel suhteliselt hästi inimesi pildilt tuvastada. Mõne teise, suurema ristmiku puhul oli pilt hägusam ning segavaid faktoreid rohkem.
+
+Liikluskaamera pilte salvestasin maha 26. augustil 2019. Selleks, et objektide tuvastamist päris mitte igalt kaadrilt tegema hakata, laadisin pilte iga 10-30 sekundi tagant, ajavahemikus 7:45 - 23:45. Kokku laadisin alla `r nrow(viru_valjak_pildid)` pilti, ~175 igas tunnis. 
+
+```{r liikluskaamera_pildid_koik, fig.height=5, fig.width=8}
+viru_valjak_pildid %>% 
+  count(tund) %>% 
+  ggplot(aes(tund, n)) +
+  geom_col(fill = "#FF8E02") +
+  theme_ipsum_rc() +
+  labs(title = "Viru väljaku liikluskaamerast alla laetud pildid",
+       caption = "2019-08-26",
+       y = "pilti")
+```
+
+Siin üks näide tiheda liiklusega Viru väljaku ülekäigust 26.08.2019, kl 14:16:
+
+![Viru väljaku ülekäik 26.08.2019, kl 14:16](https://github.com/toomase/toomase.github.io/raw/master/img/viru_valjak_1.jpg)
+
+
+### 2. Tuvasta, kas jalakäiatel põleb valgusfooris punane tuli.
+
+Kui kõik toorandmed piltide kujul olid olemas, tuli järgmise sammuna neist eristada pildid, kus jalakäiatel on punane tuli ning autodel roheline. Selle tegemiseks lõikasin kõigilt piltidelt välja 8x8 piksliga ruudu, täpselt valgusfoori tule pealt. Sellelt väikselt pildilt tuvastasin RGB värvid. Otsuse tegemine toimus selle põhjal, kas domineeriv on roheline või punane värv.
+
+Kokkuvõttes osutus just see etapp kõige keerulisemaks. Seda seetõttu, et päeva jooksul erinevas päikesevalguses paistab foori tuli nendel suhteliselt madala kvaliteediga piltidelt välja väga erinevalt. Allolevalt pildilt on näha foorituli päeva jooksul iga 2 tunni tagant.
+
+```{r echo=FALSE, message = FALSE, warning = FALSE}
+# lae igast tunnist üks pilt rohelise fooritulega autodele
+# lõika välja ainult foori osa ning pane pildid kokku üheks pildiks
+
+# käsitsi tuvastatud pildid
+foorid <- c("data/viru_valjak_raw//1566797621.jpg",
+            "data/viru_valjak_raw//1566801252.jpg",
+            "data/viru_valjak_raw//1566804798.jpg",
+            "data/viru_valjak_raw//1566808409.jpg",
+            "data/viru_valjak_raw//1566812085.jpg",
+            "data/viru_valjak_raw//1566815728.jpg",
+            "data/viru_valjak_raw//1566819273.jpg",
+            "data/viru_valjak_raw//1566822810.jpg",
+            "data/viru_valjak_raw//1566826435.jpg",
+            "data/viru_valjak_raw//1566830196.jpg",
+            "data/viru_valjak_raw//1566833579.jpg",
+            "data/viru_valjak_raw//1566837328.jpg",
+            "data/viru_valjak_raw//1566840895.jpg",
+            "data/viru_valjak_raw//1566844360.jpg",
+            "data/viru_valjak_raw//1566848036.jpg",
+            "data/viru_valjak_raw//1566851601.jpg"
+            ) %>% 
+  str_c("~/Dropbox/DataScience/R/ristmike_liikluskaamerad/", .)
+
+# funkstioon pildilt foori osa välja lõikamiseks
+foor_vaikseks <- function(x){
+  image_read(x) %>% 
+    image_crop(geometry_area(x_off= 1100))
+}
+
+# lõika kõigist piltidest välja foori osa
+auto_foorid <- map(foorid, foor_vaikseks)
+
+# pane auto fooride pildid ühte pilti kokku
+# üks pilt 2H kohta
+auto_foorid_koos <- image_append(c(auto_foorid[[1]],
+                                   auto_foorid[[3]],
+                                   auto_foorid[[5]],
+                                   auto_foorid[[7]],
+                                   auto_foorid[[9]],
+                                   auto_foorid[[11]],
+                                   auto_foorid[[13]],
+                                   auto_foorid[[15]]
+                                   ))
+
+# tee pilt väiksemaks ja 
+image_resize(auto_foorid_koos, "800x") %>% 
+  image_write("~/Dropbox/DataScience/R/toomase.github.io/img/auto-foor-roheline.jpg")
+```
+
+![Roheline foorituli läbi päeva](https://github.com/toomase/toomase.github.io/raw/master/img/auto-foor-roheline.jpg)
+
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+viru_valjak_punase_tule_pildid <- viru_valjak_punane_raw_path %>% 
+  as_tibble() %>% 
+  mutate(aeg_nr = as.numeric(str_extract(value, "\\d+")),
+         aeg = as.POSIXct(aeg_nr, origin = "1970-01-01"),
+         kp = as.Date(aeg)) %>% 
+  filter(kp == as.Date("2019-08-26")) %>% 
+  mutate(tund = floor_date(aeg, unit = "hour"),
+         tund = format(tund, "%H")) 
+```
+
+Kokku tuvastasin `r nrow(viru_valjak_punase_tule_pildid)` pilti jalakäiate punase tulega. Nagu allolevalt graafikult näha, siis õhtutundidel valitud reeglid väga hästi ei toiminud ning kella 21-23 ajast õnnestus tuvasta ainult üksikud punase tulega pildid.
+
+```{r liikluskaamera_punane_foorituli, fig.height=5, fig.width=8}
+viru_valjak_punase_tule_pildid %>% 
+  count(tund) %>% 
+  ggplot(aes(tund, n)) +
+  geom_col(fill = "#e34a33") +
+  theme_ipsum_rc() +
+  labs(title = "Viru väljaku liikluskaamerast tuvastatud jalakäiate punase tule pildid",
+       caption = "2019-08-26",
+       y = "pilti")
+```
+
+
+### 3. Lõika pildist välja ainult sõidutee osa
+
+Jalakäiate punase fooritulega piltidest lõikasin välja ainult osa sõiduteest, et sealt siis järgmises sammus tuvastada inimesil. Selle eesmärk oli, et mudel ei tuvastaks jalakäiad kõnniteel vaid ainult sõiduteel.
+
+
+### 4. YOLO mudeli abil tuvasta, kas sõiduteel on mõni inimene
+
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+viru_valjak_tuvastatud_inimeste_pildid <- viru_valjak_tuvastatud_inimesed_path %>% 
+  as_tibble() %>% 
+  mutate(aeg_nr = as.numeric(str_extract(value, "\\d+")),
+         aeg = as.POSIXct(aeg_nr, origin = "1970-01-01"),
+         kp = as.Date(aeg)) %>% 
+  filter(kp == as.Date("2019-08-26")) %>% 
+  mutate(tund = floor_date(aeg, unit = "hour"),
+         tund = format(tund, "%H")) %>% 
+  distinct(aeg_nr, .keep_all = TRUE)
+```
+
+Järgneva sammuna jooksutasin YOLO mudelit kõigil jalakäiate punase tulega sõidutee piltidel. Mudel tuvastas kokku inimesi `r nrow(viru_valjak_tuvastatud_inimeste_pildid)`-lt pildilt. Allolevatel piltidel on mõned näited, kus mudel on tuvastanud õigesti punase tulega teed ületava jalakäia. Ülemisel pildil on toorik, mis on liikluskaamerast alla laetud ning alumisel pildil sõidutee osa koos objekti tuvastusega YOLO mudeli abil.
+
+```{r}
+# esimene näide täpsest ennustusest pinase tulega teed ületanud inime kohta
+predict_1 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566827660_predict.png")
+
+raw_1 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566827660_raw.jpg")
+
+# pane pildi toorik ja ennustusega versioon ühte pilti kokku
+image_append(c(raw_1, predict_1), stack = TRUE) %>% 
+  image_resize("x600") %>% 
+  image_write("~/Dropbox/DataScience/R/toomase.github.io/img/punas-tulega-teel-1.jpg")
+
+
+# teine näide edukast ennustusest
+predict_2 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566841748_predict.png")
+
+raw_2 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566841748_raw.jpg")
+
+image_append(c(raw_2, predict_2), stack = TRUE) %>% 
+  image_resize("x600") %>% 
+  image_write("~/Dropbox/DataScience/R/toomase.github.io/img/punas-tulega-teel-2.jpg")
+```
+
+
+![Punase tulega teel](https://github.com/toomase/toomase.github.io/raw/master/img/punas-tulega-teel-1.jpg)
+
+![Punase tulega teel](https://github.com/toomase/toomase.github.io/raw/master/img/punas-tulega-teel-2.jpg)
+
+Lisaks täpsetele ennustustele, tuvastas mudel jalakäiana sõiduteel ka näiteks lahtises turismibussis istuva inimese ja kaubaautol oleva reklaampildi. Samuti ei olnud täpsed kõik tuvastatud punased foorituled jalakäiatele (ja samal ajal roheline autodele), mistõttu mõned inimesed on tuvastatud sõiduteed ületamas rohelise tulega.
+
+
+```{r}
+predict__false_1 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566807764_predict.png")
+
+raw__false_1 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566807764_raw.jpg")
+
+image_append(c(raw__false_1, predict__false_1), stack = TRUE) %>% 
+  image_resize("x600") %>% 
+  image_write("~/Dropbox/DataScience/R/toomase.github.io/img/punas-tulega-teel-vale-1.jpg")
+
+
+predict__false_2 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566805949_predict.png")
+
+raw__false_2 <- image_read("/home/rstudio/Dropbox/DataScience/R/ristmike_liikluskaamerad/data/viru_valjak/red_light_predict//1566805949_raw.jpg")
+
+image_append(c(raw__false_2, predict__false_2), stack = TRUE) %>% 
+  image_resize("x600") %>% 
+  image_write("~/Dropbox/DataScience/R/toomase.github.io/img/punas-tulega-teel-vale-2.jpg")
+```
+
+
+![Vale tuvastus](https://github.com/toomase/toomase.github.io/raw/master/img/punas-tulega-teel-vale-1.jpg)
+
+![Vale tuvastus](https://github.com/toomase/toomase.github.io/raw/master/img/punas-tulega-teel-vale-2.jpg)
+
+
+## Kuidas?
+Andmete allalaadimise, puhastamise ja modelleerimise skript on leitav Githubist: [https://github.com/toomase/ristmike_liikluskaamerad](https://github.com/toomase/ristmike_liikluskaamerad).
